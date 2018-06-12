@@ -1,0 +1,56 @@
+{
+  "name": "fluid-notion",
+  "version": "0.0.1",
+  "description": "Open source web based outliner",
+  "main": "dist/index.js",
+  "author": "Lorefnon <lorefnon@gmail.com>",
+  "license": "GPL-3.0-or-later",
+  "private": false,
+  "files": [
+    "dist-tsc",
+    "dist-webpack"
+  ],
+  "scripts": {
+    "test": "jest",
+    "build-server": "tsc",
+    "build-client": "webpack --config webpack.config.ts",
+    "build": "yarn run build-server && yarn run build-client",
+    "webpack-dev-server": "webpack-dev-server",
+    "prettier": "prettier --write --trailing-comma ./**/*.ts",
+    "tslint": "tslint -p .",
+    "prepublish": "yarn run tslint && yarn run build && yarn run test",
+    "clean": "rm -rf dist*",
+    "burmthemall": "yarn run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@types/expect-puppeteer": "^2.2.2",
+    "@types/html-webpack-plugin": "^2.30.3",
+    "@types/jest": "^23.0.2",
+    "@types/puppeteer": "^1.3.3",
+    "@types/react": "^16.3.17",
+    "@types/react-dom": "^16.0.6",
+    "html-webpack-plugin": "^3.2.0",
+    "jest": "^23.1.0",
+    "jest-environment-node": "^22.0.0",
+    "jest-puppeteer": "^3.0.1",
+    "offline-plugin": "^5.0.5",
+    "prettier": "^1.13.5",
+    "puppeteer": "^1.5.0",
+    "ts-loader": "^4.4.1",
+    "ts-node": "^6.1.1",
+    "tslint": "^5.10.0",
+    "tslint-config-prettier": "^1.13.0",
+    "typescript": "^2.9.1",
+    "webpack": "^4.12.0",
+    "webpack-cli": "^3.0.4",
+    "webpack-dev-server": "^3.1.4"
+  },
+  "dependencies": {
+    "@material-ui/core": "^1.2.1",
+    "mobx": "^4.0.2",
+    "mobx-react": "^5.2.3",
+    "mobx-state-tree": "^2.1.0",
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0"
+  }
+}
