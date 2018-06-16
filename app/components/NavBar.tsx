@@ -33,7 +33,22 @@ export const Navbar = storeObserver(({ store }: { store?: IStore }) => (
       >
         Fluid Notion
       </Typography>
-      <Input placeholder="Search ..." style={{ flex: 1 }} />
+      <Input
+        placeholder="Search ..."
+        style={{
+          flex: 1,
+          padding: "3px",
+          background: "rgba(255, 255, 255, 0.3)",
+          color: "white",
+          borderRadius: "4px"
+        }}
+        inputProps={{
+          style: {
+            padding: "10px",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.2)"
+          }
+        }}
+      />
       <IconButton color="inherit" aria-label="Menu">
         <Icon
           style={{

@@ -10,10 +10,12 @@ export const OutlineEditor = storeObserver(({ store }: IStoreConsumerProps) => (
       margin: "40px 0",
       padding: "0"
     }}
+    key={store!.outline!.id}
   >
     {store!.visitState!.flatList.map(({ node, level, isCollapsed }) => {
       return (
         <NodeEditor
+          key={node.id}
           isCollapsed={isCollapsed}
           level={level}
           node={node}

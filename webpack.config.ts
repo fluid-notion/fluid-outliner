@@ -1,4 +1,6 @@
 import HtmlWebpackPlugin from "html-webpack-plugin"; // tslint:disable-line
+// @ts-ignore
+import OfflinePlugin from "offline-plugin";
 import path from "path";
 import webpack from "webpack";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
@@ -28,6 +30,14 @@ export default {
     new DashboardPlugin(),
     new webpack.DefinePlugin({
       NODE_ENV: process.env.NODE_ENV || "development"
+    }),
+    new OfflinePlugin({
+      responseStrategy: "network-first",
+      appShell: "/",
+      externals: [
+        "https://fonts.googleapis.com/icon?family=Material+Icons",
+        "https://fonts.googleapis.com/css?family=Roboto:300,400,500"
+      ]
     })
   ],
   resolve: {
