@@ -21,6 +21,7 @@ export interface IOutline {
   registerNode(node: INode): void;
   setTitle(t: string): void;
   getNode(id: string): INode;
+  removeNode(id: string): void;
 }
 
 export const Outline: IModelType<Snapshot<IOutline>, IOutline> = t
@@ -48,5 +49,11 @@ export const Outline: IModelType<Snapshot<IOutline>, IOutline> = t
     },
     setTitle(title: string) {
       self.title = title;
+    },
+    removeNode(id: string) {
+      const node = self.allNodes.get(id);
+      if (!node) return;
+      if (node.parent) node.parent.spliceChildren(node.siblingIdx, 1);
+      self.allNodes.delete(id);
     },
   }));

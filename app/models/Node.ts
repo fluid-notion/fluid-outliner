@@ -19,6 +19,8 @@ export interface INode {
   hasDescendent(id: string): boolean;
   relocateBefore(id: string): void;
   relocateAfter(id: string): void;
+  moveUp(): void;
+  moveDown(): void;
 }
 
 export const Node: IModelType<Snapshot<INode>, INode> = t
@@ -103,4 +105,16 @@ export const Node: IModelType<Snapshot<INode>, INode> = t
         node.setParent(self as any);
       }
     },
+    moveUp() {
+      if (self.siblingIdx === 0) return;
+      const idx = self.siblingIdx;
+      self.antecedent.spliceChildren(idx, 1);
+      self.antecedent.spliceChildren(idx - 1, 0, self as any);
+    },
+    moveDown() {
+      if (self.siblingIdx === self.antecedent.children.length - 1) return;
+      const idx = self.siblingIdx;
+      self.antecedent.spliceChildren(idx, 1);
+      self.antecedent.spliceChildren(idx + 1, 0, self as any);
+    }
   }));

@@ -1,4 +1,10 @@
-import { Button, Paper, WithStyles, withStyles } from "@material-ui/core";
+import {
+  Button,
+  Paper,
+  WithStyles,
+  withStyles,
+  StyledComponentProps,
+} from "@material-ui/core";
 import { default as AddIcon } from "@material-ui/icons/Add";
 import { autobind } from "core-decorators";
 import keycode from "keycode";
@@ -30,7 +36,7 @@ export interface IPotentialDropTarget {
   location: "above" | "below";
 }
 
-export interface INodeEditorProps {
+export interface INodeEditorPrimaryProps {
   node: INode;
   level: number;
   toggleCollapse: (id: string) => void;
@@ -39,6 +45,8 @@ export interface INodeEditorProps {
   setPotentialDropTarget: (pdt: IPotentialDropTarget) => void;
   willDrop: "above" | "below" | null;
   completeDrop: (id: string | null) => void;
+  focusUp: (idx: number) => void;
+  focusDown: (idx: number) => void;
 }
 
 const styles = {
@@ -49,7 +57,7 @@ const styles = {
       display: "block",
     },
     "&:focus $paper": {
-      border: "1px solid #9473cd",
+      borderColor: "#d7b2f5",
     },
   },
   paper: {
@@ -57,6 +65,7 @@ const styles = {
     borderRadius: 0,
     cursor: "pointer",
     minHeight: "45px",
+    border: "1px solid transparent",
     "& .ql-tooltip": {
       zIndex: 1000,
     },
@@ -101,6 +110,9 @@ const styles = {
   },
 };
 
+export type INodeEditorProps = INodeEditorPrimaryProps &
+  StyledComponentProps<keyof typeof styles>;
+
 export type INodeEditorInnerProps = INodeEditorProps &
   WithStyles<keyof typeof styles> &
   IDragSourceProps &
@@ -125,13 +137,20 @@ const DropPlaceholder = ({ dir }: { dir: "up" | "down" }) => (
 );
 
 @observer
-class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
+export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
+  private container: HTMLDivElement | null = null;
   private editor: ReactQuill | null = null;
 
   @observable private isEditing = false;
 
   public render() {
     const { classes } = this.props;
+    const paperStyles: any = {};
+    if (this.props.willDrop) {
+      paperStyles.borderColor = "red";
+    } else if (this.isEditing) {
+      paperStyles.borderColor = "#9473cd";
+    }
     return this.props.connectDropTarget(
       <div
         style={{
@@ -141,16 +160,10 @@ class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
         onKeyDown={this.handleKeyDown}
         tabIndex={0}
         onDoubleClick={this.enableEditing}
+        ref={this.registerContainer}
       >
         {this.props.willDrop === "above" && <DropPlaceholder dir="down" />}
-        <Paper
-          className={classes.paper}
-          style={{
-            border: this.props.willDrop
-              ? "1px solid red"
-              : "1px solid transparent",
-          }}
-        >
+        <Paper className={classes.paper} style={paperStyles}>
           {this.props.node.children.length > 0 && (
             <Octicon
               name={this.props.isCollapsed ? "unfold" : "fold"}
@@ -183,15 +196,30 @@ class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
     );
   }
 
+  public focus() {
+    if (this.container) this.container.focus();
+  }
+
+  @autobind
+  private registerContainer(el: HTMLDivElement | null) {
+    this.container = el;
+  }
+
   @autobind
   private toggleCollapse() {
     this.props.toggleCollapse(this.props.node.id);
   }
 
   @autobind
+  private disableEditing() {
+    this.isEditing = false;
+  }
+
+  @autobind
   private enableEditing() {
     this.isEditing = true;
   }
+
   private renderContent() {
     const { node, classes } = this.props;
     if (this.isEditing) {
@@ -202,6 +230,7 @@ class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
           value={node.content}
           onChange={this.handleChange}
           className={classes.editor}
+          onBlur={this.disableEditing}
         />
       );
     }
@@ -218,9 +247,24 @@ class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
   private handleKeyDown(event: React.KeyboardEvent) {
     let handled = false;
     const { node } = this.props;
+    if (this.isEditing) {
+      if (keycode(event.nativeEvent) === "esc") {
+        this.isEditing = false;
+        this.container!.focus();
+      }
+      return;
+    }
     switch (keycode(event.nativeEvent)) {
       case "enter":
-        node.addSibling();
+        if (event.shiftKey) {
+          node.addSibling();
+        } else {
+          this.isEditing = true;
+        }
+        handled = true;
+        break;
+      case "delete":
+        node.outline.removeNode(node.id);
         handled = true;
         break;
       case "tab":
@@ -233,6 +277,30 @@ class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
         break;
       case "esc":
         this.isEditing = false;
+        handled = true;
+        break;
+      case "up":
+        if (event.ctrlKey) {
+          if (!this.props.isCollapsed) {
+            this.props.toggleCollapse(node.id);
+          }
+        } else if (event.shiftKey) {
+          node.moveUp();
+        } else {
+          this.props.focusUp(this.props.index);
+        }
+        handled = true;
+        break;
+      case "down":
+        if (event.ctrlKey) {
+          if (this.props.isCollapsed) {
+            this.props.toggleCollapse(node.id);
+          }
+        } else if (event.shiftKey) {
+          node.moveDown();
+        } else {
+          this.props.focusDown(this.props.index);
+        }
         handled = true;
         break;
     }
