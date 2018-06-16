@@ -10,7 +10,7 @@ import { Menu as MenuIcon } from "@material-ui/icons";
 import React from "react";
 import { IStore, storeObserver } from "../models/Store";
 
-export const Navbar = storeObserver(({store}: {store?: IStore}) => (
+export const Navbar = storeObserver(({ store }: { store?: IStore }) => (
   <AppBar position="static">
     <Toolbar>
       <IconButton color="inherit" aria-label="Menu">
@@ -33,6 +33,7 @@ export const Navbar = storeObserver(({store}: {store?: IStore}) => (
       >
         Fluid Notion
       </Typography>
+      <Input placeholder="Search ..." style={{ flex: 1 }} />
       <IconButton color="inherit" aria-label="Menu">
         <Icon
           style={{
@@ -41,10 +42,12 @@ export const Navbar = storeObserver(({store}: {store?: IStore}) => (
           }}
           onClick={store!.saveFile}
         >
-            cloud_download
+          cloud_download
         </Icon>
       </IconButton>
-      <Input placeholder="Search ..." style={{ flex: 1 }} />
+      <IconButton color="inherit" aria-label="Menu">
+        <Icon>settings</Icon>
+      </IconButton>
     </Toolbar>
   </AppBar>
 ));

@@ -1,8 +1,16 @@
+import { flow } from "mobx";
 import { inject, observer } from "mobx-react";
-import { applySnapshot, getSnapshot, onSnapshot, types as t } from "mobx-state-tree";
-import { download } from "../utils/download";
+import {
+  applySnapshot,
+  getSnapshot,
+  onSnapshot,
+  Snapshot,
+  types as t
+} from "mobx-state-tree";
+import { debouncedSaveLocal, download, restoreLocal, wrapMetadata } from "../utils/persistence";
 import { IProviderProps } from "./IProviderProps";
 import { defaultOutlineId, Outline, OutlineVisitState } from "./Outline";
+
 
 export const Store = t
   .model("Store", {
@@ -17,18 +25,29 @@ export const Store = t
       });
     },
     afterCreate() {
-      onSnapshot(self, snapshot => {
+      onSnapshot(self, (snapshot: Snapshot<IStore>) => {
         // tslint:disable-next-line:no-console
         console.dir(snapshot);
+        debouncedSaveLocal(wrapMetadata(snapshot));
       });
     },
     saveFile() {
-      download(getSnapshot(self));
+      download(wrapMetadata(getSnapshot(self)));
     },
     restoreSaved(content: string) {
-      const {snapshot} = JSON.parse(content);
+      const { snapshot } = JSON.parse(content);
       applySnapshot(self, snapshot);
     }
+  }))
+  .actions(self => ({
+    restoreSaved: flow(function* () {
+      const fileData = yield restoreLocal();
+      if (fileData && fileData.snapshot) {
+        applySnapshot(self, fileData.snapshot);
+        return true;
+      }
+      return false;
+    })
   }));
 
 export type IStore = typeof Store.Type;
