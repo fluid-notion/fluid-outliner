@@ -1,4 +1,4 @@
-import { Button, Paper } from "@material-ui/core";
+import { Button, Paper, WithStyles, withStyles } from "@material-ui/core";
 import { default as AddIcon } from "@material-ui/icons/Add";
 import { autobind } from "core-decorators";
 import keycode from "keycode";
@@ -24,71 +24,99 @@ interface INodeEditorProps {
   isCollapsed: boolean;
 }
 
+const styles = {
+  container: {
+    paddingRight: "40px",
+    outline: 0,
+    "&:hover $editBubble, &:focus $editBubble, &:hover $foldControl, &:focus $foldControl": {
+      display: "block"
+    },
+    "&:focus $paper": {
+      border: "1px solid #9473cd"
+    }
+  },
+  paper: {
+    position: "relative" as "relative",
+    borderRadius: 0,
+    cursor: "pointer",
+    minHeight: "45px",
+    "& .ql-tooltip": {
+      zIndex: 1000
+    }
+  },
+  editor: {
+    zIndex: 1
+  },
+  collapseControl: {
+    position: "absolute" as "absolute",
+    left: "-35px",
+    top: "7px",
+    fontSize: "2rem",
+    color: "silver"
+  },
+  foldControl: {
+    display: "none"
+  },
+  unfoldControl: {
+    display: "block"
+  },
+  editBubble: {
+    minWidth: "0px",
+    position: "absolute" as "absolute",
+    left: "5px",
+    bottom: "-20px",
+    width: "30px",
+    height: "30px",
+    lineHeight: "20px",
+    minHeight: "0",
+    padding: "0",
+    zIndex: 100,
+    display: "none"
+  }
+};
+
 @observer
-export class NodeEditor extends React.Component<INodeEditorProps> {
+class NodeEditorInner extends React.Component<
+  INodeEditorProps & WithStyles<keyof typeof styles>
+> {
   private editor: ReactQuill | null = null;
 
   @observable private isEditing = false;
-  @observable private isActive = false;
 
   public render() {
+    const { classes } = this.props;
     return (
       <div
         style={{
-          paddingLeft: 40 + this.props.level * 20 + "px",
-          paddingRight: "40px"
+          paddingLeft: 40 + this.props.level * 20 + "px"
         }}
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
+        className={classes.container}
         onKeyDown={this.handleKeyDown}
         tabIndex={0}
         onDoubleClick={this.enableEditing}
       >
-        <Paper
-          style={{
-            position: "relative",
-            borderRadius: 0,
-            cursor: "pointer",
-            minHeight: "45px"
-          }}
-        >
-          {this.isActive &&
-            this.props.node.children.length > 0 && (
-              <Octicon
-                name={this.props.isCollapsed ? "unfold" : "fold"}
-                style={{
-                  position: "absolute",
-                  left: "-35px",
-                  top: "7px",
-                  fontSize: "2rem",
-                  color: "silver"
-                }}
-                onClick={this.toggleCollapse}
-              />
-            )}
-          {this.renderContent()}
-          {this.isActive && (
-            <Button
-              variant="fab"
-              color="primary"
-              size="small"
-              style={{
-                minWidth: "0px",
-                position: "absolute",
-                left: "5px",
-                bottom: "-20px",
-                width: "30px",
-                height: "30px",
-                lineHeight: "20px",
-                minHeight: "0",
-                padding: "0",
-                zIndex: 100
-              }}
-              onClick={this.props.node.addSibling}
-            >
-              <AddIcon />
-            </Button>
+        <Paper className={classes.paper}>
+          {this.props.node.children.length > 0 && (
+            <Octicon
+              name={this.props.isCollapsed ? "unfold" : "fold"}
+              className={`${classes.collapseControl} ${
+                this.props.isCollapsed
+                  ? classes.unfoldControl
+                  : classes.foldControl
+              }`}
+              onClick={this.toggleCollapse}
+            />
           )}
+          {this.renderContent()}
+          <Button
+            variant="fab"
+            color="primary"
+            size="small"
+            className={classes.editBubble}
+            onClick={this.props.node.addSibling}
+          >
+            <AddIcon />
+          </Button>
         </Paper>
       </div>
     );
@@ -100,32 +128,11 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
   }
 
   @autobind
-  private handleMouseEnter() {
-    this.isActive = true;
-  }
-
-  @autobind
-  private handleMouseLeave() {
-    if (this.editor) {
-      const editor = this.editor.getEditor();
-      if (editor && editor.hasFocus()) {
-        return;
-      }
-    }
-    this.isActive = false;
-  }
-
-  @autobind
-  private handleBlur() {
-    this.isActive = false;
-  }
-
-  @autobind
   private enableEditing() {
     this.isEditing = true;
   }
   private renderContent() {
-    const { node } = this.props;
+    const { node, classes } = this.props;
     if (this.isEditing) {
       return (
         <QuillEditor
@@ -133,7 +140,7 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
           forwardedRef={this.registerEditor}
           value={node.content}
           onChange={this.handleChange}
-          onBlur={this.handleBlur}
+          className={classes.editor}
         />
       );
     }
@@ -186,3 +193,5 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
     this.props.node.setContent(content);
   }
 }
+
+export const NodeEditor = withStyles(styles)(NodeEditorInner);

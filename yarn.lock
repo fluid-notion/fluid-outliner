@@ -3,24 +3,24 @@
 
 
 "@babel/code-frame@^7.0.0-beta.35":
-  version "7.0.0-beta.49"
-  resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.0.0-beta.49.tgz#becd805482734440c9d137e46d77340e64d7f51b"
+  version "7.0.0-beta.51"
+  resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.0.0-beta.51.tgz#bd71d9b192af978df915829d39d4094456439a0c"
   dependencies:
-    "@babel/highlight" "7.0.0-beta.49"
+    "@babel/highlight" "7.0.0-beta.51"
 
-"@babel/highlight@7.0.0-beta.49":
-  version "7.0.0-beta.49"
-  resolved "https://registry.yarnpkg.com/@babel/highlight/-/highlight-7.0.0-beta.49.tgz#96bdc6b43e13482012ba6691b1018492d39622cc"
+"@babel/highlight@7.0.0-beta.51":
+  version "7.0.0-beta.51"
+  resolved "https://registry.yarnpkg.com/@babel/highlight/-/highlight-7.0.0-beta.51.tgz#e8844ae25a1595ccfd42b89623b4376ca06d225d"
   dependencies:
     chalk "^2.0.0"
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
 "@babel/runtime@^7.0.0-beta.42":
-  version "7.0.0-beta.49"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.0.0-beta.49.tgz#03b3bf07eb982072c8e851dd2ddd5110282e61bf"
+  version "7.0.0-beta.51"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.0.0-beta.51.tgz#48b8ed18307034c6620f643514650ca2ccc0165a"
   dependencies:
-    core-js "^2.5.6"
+    core-js "^2.5.7"
     regenerator-runtime "^0.11.1"
 
 "@material-ui/core@^1.2.1":
@@ -110,8 +110,8 @@
     "@types/webpack" "*"
 
 "@types/jest@*", "@types/jest@^23.0.2":
-  version "23.0.2"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-23.0.2.tgz#f03f9e6dd2206cc2a2e8fd033161b0b7cf905db6"
+  version "23.1.0"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-23.1.0.tgz#8054dd838ba23dc331794d26456b86c7e50bf0f6"
 
 "@types/jss@^9.5.3":
   version "9.5.3"
@@ -120,23 +120,17 @@
     csstype "^2.0.0"
     indefinite-observable "^1.0.1"
 
-"@types/localforage@^0.0.34":
-  version "0.0.34"
-  resolved "https://registry.yarnpkg.com/@types/localforage/-/localforage-0.0.34.tgz#5e31c32dd8791ec4b9ff3ef47c9cb55b2d0d9438"
-  dependencies:
-    localforage "*"
-
 "@types/lodash@^4.14.109":
   version "4.14.109"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.109.tgz#b1c4442239730bf35cabaf493c772b18c045886d"
 
 "@types/node@*":
-  version "10.3.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.3.2.tgz#3840ec6c12556fdda6e0e6d036df853101d732a4"
+  version "10.3.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.3.3.tgz#8798d9e39af2fa604f715ee6a6b19796528e46c3"
 
 "@types/puppeteer@*", "@types/puppeteer@^1.3.3":
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/@types/puppeteer/-/puppeteer-1.3.3.tgz#d3b462263f496bff93c126cac14962f067bfbf22"
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@types/puppeteer/-/puppeteer-1.3.4.tgz#6fff43968792924ac2b68744641566e6acefdc20"
   dependencies:
     "@types/events" "*"
     "@types/node" "*"
@@ -160,9 +154,9 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^16.3.17":
-  version "16.3.17"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.3.17.tgz#d59d1a632570b0713946ed9c2949d994773633c5"
+"@types/react@*", "@types/react@^16.3.18":
+  version "16.3.18"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.3.18.tgz#bf195aed4d77dc86f06e4c9bb760214a3b822b8d"
   dependencies:
     csstype "^2.2.0"
 
@@ -365,8 +359,8 @@ acorn-globals@^4.1.0:
     acorn "^5.0.0"
 
 acorn@^5.0.0, acorn@^5.3.0, acorn@^5.6.2:
-  version "5.6.2"
-  resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.6.2.tgz#b1da1d7be2ac1b4a327fb9eab851702c5045b4e7"
+  version "5.7.1"
+  resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.7.1.tgz#f095829297706a7c9776958c0afc8930a9b9d9d8"
 
 after@0.8.2:
   version "0.8.2"
@@ -1098,8 +1092,8 @@ caniuse-api@^1.5.2:
     lodash.uniq "^4.5.0"
 
 caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
-  version "1.0.30000852"
-  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000852.tgz#c37a706048f8d81f87946a7c13f39ed636876659"
+  version "1.0.30000856"
+  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000856.tgz#fbebb99abe15a5654fc7747ebb5315bdfde3358f"
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -1317,7 +1311,7 @@ combined-stream@1.0.6, combined-stream@~1.0.5:
   dependencies:
     delayed-stream "~1.0.0"
 
-commander@2.15.x, commander@^2.12.1, commander@^2.13.0, commander@^2.15.1, commander@^2.9.0, commander@~2.15.0:
+commander@2.15.x, commander@^2.11.0, commander@^2.12.1, commander@^2.13.0, commander@^2.15.1, commander@^2.9.0, commander@~2.15.0:
   version "2.15.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.15.1.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
 
@@ -1437,7 +1431,7 @@ core-js@^1.0.0:
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-1.2.7.tgz#652294c14651db28fa93bd2d5ff2983a4f08c636"
 
-core-js@^2.4.0, core-js@^2.5.0, core-js@^2.5.6:
+core-js@^2.4.0, core-js@^2.5.0, core-js@^2.5.7:
   version "2.5.7"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.5.7.tgz#f972608ff0cead68b841a16a932d0b183791814e"
 
@@ -2224,9 +2218,9 @@ expand-tilde@^1.2.2:
   dependencies:
     os-homedir "^1.0.1"
 
-expect-puppeteer@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/expect-puppeteer/-/expect-puppeteer-3.0.1.tgz#d9796865840a686665e13fef6a2a7e266f582e17"
+expect-puppeteer@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/expect-puppeteer/-/expect-puppeteer-3.1.0.tgz#072a5e54436bf8107e71ea4f8537447eb36caa8e"
 
 expect@^23.1.0:
   version "23.1.0"
@@ -2478,6 +2472,14 @@ find-pkg@^0.1.2:
   resolved "https://registry.yarnpkg.com/find-pkg/-/find-pkg-0.1.2.tgz#1bdc22c06e36365532e2a248046854b9788da557"
   dependencies:
     find-file-up "^0.1.2"
+
+find-process@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/find-process/-/find-process-1.1.1.tgz#57fb1adbc7f4304786db720a49febd708a3162d4"
+  dependencies:
+    chalk "^2.0.1"
+    commander "^2.11.0"
+    debug "^2.6.8"
 
 find-up@^1.0.0:
   version "1.1.2"
@@ -3570,6 +3572,18 @@ jest-config@^23.1.0:
     jest-validate "^23.0.1"
     pretty-format "^23.0.1"
 
+jest-dev-server@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/jest-dev-server/-/jest-dev-server-3.1.0.tgz#a6a367ac5eeba21be79f9b2f334b7a4598f251f0"
+  dependencies:
+    chalk "^2.4.1"
+    cwd "^0.10.0"
+    find-process "^1.1.1"
+    inquirer "^6.0.0"
+    spawnd "^2.0.0"
+    terminate "^2.1.0"
+    wait-port "^0.2.2"
+
 jest-diff@^23.0.1:
   version "23.0.1"
   resolved "https://registry.yarnpkg.com/jest-diff/-/jest-diff-23.0.1.tgz#3d49137cee12c320a4b4d2b4a6fa6e82d491a16a"
@@ -3614,17 +3628,16 @@ jest-environment-node@^23.1.0:
     jest-mock "^23.1.0"
     jest-util "^23.1.0"
 
-jest-environment-puppeteer@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/jest-environment-puppeteer/-/jest-environment-puppeteer-2.4.0.tgz#91a6d2dc8fa0a48c2965d6dfb912226aca4cb34d"
+jest-environment-puppeteer@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/jest-environment-puppeteer/-/jest-environment-puppeteer-3.1.0.tgz#fceb65adf71d07556ed2a399a523814ce5a5844b"
   dependencies:
-    chalk "^2.4.0"
+    chalk "^2.4.1"
     cwd "^0.10.0"
-    lodash "^4.17.5"
+    jest-dev-server "^3.1.0"
+    lodash "^4.17.10"
     mkdirp "^0.5.1"
     rimraf "^2.6.2"
-    spawnd "^2.0.0"
-    wait-port "^0.2.2"
 
 jest-get-type@^22.1.0:
   version "22.4.3"
@@ -3701,11 +3714,11 @@ jest-mock@^23.1.0:
   resolved "https://registry.yarnpkg.com/jest-mock/-/jest-mock-23.1.0.tgz#a381c31b121ab1f60c462a2dadb7b86dcccac487"
 
 jest-puppeteer@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/jest-puppeteer/-/jest-puppeteer-3.0.1.tgz#ac8845d86ff6dd154d98361cce4e6b79c84e99dc"
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/jest-puppeteer/-/jest-puppeteer-3.1.0.tgz#970237152dd7a3d9c3b2e6d7e8eae61cc6ce3827"
   dependencies:
-    expect-puppeteer "^3.0.1"
-    jest-environment-puppeteer "^2.4.0"
+    expect-puppeteer "^3.1.0"
+    jest-environment-puppeteer "^3.1.0"
 
 jest-regex-util@^23.0.0:
   version "23.0.0"
@@ -4111,7 +4124,7 @@ loader-utils@^1.0.2, loader-utils@^1.1.0:
     emojis-list "^2.0.0"
     json5 "^0.5.0"
 
-localforage@*, localforage@^1.7.1:
+localforage@^1.7.1:
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/localforage/-/localforage-1.7.1.tgz#e4927e042302b864db30f3211f13b5c6f0de965d"
   dependencies:
@@ -4861,8 +4874,8 @@ osenv@^0.1.4:
     os-tmpdir "^1.0.0"
 
 outdated-browser-rework@^2.5.1:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/outdated-browser-rework/-/outdated-browser-rework-2.5.1.tgz#e68e8d818ecdc101da2fb02009b4346af2575e47"
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/outdated-browser-rework/-/outdated-browser-rework-2.5.2.tgz#423c050d971fa61abed9e7ef3e9a6baea36f6967"
   dependencies:
     deep-extend "^0.5.0"
     ua-parser-js "^0.7.17"
@@ -5385,7 +5398,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.10, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1:
+prop-types@^15.0.0, prop-types@^15.5.10, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1:
   version "15.6.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
   dependencies:
@@ -5419,8 +5432,8 @@ pseudomap@^1.0.2:
   resolved "https://registry.yarnpkg.com/pseudomap/-/pseudomap-1.0.2.tgz#f052a28da70e618917ef0a8ac34c1ae5a68286b3"
 
 psl@^1.1.24:
-  version "1.1.27"
-  resolved "https://registry.yarnpkg.com/psl/-/psl-1.1.27.tgz#2b2c77019db86855170d903532400bf71ee085b6"
+  version "1.1.28"
+  resolved "https://registry.yarnpkg.com/psl/-/psl-1.1.28.tgz#4fb6ceb08a1e2214d4fd4de0ca22dae13740bc7b"
 
 public-encrypt@^4.0.0:
   version "4.0.2"
@@ -5584,8 +5597,8 @@ react-dom-factories@^1.0.0:
   resolved "https://registry.yarnpkg.com/react-dom-factories/-/react-dom-factories-1.0.2.tgz#eb7705c4db36fb501b3aa38ff759616aa0ff96e0"
 
 react-dom@^16.4.0:
-  version "16.4.0"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.4.0.tgz#099f067dd5827ce36a29eaf9a6cdc7cbf6216b1e"
+  version "16.4.1"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.4.1.tgz#7f8b0223b3a5fbe205116c56deb85de32685dad6"
   dependencies:
     fbjs "^0.8.16"
     loose-envify "^1.1.0"
@@ -5593,12 +5606,12 @@ react-dom@^16.4.0:
     prop-types "^15.6.0"
 
 react-event-listener@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/react-event-listener/-/react-event-listener-0.6.0.tgz#f8cf2821f5ca1844e0df1dac1c7b9a3ecb686fd7"
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/react-event-listener/-/react-event-listener-0.6.1.tgz#41c7a80a66b398c27dd511e22712b02f3d4eccca"
   dependencies:
     "@babel/runtime" "^7.0.0-beta.42"
     prop-types "^15.6.0"
-    warning "^3.0.0"
+    warning "^4.0.1"
 
 react-fa@^5.0.0:
   version "5.0.0"
@@ -5656,8 +5669,8 @@ react-transition-group@^2.2.1:
     prop-types "^15.6.1"
 
 react@^16.4.0:
-  version "16.4.0"
-  resolved "https://registry.yarnpkg.com/react/-/react-16.4.0.tgz#402c2db83335336fba1962c08b98c6272617d585"
+  version "16.4.1"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.4.1.tgz#de51ba5764b5dbcd1f9079037b862bd26b82fe32"
   dependencies:
     fbjs "^0.8.16"
     loose-envify "^1.1.0"
@@ -5895,8 +5908,8 @@ resolve@1.1.7:
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.1.7.tgz#203114d82ad2c5ed9e8e0411b3932875e889e97b"
 
 resolve@^1.3.2:
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.7.1.tgz#aadd656374fd298aee895bc026b8297418677fd3"
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.8.0.tgz#a7f2ac27b78480ecc09c83782741d9f26e4f0c3e"
   dependencies:
     path-parse "^1.0.5"
 
@@ -6761,8 +6774,8 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
 typescript@^2.9.1:
-  version "2.9.1"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.1.tgz#fdb19d2c67a15d11995fd15640e373e09ab09961"
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.2.tgz#1cbf61d05d6b96269244eb6a3bce4bd914e0f00c"
 
 ua-parser-js@^0.7.17, ua-parser-js@^0.7.18:
   version "0.7.18"
@@ -7051,8 +7064,8 @@ webpack-bundle-analyzer@^2.13.1:
     ws "^4.0.0"
 
 webpack-cli@^3.0.4:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-3.0.4.tgz#55d6ad2cdd608de8c0f757dde5bc4bf5bd2dec68"
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-3.0.8.tgz#90eddcf04a4bfc31aa8c0edc4c76785bc4f1ccd9"
   dependencies:
     chalk "^2.4.1"
     cross-spawn "^6.0.5"

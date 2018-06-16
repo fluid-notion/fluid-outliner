@@ -89,6 +89,7 @@ export interface IOutline {
   children: IObservableArray<INode>;
   spliceChildren(start: number, delCount: number, ...nodes: INode[]): any;
   registerNode(node: INode): void;
+  setTitle(t: string): void;
 }
 
 export const Outline: IModelType<Snapshot<IOutline>, IOutline> = t
@@ -110,6 +111,9 @@ export const Outline: IModelType<Snapshot<IOutline>, IOutline> = t
     },
     spliceChildren(start: number, delCount: number, ...nodes: INode[]) {
       return self.children.splice(start, delCount, ...nodes);
+    },
+    setTitle(title: string) {
+      self.title = title;
     }
   }));
 
