@@ -1,10 +1,12 @@
 import HtmlWebpackPlugin from "html-webpack-plugin"; // tslint:disable-line
-import * as path from "path";
-import {BundleAnalyzerPlugin} from "webpack-bundle-analyzer";
+import path from "path";
+import webpack from "webpack";
+import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 // @ts-ignore
 import DashboardPlugin from "webpack-dashboard/plugin"; // tslint:disable-line
 
-const mode = process.env.NODE_ENV === "production" ? "production" : "development";
+const mode =
+  process.env.NODE_ENV === "production" ? "production" : "development";
 const isDev = mode === "development";
 
 export default {
@@ -23,7 +25,10 @@ export default {
       analyzerMode: isDev ? "server" : "static",
       openAnalyzer: false
     }),
-    new DashboardPlugin()
+    new DashboardPlugin(),
+    new webpack.DefinePlugin({
+      NODE_ENV: process.env.NODE_ENV || "development"
+    })
   ],
   resolve: {
     // Add `.ts` and `.tsx` as a resolvable extension.

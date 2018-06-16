@@ -1,5 +1,6 @@
 import { inject, observer } from "mobx-react";
-import { onSnapshot, types as t } from "mobx-state-tree";
+import { getSnapshot, onSnapshot, types as t } from "mobx-state-tree";
+import { download } from "../utils/download";
 import { IProviderProps } from "./IProviderProps";
 import { defaultOutlineId, Outline, OutlineVisitState } from "./Outline";
 
@@ -17,8 +18,12 @@ export const Store = t
     },
     afterCreate() {
       onSnapshot(self, snapshot => {
+        // tslint:disable-next-line:no-console
         console.dir(snapshot);
       });
+    },
+    downloadFile() {
+      download(getSnapshot(self));
     }
   }));
 
