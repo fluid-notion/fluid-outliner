@@ -8,9 +8,9 @@ import {
 } from "@material-ui/core";
 import { Menu as MenuIcon } from "@material-ui/icons";
 import React from "react";
-import { injectStore } from "../models/Store";
+import { IStore, storeObserver } from "../models/Store";
 
-export const Navbar = injectStore(({store}) => (
+export const Navbar = storeObserver(({store}: {store?: IStore}) => (
   <AppBar position="static">
     <Toolbar>
       <IconButton color="inherit" aria-label="Menu">
@@ -39,7 +39,7 @@ export const Navbar = injectStore(({store}) => (
             marginRight: -12,
             marginLeft: 10
           }}
-          onClick={store.downloadFile}
+          onClick={store!.saveFile}
         >
             cloud_download
         </Icon>
