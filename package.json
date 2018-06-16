@@ -20,7 +20,7 @@
     "build-client": "webpack --config webpack.config.ts",
     "build": "yarn run build-server && yarn run build-client",
     "webpack-dev-server": "webpack-dev-server",
-    "prettier": "prettier --write --trailing-comma ./**/*.ts",
+    "prettier": "prettier --write ./**/*.ts",
     "tslint": "tslint -p .",
     "prepublish": "yarn run tslint && yarn run build",
     "clean": "rm -rf dist*",
