@@ -1,8 +1,12 @@
-import * as React from "react";
-import {render} from "react-dom";
+// @ts-ignore
+import checkOutdated from "outdated-browser-rework";
+// tslint:disable-next-line:no-submodule-imports
+import "outdated-browser-rework/dist/style.css";
 
-const rootEl = document.createElement("div");
-rootEl.setAttribute("id", "root");
-document.body.appendChild(rootEl);
+import React from "react";
+import { render } from "react-dom";
+import { App } from "./components/App";
 
-render(<div>Hello</div>, rootEl);
+checkOutdated();
+
+render(<App />, document.getElementById("root"));

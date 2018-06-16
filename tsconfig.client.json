@@ -2,6 +2,6 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "target": "ES6",
-    "module": "ES6"
+    "module": "esNext"
   }
 }
