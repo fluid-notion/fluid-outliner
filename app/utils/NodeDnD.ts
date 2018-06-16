@@ -36,11 +36,11 @@ export const NodeDragSource = DragSource<INodeEditorInnerProps>(
       if (!monitor || !monitor.didDrop()) {
         props.completeDrop(null);
       }
-    }
+    },
   },
   (connect, monitor) => ({
     connectDragSource: connect.dragSource(),
-    isDragging: monitor.isDragging()
+    isDragging: monitor.isDragging(),
   })
 );
 
@@ -93,10 +93,10 @@ export const NodeDropTarget = DropTarget<INodeEditorInnerProps>(
       const item: IDragItem = monitor.getItem() as any;
       if (!item) return;
       props.completeDrop(item.id);
-    }
+    },
   },
   (connect, monitor) => ({
     connectDropTarget: connect.dropTarget(),
-    isOver: monitor.isOver()
+    isOver: monitor.isOver(),
   })
 );

@@ -20,6 +20,6 @@ export const installOfflinePlugin = () => {
     },
     onUpdateFailed: () => {
       debug("Event: onUpdateFailed");
-    }
+    },
   });
 };

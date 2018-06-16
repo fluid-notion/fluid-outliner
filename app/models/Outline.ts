@@ -4,7 +4,7 @@ import {
   IExtendedObservableMap,
   IModelType,
   Snapshot,
-  types as t
+  types as t,
 } from "mobx-state-tree";
 import { v4 as uuid } from "uuid";
 import { INode, Node } from "./Node";
@@ -31,10 +31,10 @@ export const Outline: IModelType<Snapshot<IOutline>, IOutline> = t
       [defaultRootNodeId()]: {
         outline: defaultOutlineId(),
         id: defaultRootNodeId(),
-        content: "Edit Me"
-      }
+        content: "Edit Me",
+      },
     }),
-    children: t.optional(t.array(t.reference(Node)), [defaultRootNodeId()])
+    children: t.optional(t.array(t.reference(Node)), [defaultRootNodeId()]),
   })
   .actions(self => ({
     getNode(id: string) {
@@ -48,6 +48,5 @@ export const Outline: IModelType<Snapshot<IOutline>, IOutline> = t
     },
     setTitle(title: string) {
       self.title = title;
-    }
+    },
   }));
-

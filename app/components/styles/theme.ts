@@ -24,16 +24,16 @@ export const palette = {
     light: "#9a67ea",
     dark: "#320b86",
     main: "#673ab7",
-    contrastText: "#e3f2fd"
+    contrastText: "#e3f2fd",
   },
   secondary: {
     main: "#2196f3",
     light: "#6ec6ff",
     dark: "#0069c0",
-    contrastText: "#e3f2fd"
-  }
+    contrastText: "#e3f2fd",
+  },
 };
 
 export const theme = createMuiTheme({
-  palette
+  palette,
 });

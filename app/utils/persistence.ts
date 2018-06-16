@@ -26,7 +26,7 @@ export const download = (content: any) => {
     process.env.NODE_ENV === "development" ? 2 : undefined
   );
   const blob = new Blob([json], {
-    type: "application/json;charset=utf-8"
+    type: "application/json;charset=utf-8",
   });
   FileSaver.saveAs(blob, "outline.fdor");
 };
@@ -36,11 +36,11 @@ export const wrapMetadata = (snapshot: Snapshot<IStore>) => {
     application: {
       manifest: {
         name: manifest.name,
-        version: manifest.version
+        version: manifest.version,
       },
-      origin: location.href
+      origin: location.href,
     },
-    snapshot
+    snapshot,
   };
   return wrapped;
 };

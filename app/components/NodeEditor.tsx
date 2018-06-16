@@ -10,7 +10,6 @@ import { asyncComponent } from "react-async-component";
 import Octicon from "react-octicon";
 import ReactQuill from "react-quill";
 
-import { INode } from "../models/Outline";
 import { IQuillEditorProps } from "./QuillEditor";
 
 import "react-quill/dist/quill.bubble.css";
@@ -18,11 +17,12 @@ import {
   IDragSourceProps,
   IDropTargetProps,
   NodeDragSource,
-  NodeDropTarget
+  NodeDropTarget,
 } from "../utils/NodeDnD";
+import { INode } from "../models/Node";
 
 const QuillEditor = asyncComponent<IQuillEditorProps>({
-  resolve: async () => (await import("./QuillEditor")).QuillEditor
+  resolve: async () => (await import("./QuillEditor")).QuillEditor,
 });
 
 export interface IPotentialDropTarget {
@@ -46,11 +46,11 @@ const styles = {
     paddingRight: "40px",
     outline: 0,
     "&:hover $editBubble, &:hover $foldControl, &:hover $grabber": {
-      display: "block"
+      display: "block",
     },
     "&:focus $paper": {
-      border: "1px solid #9473cd"
-    }
+      border: "1px solid #9473cd",
+    },
   },
   paper: {
     position: "relative" as "relative",
@@ -58,24 +58,24 @@ const styles = {
     cursor: "pointer",
     minHeight: "45px",
     "& .ql-tooltip": {
-      zIndex: 1000
-    }
+      zIndex: 1000,
+    },
   },
   editor: {
-    zIndex: 1
+    zIndex: 1,
   },
   collapseControl: {
     position: "absolute" as "absolute",
     left: "-35px",
     top: "7px",
     fontSize: "2rem",
-    color: "silver"
+    color: "silver",
   },
   foldControl: {
-    display: "none"
+    display: "none",
   },
   unfoldControl: {
-    display: "block"
+    display: "block",
   },
   editBubble: {
     minWidth: "0px",
@@ -89,7 +89,7 @@ const styles = {
     padding: "0",
     zIndex: 100,
     display: "none",
-    paddingTop: "2px"
+    paddingTop: "2px",
   },
   grabber: {
     position: "absolute" as "absolute",
@@ -97,8 +97,8 @@ const styles = {
     top: "7px",
     color: "silver",
     fontSize: "2rem",
-    display: "none"
-  }
+    display: "none",
+  },
 };
 
 export type INodeEditorInnerProps = INodeEditorProps &
@@ -116,7 +116,7 @@ const DropPlaceholder = ({ dir }: { dir: "up" | "down" }) => (
         float: "right",
         color: "black",
         marginTop: "5px",
-        paddingLeft: "5px"
+        paddingLeft: "5px",
       }}
     >
       <Octicon name={`triangle-${dir}`} />
@@ -135,7 +135,7 @@ class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
     return this.props.connectDropTarget(
       <div
         style={{
-          paddingLeft: 40 + this.props.level * 40 + "px"
+          paddingLeft: 40 + this.props.level * 40 + "px",
         }}
         className={classes.container}
         onKeyDown={this.handleKeyDown}
@@ -148,7 +148,7 @@ class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
           style={{
             border: this.props.willDrop
               ? "1px solid red"
-              : "1px solid transparent"
+              : "1px solid transparent",
           }}
         >
           {this.props.node.children.length > 0 && (

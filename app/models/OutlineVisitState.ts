@@ -1,6 +1,6 @@
 import { IExtendedObservableMap, types as t } from "mobx-state-tree";
 import { INode } from "./Node";
-import {  Outline } from "./Outline";
+import { Outline } from "./Outline";
 
 interface INodeLevel {
   node: INode;
@@ -24,15 +24,15 @@ const iterateVisible = (collapsedNodes: IExtendedObservableMap<boolean>) => {
 export const OutlineVisitState = t
   .model("OutlineVisitState", {
     outline: t.reference(Outline),
-    collapsedNodes: t.optional(t.map(t.boolean), {})
+    collapsedNodes: t.optional(t.map(t.boolean), {}),
   })
   .views(self => ({
     get flatList(): INodeLevel[] {
       return [...iterateVisible(self.collapsedNodes)(self.outline.children)];
-    }
+    },
   }))
   .actions(self => ({
     toggleCollapse(id: string) {
       self.collapsedNodes.set(id, !self.collapsedNodes.get(id));
-    }
+    },
   }));

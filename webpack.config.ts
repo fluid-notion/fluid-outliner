@@ -16,36 +16,36 @@ export default {
   mode,
   output: {
     path: path.resolve(__dirname, "dist-webpack"),
-    filename: "[name].[chunkhash].js"
+    filename: "[name].[chunkhash].js",
   },
   plugins: [
     new HtmlWebpackPlugin({
       title: "Fluid Notion",
-      template: "app/index.html"
+      template: "app/index.html",
     }),
     new BundleAnalyzerPlugin({
       analyzerMode: isDev ? "server" : "static",
-      openAnalyzer: false
+      openAnalyzer: false,
     }),
     new DashboardPlugin(),
     new webpack.DefinePlugin({
-      NODE_ENV: process.env.NODE_ENV || "development"
+      NODE_ENV: process.env.NODE_ENV || "development",
     }),
     new OfflinePlugin({
       responseStrategy: "network-first",
       appShell: "/",
       externals: [
         "https://fonts.googleapis.com/icon?family=Material+Icons",
-        "https://fonts.googleapis.com/css?family=Roboto:300,400,500"
-      ]
-    })
+        "https://fonts.googleapis.com/css?family=Roboto:300,400,500",
+      ],
+    }),
   ],
   resolve: {
     // Add `.ts` and `.tsx` as a resolvable extension.
-    extensions: [".ts", ".tsx", ".js"]
+    extensions: [".ts", ".tsx", ".js"],
   },
   watchOptions: {
-    ignored: /node_modules/
+    ignored: /node_modules/,
   },
   module: {
     rules: [
@@ -53,22 +53,22 @@ export default {
         test: /\.tsx?$/,
         loader: "ts-loader",
         options: {
-          configFile: "tsconfig.client.json"
-        }
+          configFile: "tsconfig.client.json",
+        },
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        use: ["style-loader", "css-loader"],
       },
       {
         test: /\.(png|jpg|gif|ttf|woff2?|eot|svg)$/,
         use: [
           {
             loader: "file-loader",
-            options: {}
-          }
-        ]
-      }
-    ]
-  }
+            options: {},
+          },
+        ],
+      },
+    ],
+  },
 };
