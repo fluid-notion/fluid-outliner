@@ -10,15 +10,19 @@ import { OutlineTitleEditor } from "./OutlineTitleEditor";
 const InjectStyles = withStyles({
   root: {
     minHeight: "100%",
-    maxWidth: "1200px",
+    maxWidth: "1280px",
     margin: "90px auto",
-    padding: "0"
-  }
+    padding: "0",
+    position: "relative",
+    "@media(min-width: 1280px)": {
+      left: "40px"
+    }
+  },
 });
 
-class OutlineEditorInner extends React.Component<
-  IStoreConsumerProps & WithStyles<any>
-> {
+type IOutlineEditorInnerProps = IStoreConsumerProps & WithStyles<any>;
+
+class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps> {
   @observable private potentialDropTarget: IPotentialDropTarget | null = null;
 
   get outline() {

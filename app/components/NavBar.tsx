@@ -6,24 +6,37 @@ import {
   Toolbar,
   Typography
 } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles, WithStyles } from "@material-ui/core/styles";
 import { Menu as MenuIcon } from "@material-ui/icons";
 import React from "react";
 import { IStoreConsumerProps } from "../models/IProviderProps";
 import { storeObserver } from "../models/Store";
 
-interface INavbarProps extends IStoreConsumerProps {
-  classes: any
-}
-
-export const Navbar = withStyles({
+const styles = {
   root: {
-    position: "fixed",
+    position: "fixed" as "fixed",
     top: 0,
     left: 0,
     right: 0
+  },
+  searchInputWrapper: {
+    padding: "3px",
+    background: "rgba(255, 255, 255, 0.3)",
+    color: "white",
+    borderRadius: "4px",
+    maxWidth: "1200px",
+    width: "100%",
+    margin: "auto",
+    display: "flex",
+    "@media(max-width: 700px)": {
+      display: "none"
+    }
   }
-})(
+};
+
+type INavbarProps = IStoreConsumerProps & WithStyles<keyof typeof styles>;
+
+export const Navbar = withStyles(styles)(
   storeObserver(({ store, classes }: INavbarProps) => (
     <AppBar
       position="static"
@@ -53,16 +66,7 @@ export const Navbar = withStyles({
         <div style={{flex: 1}}>
         <Input
           placeholder="Search ..."
-          style={{
-            padding: "3px",
-            background: "rgba(255, 255, 255, 0.3)",
-            color: "white",
-            borderRadius: "4px",
-            maxWidth: "1200px",
-            width: "100%",
-            margin: "auto",
-            display: "flex"
-          }}
+          className={classes.searchInputWrapper}
           inputProps={{
             style: {
               padding: "10px",
