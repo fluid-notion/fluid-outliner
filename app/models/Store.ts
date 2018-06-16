@@ -9,7 +9,8 @@ import {
 } from "mobx-state-tree";
 import { debouncedSaveLocal, download, restoreLocal, wrapMetadata } from "../utils/persistence";
 import { IProviderProps } from "./IProviderProps";
-import { defaultOutlineId, Outline, OutlineVisitState } from "./Outline";
+import { defaultOutlineId, Outline } from "./Outline";
+import { OutlineVisitState } from "./OutlineVisitState";
 
 
 export const Store = t
