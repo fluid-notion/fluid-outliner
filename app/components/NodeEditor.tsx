@@ -13,22 +13,39 @@ import ReactQuill from "react-quill";
 import { INode } from "../models/Outline";
 import { IQuillEditorProps } from "./QuillEditor";
 
+import "react-quill/dist/quill.bubble.css";
+import {
+  IDragSourceProps,
+  IDropTargetProps,
+  NodeDragSource,
+  NodeDropTarget
+} from "../utils/NodeDnD";
+
 const QuillEditor = asyncComponent<IQuillEditorProps>({
   resolve: async () => (await import("./QuillEditor")).QuillEditor
 });
 
-interface INodeEditorProps {
+export interface IPotentialDropTarget {
+  id: string;
+  location: "above" | "below";
+}
+
+export interface INodeEditorProps {
   node: INode;
   level: number;
   toggleCollapse: (id: string) => void;
   isCollapsed: boolean;
+  index: number;
+  setPotentialDropTarget: (pdt: IPotentialDropTarget) => void;
+  willDrop: "above" | "below" | null;
+  completeDrop: (id: string | null) => void;
 }
 
 const styles = {
   container: {
     paddingRight: "40px",
     outline: 0,
-    "&:hover $editBubble, &:focus $editBubble, &:hover $foldControl, &:focus $foldControl": {
+    "&:hover $editBubble, &:hover $foldControl, &:hover $grabber": {
       display: "block"
     },
     "&:focus $paper": {
@@ -71,31 +88,69 @@ const styles = {
     minHeight: "0",
     padding: "0",
     zIndex: 100,
+    display: "none",
+    paddingTop: "2px"
+  },
+  grabber: {
+    position: "absolute" as "absolute",
+    right: "-45px",
+    top: "7px",
+    color: "silver",
+    fontSize: "2rem",
     display: "none"
   }
 };
 
+export type INodeEditorInnerProps = INodeEditorProps &
+  WithStyles<keyof typeof styles> &
+  IDragSourceProps &
+  IDropTargetProps;
+
+const DropPlaceholder = ({ dir }: { dir: "up" | "down" }) => (
+  <div style={{ height: "30px" }}>
+    <div
+      style={{
+        border: "1px solid silver",
+        borderRadius: "4px",
+        background: "#ddd",
+        float: "right",
+        color: "black",
+        marginTop: "5px",
+        paddingLeft: "5px"
+      }}
+    >
+      <Octicon name={`triangle-${dir}`} />
+    </div>
+  </div>
+);
+
 @observer
-class NodeEditorInner extends React.Component<
-  INodeEditorProps & WithStyles<keyof typeof styles>
-> {
+class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
   private editor: ReactQuill | null = null;
 
   @observable private isEditing = false;
 
   public render() {
     const { classes } = this.props;
-    return (
+    return this.props.connectDropTarget(
       <div
         style={{
-          paddingLeft: 40 + this.props.level * 20 + "px"
+          paddingLeft: 40 + this.props.level * 40 + "px"
         }}
         className={classes.container}
         onKeyDown={this.handleKeyDown}
         tabIndex={0}
         onDoubleClick={this.enableEditing}
       >
-        <Paper className={classes.paper}>
+        {this.props.willDrop === "above" && <DropPlaceholder dir="down" />}
+        <Paper
+          className={classes.paper}
+          style={{
+            border: this.props.willDrop
+              ? "1px solid red"
+              : "1px solid transparent"
+          }}
+        >
           {this.props.node.children.length > 0 && (
             <Octicon
               name={this.props.isCollapsed ? "unfold" : "fold"}
@@ -106,6 +161,11 @@ class NodeEditorInner extends React.Component<
               }`}
               onClick={this.toggleCollapse}
             />
+          )}
+          {this.props.connectDragSource(
+            <span>
+              <Octicon name="grabber" className={classes.grabber} />
+            </span>
           )}
           {this.renderContent()}
           <Button
@@ -118,6 +178,7 @@ class NodeEditorInner extends React.Component<
             <AddIcon />
           </Button>
         </Paper>
+        {this.props.willDrop === "below" && <DropPlaceholder dir="up" />}
       </div>
     );
   }
@@ -147,6 +208,7 @@ class NodeEditorInner extends React.Component<
     return (
       <div
         style={{ padding: "12px 15px" }}
+        className="ql-container ql-editor"
         dangerouslySetInnerHTML={{ __html: node.content }}
       />
     );
@@ -194,4 +256,6 @@ class NodeEditorInner extends React.Component<
   }
 }
 
-export const NodeEditor = withStyles(styles)(NodeEditorInner);
+export const NodeEditor: React.ComponentType<INodeEditorProps> = withStyles(
+  styles
+)(NodeDragSource(NodeDropTarget(NodeEditorInner))) as any; // TODO FIXME

@@ -50,14 +50,18 @@ export const Navbar = withStyles({
         >
           Fluid Notion
         </Typography>
+        <div style={{flex: 1}}>
         <Input
           placeholder="Search ..."
           style={{
-            flex: 1,
             padding: "3px",
             background: "rgba(255, 255, 255, 0.3)",
             color: "white",
-            borderRadius: "4px"
+            borderRadius: "4px",
+            maxWidth: "1200px",
+            width: "100%",
+            margin: "auto",
+            display: "flex"
           }}
           inputProps={{
             style: {
@@ -66,6 +70,7 @@ export const Navbar = withStyles({
             }
           }}
         />
+        </div>
         <IconButton color="inherit" aria-label="Menu">
           <Icon
             style={{

@@ -3,6 +3,9 @@ import { CssBaseline, MuiThemeProvider } from "@material-ui/core";
 import { observable } from "mobx";
 import { observer, Provider } from "mobx-react";
 import React from "react";
+import { DragDropContextProvider } from "react-dnd";
+import HTML5Backend from "react-dnd-html5-backend";
+
 import { IStoreConsumerProps } from "../models/IProviderProps";
 import { Store } from "../models/Store";
 import { Body } from "./Body";
@@ -24,12 +27,14 @@ export class App extends React.Component<IStoreConsumerProps> {
     return (
       <>
         <CssBaseline />
-        <Provider store={store}>
-          <MuiThemeProvider theme={theme}>
-            <Navbar />
-            {this.isPreloading ? <Loader /> : <Body />}
-          </MuiThemeProvider>
-        </Provider>
+        <DragDropContextProvider backend={HTML5Backend}>
+          <Provider store={store}>
+            <MuiThemeProvider theme={theme}>
+              <Navbar />
+              {this.isPreloading ? <Loader /> : <Body />}
+            </MuiThemeProvider>
+          </Provider>
+        </DragDropContextProvider>
       </>
     );
   }

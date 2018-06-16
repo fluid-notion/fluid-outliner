@@ -12,14 +12,19 @@ export interface INode {
   id: string;
   content: string;
   parent: INode | null;
+  antecedent: INode | IOutline;
   children: INode[];
   outline: IOutline;
   siblingIdx: number;
   setContent(content: string): void;
+  setParent(node: INode | null): void;
   spliceChildren(start: number, delCount: number, ...nodes: INode[]): any;
   addSibling(): void;
   indentForward(): void;
   indentBackward(): void;
+  hasDescendent(id: string): boolean;
+  relocateBefore(id: string): void;
+  relocateAfter(id: string): void;
 }
 
 export const Node: IModelType<Snapshot<INode>, INode> = t
@@ -46,9 +51,19 @@ export const Node: IModelType<Snapshot<INode>, INode> = t
     },
     spliceChildren(start: number, delCount: number, ...nodes: INode[]) {
       return self.children.splice(start, delCount, ...nodes);
+    },
+    setParent(node: INode | null) {
+      self.parent = node;
     }
   }))
   .actions(self => ({
+    hasDescendent(id: string) {
+      for (const node of self.children) {
+        if (node.id === id) return true;
+        if (node.hasDescendent(id)) return true;
+      }
+      return false;
+    },
     addSibling() {
       const node = Node.create({
         parent: self.parent,
@@ -76,6 +91,23 @@ export const Node: IModelType<Snapshot<INode>, INode> = t
       self.children.push(...newChildren);
       gParent.spliceChildren(newIdx, 0, self as any);
       self.parent = gParent;
+    },
+    relocateBefore(id: string) {
+      const node = self.outline.getNode(id);
+      node.antecedent.spliceChildren(node.siblingIdx, 1);
+      self.antecedent.spliceChildren(self.siblingIdx, 0, node);
+      node.setParent(self.parent);
+    },
+    relocateAfter(id: string) {
+      const node = self.outline.getNode(id);
+      node.antecedent.spliceChildren(node.siblingIdx, 1);
+      if (self.children.length === 0) {
+        self.antecedent.spliceChildren(self.siblingIdx + 1, 0, node);
+        node.setParent(self.parent);
+      } else {
+        self.spliceChildren(0, 0, node);
+        node.setParent(self as any);
+      }
     }
   }));
 
@@ -90,6 +122,7 @@ export interface IOutline {
   spliceChildren(start: number, delCount: number, ...nodes: INode[]): any;
   registerNode(node: INode): void;
   setTitle(t: string): void;
+  getNode(id: string): INode;
 }
 
 export const Outline: IModelType<Snapshot<IOutline>, IOutline> = t
@@ -106,6 +139,9 @@ export const Outline: IModelType<Snapshot<IOutline>, IOutline> = t
     children: t.optional(t.array(t.reference(Node)), [defaultRootNodeId()])
   })
   .actions(self => ({
+    getNode(id: string) {
+      return self.allNodes.get(id)!;
+    },
     registerNode(node: INode) {
       self.allNodes.set(node.id, node);
     },
