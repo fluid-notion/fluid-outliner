@@ -6,7 +6,6 @@ import keycode from "keycode";
 import { observable } from "mobx";
 import { observer } from "mobx-react";
 import React from "react";
-// @ts-ignore
 import Octicon from "react-octicon";
 import { IOutline } from "../models/Outline";
 

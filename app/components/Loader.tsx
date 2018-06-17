@@ -1,5 +1,4 @@
 import React from "react";
-// @ts-ignore
 import Octicon from "react-octicon";
 import { Typography } from "@material-ui/core";
 
