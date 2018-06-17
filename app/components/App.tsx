@@ -7,13 +7,13 @@ import { DragDropContextProvider } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
 import { asyncComponent } from "react-async-component";
 
-import { IStoreConsumerProps } from "../models/IProviderProps";
 import { Store } from "../models/Store";
 import { Body } from "./Body";
 import { Loader } from "./Loader";
 import { Navbar } from "./NavBar";
 import { theme } from "./styles/theme";
 import { autobind } from "core-decorators";
+import { ModalContainer } from "./ModalContainer";
 
 const store = Store.create();
 
@@ -22,7 +22,7 @@ const DrawerBody = asyncComponent({
 });
 
 @observer
-export class App extends React.Component<IStoreConsumerProps> {
+export class App extends React.Component {
   @observable private isPreloading = true;
 
   @observable private drawerOpen = false;
@@ -39,11 +39,11 @@ export class App extends React.Component<IStoreConsumerProps> {
         <DragDropContextProvider backend={HTML5Backend}>
           <Provider store={store}>
             <MuiThemeProvider theme={theme}>
-              <Navbar toggleDrawer={this.toggleDrawer} />
-              {this.drawerOpen && (
-                <DrawerBody />
-              )}
-              {this.isPreloading ? <Loader /> : <Body />}
+              <ModalContainer>
+                <Navbar toggleDrawer={this.toggleDrawer} />
+                {this.drawerOpen && <DrawerBody />}
+                {this.isPreloading ? <Loader /> : <Body />}
+              </ModalContainer>
             </MuiThemeProvider>
           </Provider>
         </DragDropContextProvider>

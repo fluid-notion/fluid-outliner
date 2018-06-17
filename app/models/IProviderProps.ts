@@ -5,5 +5,5 @@ export interface IProviderProps {
 }
 
 export interface IStoreConsumerProps {
-  store?: IStore;
+  store: IStore;
 }

@@ -11,15 +11,19 @@ import { autobind } from "core-decorators";
 import { observable } from "mobx";
 import React from "react";
 import {asyncComponent} from "react-async-component";
-import { IStore, storeObserver } from "../models/Store";
+import flow from "lodash/flow";
 import { IconPair } from "./IconPair";
+import { IStoreConsumerProps } from "../models/IProviderProps";
+import { IModalConsumerProps } from "./ModalContainer";
+import { inject, observer } from "mobx-react";
 
 const FileUploader = asyncComponent({
   resolve: () => import("./FileUploader").then(({FileUploader: F}) => F)
 });
 
-@storeObserver
-export class FileSelectionDialog extends React.Component<{ store?: IStore }> {
+type IFileSelectionDialogInner = IStoreConsumerProps & IModalConsumerProps;
+
+export class FileSelectionDialogInner extends React.Component<IFileSelectionDialogInner> {
   @observable private isUploadActive = false;
   public render() {
     return (
@@ -51,7 +55,7 @@ export class FileSelectionDialog extends React.Component<{ store?: IStore }> {
                     <Typography variant="headline">Select a File</Typography>
                   </Paper>
                 </ButtonBase>
-                <ButtonBase onClick={this.props.store!.createNew}>
+                <ButtonBase onClick={this.handleCreateNew}>
                   <Paper>
                     <IconPair
                       primary="insert_drive_file"
@@ -73,7 +77,18 @@ export class FileSelectionDialog extends React.Component<{ store?: IStore }> {
   }
 
   @autobind
+  private handleCreateNew() {
+    this.props.store.createNew();
+    this.props.modal.dismiss();
+  }
+
+  @autobind
   private activateUpload() {
     this.isUploadActive = true;
   }
 }
+
+export const FileSelectionDialog: React.ComponentType<{}> = flow(
+  observer,
+  inject(({store, modal}) => ({store, modal}))
+)(FileSelectionDialogInner);

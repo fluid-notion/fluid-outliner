@@ -15,8 +15,7 @@ import { asyncComponent } from "react-async-component";
 // @ts-ignore
 import Octicon from "react-octicon";
 import ReactQuill from "react-quill";
-
-import { IQuillEditorProps } from "./QuillEditor";
+// type ReactQuill = import("react-quill").ReactQuill;
 
 import "react-quill/dist/quill.bubble.css";
 import {
@@ -27,7 +26,7 @@ import {
 } from "../utils/NodeDnD";
 import { INode } from "../models/Node";
 
-const QuillEditor = asyncComponent<IQuillEditorProps>({
+const QuillEditor = asyncComponent({
   resolve: async () => (await import("./QuillEditor")).QuillEditor,
 });
 

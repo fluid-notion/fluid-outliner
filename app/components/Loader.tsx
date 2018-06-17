@@ -1,6 +1,7 @@
 import React from "react";
 // @ts-ignore
 import Octicon from "react-octicon";
+import { Typography } from "@material-ui/core";
 
 export const Loader = () => (
   <div
@@ -10,24 +11,27 @@ export const Loader = () => (
       fontSize: "3rem",
       textAlign: "center",
       textTransform: "uppercase",
-      marginTop: "100px"
+      marginTop: "100px",
     }}
   >
-    <span
-      style={{
-        height: "3rem",
-        width: "3rem",
-        display: "inline-block"
-      }}
-    >
-      <Octicon
+    <Typography variant="headline">
+      <span
         style={{
-          fontSize: "3rem"
+          height: "1.5rem",
+          width: "1.5rem",
+          display: "inline-block",
         }}
-        name="sync"
-        spin
-      />
-    </span>{" "}
-    Loading ...
+      >
+        <Octicon
+          style={{
+            fontSize: "1.5rem",
+            display: "block"
+          }}
+          name="sync"
+          spin
+        />
+      </span>
+      Loading ...
+    </Typography>
   </div>
 );
