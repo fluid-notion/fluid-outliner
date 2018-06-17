@@ -9,7 +9,8 @@ export const Loader = () => (
       padding: "20px",
       fontSize: "3rem",
       textAlign: "center",
-      textTransform: "uppercase"
+      textTransform: "uppercase",
+      marginTop: "100px"
     }}
   >
     <span

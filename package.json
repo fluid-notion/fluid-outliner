@@ -83,6 +83,7 @@
     "core-decorators": "^0.20.0",
     "debug": "^3.1.0",
     "font-awesome": "^4.7.0",
+    "fuzzysearch": "^1.0.3",
     "http-server": "^0.11.1",
     "lodash": "^4.17.10",
     "prop-types": "^15.0.0",

@@ -27,6 +27,7 @@ export const Store = t
       self.outline = Outline.create({ id: defaultOutlineId() });
       self.visitState = OutlineVisitState.create({
         outline: defaultOutlineId(),
+        
       });
     },
     afterCreate() {

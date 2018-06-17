@@ -1,10 +1,14 @@
 import { IModelType, Snapshot, types as t } from "mobx-state-tree";
 import { v4 as uuid } from "uuid";
+import fuzzysearch from "fuzzysearch";
+import isEmpty from "lodash/isEmpty";
+
 import { IOutline, Outline } from "./Outline";
 
 export interface INode {
   id: string;
   content: string;
+  searchableContent: string;
   parent: INode | null;
   antecedent: INode | IOutline;
   children: INode[];
@@ -21,6 +25,7 @@ export interface INode {
   relocateAfter(id: string): void;
   moveUp(): void;
   moveDown(): void;
+  matchesQuery(q: string): boolean;
 }
 
 export const Node: IModelType<Snapshot<INode>, INode> = t
@@ -35,8 +40,15 @@ export const Node: IModelType<Snapshot<INode>, INode> = t
     get antecedent() {
       return self.parent || self.outline;
     },
+    get searchableContent() {
+      return self.content.toLowerCase();
+    },
   }))
   .views(self => ({
+    matchesQuery(query: string) {
+      if (isEmpty(query)) return true;
+      return fuzzysearch(query, self.searchableContent);
+    },
     get siblingIdx() {
       return self.antecedent.children.indexOf(self as any);
     },
@@ -116,5 +128,5 @@ export const Node: IModelType<Snapshot<INode>, INode> = t
       const idx = self.siblingIdx;
       self.antecedent.spliceChildren(idx, 1);
       self.antecedent.spliceChildren(idx + 1, 0, self as any);
-    }
+    },
   }));

@@ -6,7 +6,7 @@ import {
   Toolbar,
   Typography
 } from "@material-ui/core";
-import { withStyles, WithStyles } from "@material-ui/core/styles";
+import { withStyles, WithStyles, StyledComponentProps } from "@material-ui/core/styles";
 import { Menu as MenuIcon } from "@material-ui/icons";
 import React from "react";
 import { IStoreConsumerProps } from "../models/IProviderProps";
@@ -34,10 +34,16 @@ const styles = {
   }
 };
 
-type INavbarProps = IStoreConsumerProps & WithStyles<keyof typeof styles>;
+type INavbarCommonProps = IStoreConsumerProps  & {
+  toggleDrawer: () => void
+};
 
-export const Navbar = withStyles(styles)(
-  storeObserver(({ store, classes }: INavbarProps) => (
+type INavbarInnerProps =  WithStyles<keyof typeof styles> & INavbarCommonProps;
+
+type INavbarProps = INavbarCommonProps & StyledComponentProps<keyof typeof styles>;
+
+export const Navbar: React.ComponentType<INavbarProps> = withStyles(styles)(
+  storeObserver(({ store, classes, toggleDrawer }: INavbarInnerProps) => (
     <AppBar
       position="static"
       className={classes.root}
@@ -49,6 +55,7 @@ export const Navbar = withStyles(styles)(
               marginLeft: -12,
               marginRight: 10
             }}
+            onClick={toggleDrawer}
           />
         </IconButton>
         <Typography
@@ -67,6 +74,8 @@ export const Navbar = withStyles(styles)(
         <Input
           placeholder="Search ..."
           className={classes.searchInputWrapper}
+          value={(store!.visitState && store!.visitState!.searchQuery) || ""}
+          onChange={(event) => store!.visitState!.setSearchQuery(event.target.value)}
           inputProps={{
             style: {
               padding: "10px",
@@ -92,4 +101,4 @@ export const Navbar = withStyles(styles)(
       </Toolbar>
     </AppBar>
   ))
-);
+) as any;
