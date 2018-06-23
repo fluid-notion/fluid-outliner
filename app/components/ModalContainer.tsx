@@ -18,7 +18,8 @@ const ModalRegistry = {
 type IModalKey = keyof typeof ModalRegistry;
 
 export interface IModalFacade {
-  activate: (m: IModalKey) => void;
+  activeModal: IModalKey | null;
+  activate: (m: IModalKey, retainPrev?: boolean) => void;
   dismiss: () => void;
 }
 
@@ -29,6 +30,7 @@ export interface IModalConsumerProps {
 @observer
 export class ModalContainer extends React.Component {
   @observable private activeModal: IModalKey | null = null;
+  private activeModalStack: IModalKey[] = [];
 
   public render() {
     return (
@@ -43,12 +45,18 @@ export class ModalContainer extends React.Component {
   @decorate(memoize)
   private getModalFacade(): IModalFacade {
     return {
+      activeModal: this.activeModal,
       activate: this.activateModal,
       dismiss: this.dismissModal,
     };
   }
   @autobind
-  private activateModal(activeModal: IModalKey) {
+  private activateModal(activeModal: IModalKey, retainPrev = false) {
+    if (retainPrev && this.activeModal) {
+      this.activeModalStack.push(this.activeModal);
+    } else {
+      this.activeModalStack = [];
+    }
     this.activeModal = activeModal;
   }
   private renderActiveModal() {
@@ -60,6 +68,7 @@ export class ModalContainer extends React.Component {
   }
   @autobind
   private dismissModal() {
-    this.activeModal = null;
+    const prevModal = this.activeModalStack.pop();
+    this.activeModal = prevModal || null;
   }
 }

@@ -4,7 +4,7 @@ import { IStoreConsumerProps } from "../models/IProviderProps";
 import { OutlineEditor } from "./OutlineEditor";
 import { IModalConsumerProps } from "./ModalContainer";
 import { inject, observer } from "mobx-react";
-import { observable } from "mobx";
+import { observable, computed } from "mobx";
 import { AppFooter } from "./AppFooter";
 import { IStore } from "../models/Store";
 import { Loader } from "./Loader";
@@ -23,9 +23,11 @@ export class BodyInner extends React.Component<IBodyInnerProps> {
 
   @observable private drawerOpen = false;
 
+  @computed
   get outline() {
     return this.props.store!.outline;
   }
+
   public componentDidMount() {
     this.props.store.restoreSaved().then(() => {
       this.isPreloading = false;
@@ -33,6 +35,12 @@ export class BodyInner extends React.Component<IBodyInnerProps> {
         this.props.modal.activate("FileSelectionDialog");
       }
     });
+  }
+
+  public componentDidUpdate() {
+    if (!this.outline && !this.props.modal.activeModal) {
+      this.props.modal.activate("FileSelectionDialog");
+    }
   }
 
   public render() {

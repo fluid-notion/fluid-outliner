@@ -7,7 +7,7 @@ interface IIconPairProps {
 }
 
 export const IconPair = ({ primary, secondary }: IIconPairProps) => (
-  <div style={{ position: "relative" }}>
+  <div style={{ position: "relative", display: "inline-block" }}>
     <Icon
       color="primary"
       style={{
