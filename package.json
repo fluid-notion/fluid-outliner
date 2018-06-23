@@ -25,7 +25,7 @@
     "prepublish": "yarn run tslint && yarn run build",
     "clean": "rm -rf dist*",
     "burmthemall": "yarn run clean && rm -rf node_modules",
-    "publish": "node ./scripts/publish"
+    "publish": "yarn run clean && NODE_ENV=production yarn run build && node ./scripts/publish"
   },
   "devDependencies": {
     "@material-ui/core": "^1.2.1",

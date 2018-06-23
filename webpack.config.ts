@@ -13,7 +13,10 @@ const mode =
 // const isDev = mode === "development";
 
 export default {
-  entry: "./app/index.tsx",
+  entry: {
+    main: "./app/index.tsx",
+    "outdated-browser-check": "./app/outdated-browser-check.js"
+  },
   mode,
   output: {
     path: path.resolve(__dirname, "dist-webpack"),

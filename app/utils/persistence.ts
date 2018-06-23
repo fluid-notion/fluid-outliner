@@ -53,3 +53,5 @@ export const saveLocal = async (fileData: IWrappedFileData) =>
 export const debouncedSaveLocal = debounce(saveLocal, 1000);
 
 export const restoreLocal = async () => localForage.getItem(LF_KEY);
+
+export const clearLocal = () => localForage.clear();

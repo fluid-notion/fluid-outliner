@@ -17,6 +17,7 @@ import { IStoreConsumerProps } from "../models/IProviderProps";
 import { IModalConsumerProps } from "./ModalContainer";
 import { inject, observer } from "mobx-react";
 import { AppFooter } from "./AppFooter";
+import { CloseButton } from "./CloseButton";
 
 const FileUploader = asyncComponent({
   resolve: () => import("./FileUploader").then(({ FileUploader: F }) => F),
@@ -28,9 +29,11 @@ export class FileSelectionDialogInner extends React.Component<
   IFileSelectionDialogInner
 > {
   @observable private isUploadActive = false;
+
   public render() {
     return (
-      <Dialog open={true}>
+      <Dialog open={true} onClose={this.handleClose}>
+        {this.isClosable && <CloseButton onClick={this.props.modal.dismiss} />}
         <DialogTitle>Open Outline</DialogTitle>
         <Divider />
         <DialogContent>
@@ -74,6 +77,17 @@ export class FileSelectionDialogInner extends React.Component<
         </DialogContent>
       </Dialog>
     );
+  }
+
+  private get isClosable() {
+    return !!this.props.store.outline;
+  }
+
+  @autobind
+  private handleClose() {
+    if (!this.isClosable) return false;
+    this.props.modal.dismiss();
+    return true;
   }
 
   @autobind

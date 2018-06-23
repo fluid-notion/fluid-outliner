@@ -2,6 +2,7 @@ import React from "react";
 import { Divider, Typography } from "@material-ui/core";
 import { IModalConsumerProps } from "./ModalContainer";
 import { inject } from "mobx-react";
+import { Link } from "./Link";
 
 export const AppFooter: React.StatelessComponent<{}> = inject(
   ({ modal }: IModalConsumerProps) => ({ modal })
@@ -16,16 +17,15 @@ export const AppFooter: React.StatelessComponent<{}> = inject(
     <Divider />
     <Typography variant="body1" style={{ padding: "10px" }}>
       Fluid Outliner cares about your privacy.{" "}
-      <a
+      <Link
         onClick={() => modal.activate("PrivacyDialog")}
-        style={{ borderBottom: "1px dotted silver", cursor: "pointer" }}
       >
         Know More
-      </a>
+      </Link>
     </Typography>
     <Divider />
     <Typography variant="body1" style={{ padding: "10px" }}>
-      Github | @lorefnon
+      <Link href="https://github.com/fluid-notion/fluid-outliner">Github</Link> | <Link href="https://twitter.com/lorefnon">@lorefnon</Link>
     </Typography>
   </div>
 )) as any;

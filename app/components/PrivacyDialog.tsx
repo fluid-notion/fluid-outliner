@@ -8,23 +8,13 @@ import {
 import React from "react";
 import { inject } from "mobx-react";
 import { IModalConsumerProps } from "./ModalContainer";
-import Octicon from "react-octicon";
+import { CloseButton } from "./CloseButton";
 
 export const PrivacyDialog: React.StatelessComponent<{}> = inject(
   ({ modal }: IModalConsumerProps) => ({ modal })
 )(({ modal }: IModalConsumerProps) => (
   <Dialog open={true} onClose={modal.dismiss}>
-    <Octicon
-      onClick={modal.dismiss}
-      name="x"
-      style={{
-        position: "absolute",
-        right: "10px",
-        top: "10px",
-        fontSize: "1.5rem",
-        cursor: "pointer",
-      }}
-    />
+    <CloseButton onClick={modal.dismiss} />
     <DialogTitle>Fluid Outliner cares about your Privacy</DialogTitle>
     <Divider style={{ marginBottom: "20px" }} />
     <DialogContent>

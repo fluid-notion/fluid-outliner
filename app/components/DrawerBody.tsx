@@ -1,16 +1,18 @@
 import React from "react";
 import Octicon from "react-octicon";
-import { withStyles } from "@material-ui/core/styles";
 import {
-  Typography,
-  Table,
-  TableBody,
-  TableRow,
-  TableCell,
-  List,
-  ListItem,
-  Button,
-} from "@material-ui/core";
+  withStyles,
+  StyledComponentProps,
+  WithStyles,
+} from "@material-ui/core/styles";
+import * as R from "ramda";
+import { Typography, List, ListItem, Button } from "@material-ui/core";
+import { Link } from "./Link";
+import { KeyBindingsGlossary } from "./KeyBindingsGlossary";
+import { IStoreConsumerProps } from "../models/IProviderProps";
+import { IModalConsumerProps } from "./ModalContainer";
+import { inject } from "mobx-react";
+import { clearLocal } from "../utils/persistence";
 
 const styles = {
   container: {
@@ -43,110 +45,104 @@ const Section = ({ children }: any) => (
   </section>
 );
 
-export const DrawerBody = withStyles(styles)(({ classes }) => (
-  <div className={classes.container}>
-    <Typography variant="headline">Current Notebook</Typography>
-    <Section>
-      <Button color="primary">
-        <Typography variant="body1">
-          <Octicon name="desktop-download" className={classes.icon} /> Save To
-          File
-        </Typography>
-      </Button>
-      <Button color="primary">
-        <Typography variant="body1">
-          <Octicon name="trashcan" className={classes.icon} /> Clear Cache
-        </Typography>
-      </Button>
-    </Section>
-    <Typography variant="headline">Keybindings</Typography>
-    <Section>
-      <Table className={classes.table}>
-        <TableBody>
-          <TableRow>
-            <TableCell>Save To File</TableCell>
-            <TableCell>Ctrl+S</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Find</TableCell>
-            <TableCell>Ctrl+F</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell colSpan={2}>
-              <Typography variant="body2">For Selected Node:</Typography>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Shift Up</TableCell>
-            <TableCell>Shift+Up</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Shift Down</TableCell>
-            <TableCell>Shift+Down</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Navigate</TableCell>
-            <TableCell>Up/Down</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Indent Further</TableCell>
-            <TableCell>Tab</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Indent Back</TableCell>
-            <TableCell>Shift+Tab</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Enable Edit</TableCell>
-            <TableCell>Enter</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Disable Edit</TableCell>
-            <TableCell>Esc</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Add new note below</TableCell>
-            <TableCell>Shift+Enter</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </Section>
-    <Typography variant="headline">Credits</Typography>
-    <Section>
-      <Typography variant="body1">
-        This project wouldn't exist without following amazing open source
-        projects (and the hard work of contributors working on them).
-      </Typography>
-      <List dense style={{ marginLeft: "-20px" }}>
-        <ListItem>
-          <Octicon name="star" className={classes.icon} />
-          <Typography variant="body1">mobx</Typography>
-        </ListItem>
-        <ListItem>
-          <Octicon name="star" className={classes.icon} />
-          <Typography variant="body1">mobx-state-tree</Typography>
-        </ListItem>
-        <ListItem>
-          <Octicon name="star" className={classes.icon} />
-          <Typography variant="body1">react</Typography>
-        </ListItem>
-        <ListItem>
-          <Octicon name="star" className={classes.icon} />
-          <Typography variant="body1">webpack</Typography>
-        </ListItem>
-        <ListItem>
-          <Octicon name="star" className={classes.icon} />
-          <Typography variant="body1">quill</Typography>
-        </ListItem>
-        <ListItem>
-          <Octicon name="star" className={classes.icon} />
-          <Typography variant="body1">webpack-offline</Typography>
-        </ListItem>
-        <ListItem>
-          <Octicon name="star" className={classes.icon} />
-          <Typography variant="body1">And Many More ...</Typography>
-        </ListItem>
-      </List>
-    </Section>
-  </div>
-));
+export const DrawerBody: React.ComponentType<
+  StyledComponentProps<keyof typeof styles>
+> = withStyles(styles)(
+  inject(({ store, modal }: IStoreConsumerProps & IModalConsumerProps) => ({
+    store,
+    modal,
+  }))(
+    ({
+      classes,
+      store,
+      modal,
+    }: WithStyles<keyof typeof styles> &
+      IStoreConsumerProps &
+      IModalConsumerProps) => (
+      <div className={classes.container}>
+        <Typography variant="headline">Current Notebook</Typography>
+        <Section>
+          <Button color="primary" onClick={store.saveFile}>
+            <Typography variant="body1">
+              <Octicon name="desktop-download" className={classes.icon} />
+              Save To File
+            </Typography>
+          </Button>
+          <Button
+            color="primary"
+            onClick={async () => {
+              await clearLocal();
+              location.reload();
+            }}
+          >
+            <Typography variant="body1">
+              <Octicon name="trashcan" className={classes.icon} />
+              Clear Cache
+            </Typography>
+          </Button>
+          <Button
+            color="primary"
+            onClick={() => {
+              modal.activate("FileSelectionDialog");
+            }}
+          >
+            <Typography variant="body1">
+              <Octicon name="repo-push" className={classes.icon} />
+              Open / Create Outline
+            </Typography>
+          </Button>
+        </Section>
+        <Typography variant="headline">Keybindings</Typography>
+        <Section>
+          <KeyBindingsGlossary classes={R.pick(["table"], classes)} />
+        </Section>
+        <Typography variant="headline">Credits</Typography>
+        <Section>
+          <Typography variant="body1">
+            This project wouldn't exist without following amazing open source
+            projects
+            <br />
+            (and the hard work of contributors working on them).
+          </Typography>
+          <List dense style={{ marginLeft: "-20px" }}>
+            <ListItem>
+              <Octicon name="star" className={classes.icon} />
+              <Typography variant="body1">
+                <Link href="https://mobx.js.org">Mobx</Link> &{" "}
+                <Link href="https://github.com/mobxjs/mobx-state-tree">
+                  MST
+                </Link>
+              </Typography>
+            </ListItem>
+            <ListItem>
+              <Octicon name="star" className={classes.icon} />
+              <Typography variant="body1">
+                <Link href="https://reactjs.org">React</Link>
+              </Typography>
+            </ListItem>
+            <ListItem>
+              <Octicon name="star" className={classes.icon} />
+              <Typography variant="body1">
+                <Link href="https://webpack.js.org">Webpack</Link>
+                <br />
+                (& the{" "}
+                <Link href="https://github.com/webpack-contrib/awesome-webpack">
+                  ecosystem
+                </Link>{" "}
+                around it)
+              </Typography>
+            </ListItem>
+            <ListItem>
+              <Octicon name="star" className={classes.icon} />
+              <Typography variant="body1">
+                <Link href="https://github.com/fluid-notion/fluid-outliner/blob/master/package.json">
+                  And Many More ...
+                </Link>
+              </Typography>
+            </ListItem>
+          </List>
+        </Section>
+      </div>
+    )
+  )
+) as any;
