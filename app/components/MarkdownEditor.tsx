@@ -45,7 +45,7 @@ export class MarkdownEditor extends React.Component<{ note: INote }> {
       );
     }
     return (
-      <div>
+      <div style={{background: "white"}}>
         <textarea ref={this.registerTextArea} />
       </div>
     );

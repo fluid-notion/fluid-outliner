@@ -26,6 +26,7 @@ import { INode } from "../models/Node";
 import { palette } from "./styles/theme";
 import { NodeActionToolbar } from "./NodeActionToolbar";
 import { INote } from "../models/Note";
+import { SwitchSlider } from "./SwitchSlider";
 
 const RichTextEditor = asyncComponent({
   resolve: async () => (await import("./RichTextEditor")).RichTextEditor,
@@ -337,7 +338,13 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
   private renderMarkers(placement: string) {
     return this.node.markers
       .filter(m => m.placement === placement)
-      .map(m => <Octicon name={m.icon} className={this.props.classes.icon} />);
+      .map(m => (
+        <Octicon
+          name={m.icon}
+          key={m.id!}
+          className={this.props.classes.icon}
+        />
+      ));
   }
 
   private renderLeftMarkers() {
@@ -347,11 +354,11 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
   private renderRightMarkers() {
     const markers = this.renderMarkers("right");
     if (this.notes.length > 0) {
-      return (
-        <Octicon
-          name="file"
-          className={this.props.classes.icon}
-          onClick={this.toggleNotesVisibility}
+      markers.push(
+        <SwitchSlider
+          isOn={this.areNotesVisible}
+          onToggle={this.toggleNotesVisibility}
+          label={this.notes.length}
         />
       );
     }

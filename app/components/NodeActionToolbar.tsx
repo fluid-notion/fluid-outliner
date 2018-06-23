@@ -9,6 +9,7 @@ import {
   Menu,
   MenuItem,
   Divider,
+  Typography,
 } from "@material-ui/core";
 import { INode } from "../models/Node";
 import { palette } from "./styles/theme";
@@ -77,7 +78,24 @@ class NodeActionToolbarInner extends React.Component<
                     onClose={this.hideMemoMenu}
                     anchorEl={this.memoMenuAnchor}
                   >
-                    <MenuItem>Add Memo</MenuItem>
+                    <li
+                      style={{
+                        outline: 0,
+                        background: "#f1f0f0",
+                        marginTop: "-8px",
+                        borderTop: "1px solid silver",
+                      }}
+                    >
+                      <Typography
+                        variant="body1"
+                        style={{
+                          textAlign: "center",
+                          padding: "10px",
+                        }}
+                      >
+                        Add Memo
+                      </Typography>
+                    </li>
                     <Divider />
                     <MenuItem onClick={this.addMarkdownMemo}>Markdown</MenuItem>
                     <MenuItem onClick={this.addRichTextMemo}>
