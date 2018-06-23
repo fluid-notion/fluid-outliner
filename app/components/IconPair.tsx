@@ -11,7 +11,7 @@ export const IconPair = ({ primary, secondary }: IIconPairProps) => (
     <Icon
       color="primary"
       style={{
-        fontSize: "5rem"
+        fontSize: "5rem",
       }}
     >
       {primary}
@@ -22,7 +22,7 @@ export const IconPair = ({ primary, secondary }: IIconPairProps) => (
         position: "absolute",
         bottom: "15px",
         left: "15px",
-        fontSize: "2rem"
+        fontSize: "2rem",
       }}
     >
       {secondary}

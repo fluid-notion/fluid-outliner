@@ -28,7 +28,7 @@ const iterateVisible = (
         }
       } else {
         const children = [...iterate(node.children, level + 1)];
-        didMatch = didMatch || (children.length > 0);
+        didMatch = didMatch || children.length > 0;
         if (!didMatch) continue;
         yield curLevel;
         yield* children;

@@ -11,10 +11,10 @@ import { IOutline } from "../models/Outline";
 
 const styles = {
   input: {
-    fontSize: "1.5rem"
+    fontSize: "1.5rem",
   },
   inputWrapper: {
-    margin: "10px 40px"
+    margin: "10px 40px",
   },
   editControl: {
     display: "none",
@@ -23,14 +23,14 @@ const styles = {
     marginLeft: "10px",
     // Required because: https://github.com/Microsoft/TypeScript/issues/11465#issuecomment-252453037
     position: "relative" as "relative",
-    bottom: "3px"
+    bottom: "3px",
   },
   title: {
     padding: "10px 40px",
     "&:hover $editControl": {
-      display: "inline-block"
-    }
-  }
+      display: "inline-block",
+    },
+  },
 };
 
 type I = { outline: IOutline } & WithStyles<keyof typeof styles>;
@@ -47,7 +47,7 @@ class OutlineTitleEditorInner extends React.Component<I> {
           className={classes.inputWrapper}
           inputProps={{
             className: this.props.classes.input,
-            onKeyDown: this.handleTitleKeyDown
+            onKeyDown: this.handleTitleKeyDown,
           }}
         />
       );

@@ -4,6 +4,8 @@ import fuzzysearch from "fuzzysearch";
 import isEmpty from "lodash/isEmpty";
 
 import { IOutline, Outline } from "./Outline";
+import { Note, INote, INoteFormat } from "./Note";
+import { Marker, IMarker } from "./Marker";
 
 export interface INode {
   id: string;
@@ -12,6 +14,8 @@ export interface INode {
   parent: INode | null;
   antecedent: INode | IOutline;
   children: INode[];
+  markers: IMarker[];
+  notes: INote[];
   outline: IOutline;
   siblingIdx: number;
   setContent(content: string): void;
@@ -26,6 +30,10 @@ export interface INode {
   moveUp(): void;
   moveDown(): void;
   matchesQuery(q: string): boolean;
+  toggleBookmark(): void;
+  toggleStar(): void;
+  addMemo(format: INoteFormat): void;
+  addComment(): void;
 }
 
 export const Node: IModelType<Snapshot<INode>, INode> = t
@@ -35,6 +43,8 @@ export const Node: IModelType<Snapshot<INode>, INode> = t
     outline: t.reference(t.late(() => Outline)),
     parent: t.late(() => t.maybe(t.reference(Node))),
     children: t.late(() => t.optional(t.array(t.reference(Node)), [])),
+    notes: t.optional(t.array(Note), () => []),
+    markers: t.optional(t.array(Marker), () => []),
   })
   .views(self => ({
     get antecedent() {
@@ -42,6 +52,9 @@ export const Node: IModelType<Snapshot<INode>, INode> = t
     },
     get searchableContent() {
       return self.content.toLowerCase();
+    },
+    getMarkerIdx(icon: string) {
+      return self.markers.findIndex(marker => marker.icon === icon);
     },
   }))
   .views(self => ({
@@ -51,6 +64,9 @@ export const Node: IModelType<Snapshot<INode>, INode> = t
     },
     get siblingIdx() {
       return self.antecedent.children.indexOf(self as any);
+    },
+    get isBookmarked() {
+      return self.getMarkerIdx("bookmark") >= 0;
     },
   }))
   .actions(self => ({
@@ -62,6 +78,50 @@ export const Node: IModelType<Snapshot<INode>, INode> = t
     },
     setParent(node: INode | null) {
       self.parent = node;
+    },
+    toggleBookmark() {
+      const idx = self.getMarkerIdx("bookmark");
+      if (idx >= 0) {
+        self.markers.splice(idx, 1);
+      } else {
+        self.markers.push({
+          id: uuid(),
+          icon: "bookmark",
+          placement: "left",
+        });
+      }
+    },
+    toggleStar() {
+      const idx = self.getMarkerIdx("star");
+      if (idx >= 0) {
+        self.markers.splice(idx, 1);
+      } else {
+        self.markers.push({
+          id: uuid(),
+          icon: "star",
+          placement: "right",
+        });
+      }
+    },
+    addMemo(format: INoteFormat) {
+      self.notes.push(
+        Note.create({
+          id: uuid(),
+          format,
+          content: "",
+          placement: "main",
+        })
+      );
+    },
+    addComment() {
+      self.notes.push(
+        Note.create({
+          id: uuid(),
+          format: "text",
+          content: "",
+          placement: "side",
+        })
+      );
     },
   }))
   .actions(self => ({

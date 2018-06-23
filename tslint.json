@@ -8,6 +8,7 @@
     "no-submodule-imports": false,
     "no-implicit-dependencies": [true, "dev"],
     "curly": [true, "ignore-same-line"],
-    "ordered-imports": false
+    "ordered-imports": false,
+    "variable-name": [false]
   }
 }

@@ -3,28 +3,58 @@ import flow from "lodash/flow";
 import { IStoreConsumerProps } from "../models/IProviderProps";
 import { OutlineEditor } from "./OutlineEditor";
 import { IModalConsumerProps } from "./ModalContainer";
-import { IOutline } from "../models/Outline";
 import { inject, observer } from "mobx-react";
-import { Divider } from "@material-ui/core";
+import { observable } from "mobx";
 import { AppFooter } from "./AppFooter";
+import { IStore } from "../models/Store";
+import { Loader } from "./Loader";
+import { Navbar } from "./NavBar";
+import { autobind } from "core-decorators";
+import { asyncComponent } from "react-async-component";
 
-type IBodyProps = IModalConsumerProps & { outline: IOutline | null };
+type IBodyInnerProps = IModalConsumerProps & { store: IStore };
 
-export class BodyInner extends React.Component<IBodyProps> {
-  public componentDidMount() {
-    if (!this.props.outline) {
-      this.props.modal.activate("FileSelectionDialog");
-    }
+const DrawerBody = asyncComponent({
+  resolve: async () => (await import("./DrawerBody")).DrawerBody,
+});
+
+export class BodyInner extends React.Component<IBodyInnerProps> {
+  @observable private isPreloading = true;
+
+  @observable private drawerOpen = false;
+
+  get outline() {
+    return this.props.store!.outline;
   }
+  public componentDidMount() {
+    this.props.store.restoreSaved().then(() => {
+      this.isPreloading = false;
+      if (!this.outline) {
+        this.props.modal.activate("FileSelectionDialog");
+      }
+    });
+  }
+
   public render() {
-    const { outline } = this.props;
     return (
       <>
-        {outline && <OutlineEditor />}
-        <Divider/>
-        <AppFooter/>
+        <Navbar toggleDrawer={this.toggleDrawer} />
+        {this.drawerOpen && <DrawerBody />}
+        {this.isPreloading ? (
+          <Loader />
+        ) : (
+          <>
+            {this.outline && <OutlineEditor />}
+            <AppFooter />
+          </>
+        )}
       </>
     );
+  }
+
+  @autobind
+  private toggleDrawer() {
+    this.drawerOpen = !this.drawerOpen;
   }
 }
 
@@ -32,6 +62,6 @@ export const Body: React.ComponentType<{}> = flow(
   observer,
   inject(({ modal, store }: IModalConsumerProps & IStoreConsumerProps) => ({
     modal,
-    outline: store!.outline,
-  }))  
+    store,
+  }))
 )(BodyInner);

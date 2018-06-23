@@ -24,7 +24,7 @@ export const Loader = () => (
         <Octicon
           style={{
             fontSize: "1.5rem",
-            display: "block"
+            display: "block",
           }}
           name="sync"
           spin

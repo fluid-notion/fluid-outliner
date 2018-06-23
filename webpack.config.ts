@@ -20,7 +20,7 @@ export default {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: "Fluid Notion",
+      title: "Fluid Outliner",
       template: "app/index.html",
     }),
     new BundleAnalyzerPlugin({

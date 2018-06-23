@@ -5,25 +5,28 @@ import {
   DialogTitle,
   Divider,
   Paper,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { autobind } from "core-decorators";
 import { observable } from "mobx";
 import React from "react";
-import {asyncComponent} from "react-async-component";
+import { asyncComponent } from "react-async-component";
 import flow from "lodash/flow";
 import { IconPair } from "./IconPair";
 import { IStoreConsumerProps } from "../models/IProviderProps";
 import { IModalConsumerProps } from "./ModalContainer";
 import { inject, observer } from "mobx-react";
+import { AppFooter } from "./AppFooter";
 
 const FileUploader = asyncComponent({
-  resolve: () => import("./FileUploader").then(({FileUploader: F}) => F)
+  resolve: () => import("./FileUploader").then(({ FileUploader: F }) => F),
 });
 
 type IFileSelectionDialogInner = IStoreConsumerProps & IModalConsumerProps;
 
-export class FileSelectionDialogInner extends React.Component<IFileSelectionDialogInner> {
+export class FileSelectionDialogInner extends React.Component<
+  IFileSelectionDialogInner
+> {
   @observable private isUploadActive = false;
   public render() {
     return (
@@ -36,11 +39,11 @@ export class FileSelectionDialogInner extends React.Component<IFileSelectionDial
               margin: "50px auto",
               maxWidth: "80%",
               display: "flex",
-              flexDirection: "row"
+              flexDirection: "row",
             }}
           >
             {this.isUploadActive ? (
-              <FileUploader />
+              <FileUploader dismiss={this.props.modal.dismiss} />
             ) : (
               <>
                 <ButtonBase
@@ -67,10 +70,7 @@ export class FileSelectionDialogInner extends React.Component<IFileSelectionDial
               </>
             )}
           </div>
-          <Divider />
-          <Typography variant="caption">
-            Fluid Outliner cares about your privacy <a>Learn More</a>
-          </Typography>
+          <AppFooter />
         </DialogContent>
       </Dialog>
     );
@@ -90,5 +90,5 @@ export class FileSelectionDialogInner extends React.Component<IFileSelectionDial
 
 export const FileSelectionDialog: React.ComponentType<{}> = flow(
   observer,
-  inject(({store, modal}) => ({store, modal}))
+  inject(({ store, modal }) => ({ store, modal }))
 )(FileSelectionDialogInner);

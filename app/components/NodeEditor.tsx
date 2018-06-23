@@ -4,20 +4,18 @@ import {
   WithStyles,
   withStyles,
   StyledComponentProps,
+  Typography,
 } from "@material-ui/core";
 import { default as AddIcon } from "@material-ui/icons/Add";
 import { autobind } from "core-decorators";
 import keycode from "keycode";
-import { observable } from "mobx";
-import { observer } from "mobx-react";
+import { observable, computed } from "mobx";
+import { observer, Observer } from "mobx-react";
 import React from "react";
 import { asyncComponent } from "react-async-component";
-// @ts-ignore
 import Octicon from "react-octicon";
-import ReactQuill from "react-quill";
-// type ReactQuill = import("react-quill").ReactQuill;
+import { Motion, spring } from "react-motion";
 
-import "react-quill/dist/quill.bubble.css";
 import {
   IDragSourceProps,
   IDropTargetProps,
@@ -25,9 +23,15 @@ import {
   NodeDropTarget,
 } from "../utils/NodeDnD";
 import { INode } from "../models/Node";
+import { palette } from "./styles/theme";
+import { NodeActionToolbar } from "./NodeActionToolbar";
+import { INote } from "../models/Note";
 
-const QuillEditor = asyncComponent({
-  resolve: async () => (await import("./QuillEditor")).QuillEditor,
+const RichTextEditor = asyncComponent({
+  resolve: async () => (await import("./RichTextEditor")).RichTextEditor,
+});
+const MarkdownEditor = asyncComponent({
+  resolve: async () => (await import("./MarkdownEditor")).MarkdownEditor,
 });
 
 export interface IPotentialDropTarget {
@@ -51,26 +55,26 @@ export interface INodeEditorPrimaryProps {
 const styles = {
   container: {
     paddingRight: "40px",
-    outline: 0,
-    "&:hover $editBubble, &:hover $foldControl, &:hover $grabber": {
-      display: "block",
-    },
-    "&:focus $paper": {
-      borderColor: "#d7b2f5",
-    },
+  },
+  notesContainer: {
+    borderLeft: "2px solid silver",
   },
   paper: {
+    outline: 0,
     position: "relative" as "relative",
     borderRadius: 0,
     cursor: "pointer",
     minHeight: "45px",
-    border: "1px solid transparent",
+    borderLeft: "2px solid transparent",
     "& .ql-tooltip": {
       zIndex: 1000,
     },
-  },
-  editor: {
-    zIndex: 1,
+    "&:hover $foldControl, &:hover $grabber": {
+      display: "block",
+    },
+    "&:focus": {
+      borderLeft: `2px solid ${palette.primary.main}`,
+    },
   },
   collapseControl: {
     position: "absolute" as "absolute",
@@ -80,7 +84,7 @@ const styles = {
     color: "silver",
   },
   foldControl: {
-    display: "none",
+    // display: "none",
   },
   unfoldControl: {
     display: "block",
@@ -89,14 +93,13 @@ const styles = {
     minWidth: "0px",
     position: "absolute" as "absolute",
     left: "5px",
-    bottom: "-20px",
+    bottom: "0px",
     width: "30px",
     height: "30px",
     lineHeight: "20px",
     minHeight: "0",
     padding: "0",
     zIndex: 100,
-    display: "none",
     paddingTop: "2px",
   },
   grabber: {
@@ -106,6 +109,44 @@ const styles = {
     color: "silver",
     fontSize: "2rem",
     display: "none",
+  },
+  input: {
+    border: 0,
+    outline: 0,
+    lineHeight: "45px",
+    padding: "0 10px",
+    flexGrow: 1,
+  },
+  inputContainer: {
+    flexGrow: 1,
+  },
+  innerContainer: {
+    display: "flex",
+    flexDirection: "row" as "row",
+    width: "100%",
+    minHeight: "45px",
+  },
+  contentLine: {
+    outline: 0,
+    padding: "0 10px",
+    textOverflow: "ellipsis",
+    overflow: "hidden",
+    lineHeight: "45px",
+    whiteSpace: "nowrap" as "nowrap",
+    flexGrow: 1,
+  },
+  icon: {
+    lineHeight: "45px",
+    fontSize: "1.5rem",
+    padding: "0 10px",
+    "&.octicon-star": {
+      color: "red",
+    },
+    "&.octicon-bookmark": {
+      color: "red",
+      position: "relative" as "relative",
+      top: "-10px",
+    },
   },
 };
 
@@ -138,17 +179,33 @@ const DropPlaceholder = ({ dir }: { dir: "up" | "down" }) => (
 @observer
 export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
   private container: HTMLDivElement | null = null;
-  private editor: ReactQuill | null = null;
+  private editor: HTMLInputElement | null = null;
 
   @observable private isEditing = false;
+  @observable private areNotesVisible = false;
+
+  private blurTimer: any;
+
+  @computed
+  get node() {
+    return this.props.node;
+  }
+
+  @computed
+  get notes() {
+    return this.node.notes;
+  }
 
   public render() {
     const { classes } = this.props;
     const paperStyles: any = {};
     if (this.props.willDrop) {
       paperStyles.borderColor = "red";
-    } else if (this.isEditing) {
+    }
+    if (this.isEditing) {
       paperStyles.borderColor = "#9473cd";
+    } else {
+      paperStyles.cursor = "pointer";
     }
     return this.props.connectDropTarget(
       <div
@@ -156,47 +213,94 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
           paddingLeft: 40 + this.props.level * 40 + "px",
         }}
         className={classes.container}
-        onKeyDown={this.handleKeyDown}
-        tabIndex={0}
-        onDoubleClick={this.enableEditing}
-        ref={this.registerContainer}
       >
         {this.props.willDrop === "above" && <DropPlaceholder dir="down" />}
-        <Paper className={classes.paper} style={paperStyles}>
-          {this.props.node.children.length > 0 && (
-            <Octicon
-              name={this.props.isCollapsed ? "unfold" : "fold"}
-              className={`${classes.collapseControl} ${
-                this.props.isCollapsed
-                  ? classes.unfoldControl
-                  : classes.foldControl
-              }`}
-              onClick={this.toggleCollapse}
-            />
+        <Motion
+          style={{
+            borderRadius: spring(this.isEditing ? 4 : 0),
+            dist1: spring(this.isEditing ? 4 : 0),
+            dist2: spring(this.isEditing ? 50 : 0),
+            bkgOpacity: spring(this.isEditing ? 0.1 : 0),
+            fgOpacity: spring(this.isEditing ? 1 : 0),
+          }}
+        >
+          {s => (
+            <Observer>
+              {() => (
+                <div
+                  style={{
+                    position: "relative",
+                    borderRadius: `${s.borderRadius}px`,
+                    margin: `${s.dist1}px 0`,
+                    padding: `${s.dist1}px ${s.dist1}px ${s.dist2}px ${
+                      s.dist1
+                    }px`,
+                    backgroundColor: `rgba(0,0,0,${s.bkgOpacity})`,
+                  }}
+                  onClick={this.isEditing ? this.clearBlurTimer : undefined}
+                >
+                  <Paper
+                    className={classes.paper}
+                    style={paperStyles}
+                    tabIndex={0}
+                    onKeyDown={this.handleKeyDown}
+                    innerRef={this.registerContainer}
+                  >
+                    {this.props.node.children.length > 0 && (
+                      <Octicon
+                        name={this.props.isCollapsed ? "unfold" : "fold"}
+                        className={`${classes.collapseControl} ${
+                          this.props.isCollapsed
+                            ? classes.unfoldControl
+                            : classes.foldControl
+                        }`}
+                        onClick={this.toggleCollapse}
+                      />
+                    )}
+                    {this.props.connectDragSource(
+                      <span>
+                        <Octicon name="grabber" className={classes.grabber} />
+                      </span>
+                    )}
+                    <div className={classes.innerContainer}>
+                      {this.renderLeftMarkers()}
+                      {this.renderContent()}
+                      {this.renderRightMarkers()}
+                    </div>
+                  </Paper>
+                  {this.areNotesVisible && this.renderNotes()}
+                  {s.fgOpacity === 1 && (
+                    <NodeActionToolbar
+                      node={this.props.node}
+                      showNotes={this.showNotes}
+                    />
+                  )}
+                  {s.fgOpacity > 0 && (
+                    <Button
+                      variant="fab"
+                      color="primary"
+                      size="small"
+                      style={{ opacity: s.fgOpacity }}
+                      className={classes.editBubble}
+                      onClick={this.props.node.addSibling}
+                    >
+                      <AddIcon />
+                    </Button>
+                  )}
+                </div>
+              )}
+            </Observer>
           )}
-          {this.props.connectDragSource(
-            <span>
-              <Octicon name="grabber" className={classes.grabber} />
-            </span>
-          )}
-          {this.renderContent()}
-          <Button
-            variant="fab"
-            color="primary"
-            size="small"
-            className={classes.editBubble}
-            onClick={this.props.node.addSibling}
-          >
-            <AddIcon />
-          </Button>
-        </Paper>
+        </Motion>
         {this.props.willDrop === "below" && <DropPlaceholder dir="up" />}
       </div>
     );
   }
 
   public focus() {
-    if (this.container) this.container.focus();
+    this.clearBlurTimer();
+    if (this.editor) this.editor.focus();
+    else if (this.container) this.container.focus();
   }
 
   @autobind
@@ -210,6 +314,17 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
   }
 
   @autobind
+  private clearBlurTimer() {
+    clearTimeout(this.blurTimer);
+  }
+
+  @autobind
+  private handleBlur() {
+    this.clearBlurTimer();
+    this.blurTimer = setTimeout(this.disableEditing, 1000);
+  }
+
+  @autobind
   private disableEditing() {
     this.isEditing = false;
   }
@@ -219,26 +334,81 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
     this.isEditing = true;
   }
 
+  private renderMarkers(placement: string) {
+    return this.node.markers
+      .filter(m => m.placement === placement)
+      .map(m => <Octicon name={m.icon} className={this.props.classes.icon} />);
+  }
+
+  private renderLeftMarkers() {
+    return this.renderMarkers("left");
+  }
+
+  private renderRightMarkers() {
+    const markers = this.renderMarkers("right");
+    if (this.notes.length > 0) {
+      return (
+        <Octicon
+          name="file"
+          className={this.props.classes.icon}
+          onClick={this.toggleNotesVisibility}
+        />
+      );
+    }
+    return markers;
+  }
+
+  @autobind
+  showNotes() {
+    this.areNotesVisible = true;
+  }
+
+  @autobind
+  toggleNotesVisibility() {
+    this.areNotesVisible = !this.areNotesVisible;
+  }
+
+  private renderNotes() {
+    return (
+      <div className={this.props.classes.notesContainer}>
+        {this.props.node.notes.map(this.renderNote)}
+      </div>
+    );
+  }
+
+  @autobind
+  private renderNote(note: INote) {
+    if (note.format === "markdown") {
+      return <MarkdownEditor key={note.id!} note={note} />;
+    }
+    if (note.format === "html") {
+      return <RichTextEditor key={note.id!} note={note} />;
+    }
+    return null;
+  }
+
   private renderContent() {
     const { node, classes } = this.props;
     if (this.isEditing) {
       return (
-        <QuillEditor
-          theme="bubble"
-          forwardedRef={this.registerEditor}
+        <input
+          ref={this.registerEditor}
           value={node.content}
           onChange={this.handleChange}
-          className={classes.editor}
-          onBlur={this.disableEditing}
+          className={classes.input}
+          onBlur={this.handleBlur}
         />
       );
     }
     return (
-      <div
-        style={{ padding: "12px 15px" }}
-        className="ql-container ql-editor"
-        dangerouslySetInnerHTML={{ __html: node.content }}
-      />
+      <Typography
+        variant="body1"
+        className={classes.contentLine}
+        onDoubleClick={this.enableEditing}
+        innerRef={this.registerContainer}
+      >
+        {node.content}
+      </Typography>
     );
   }
 
@@ -249,11 +419,15 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
     if (this.isEditing) {
       if (keycode(event.nativeEvent) === "esc") {
         this.isEditing = false;
-        this.container!.focus();
+        this.focus();
       }
       return;
     }
     switch (keycode(event.nativeEvent)) {
+      case "esc":
+        this.container!.blur();
+        handled = true;
+        break;
       case "enter":
         if (event.shiftKey) {
           node.addSibling();
@@ -272,10 +446,6 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
         } else {
           node.indentForward();
         }
-        handled = true;
-        break;
-      case "esc":
-        this.isEditing = false;
         handled = true;
         break;
       case "up":
@@ -310,16 +480,16 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
   }
 
   @autobind
-  private registerEditor(editor: ReactQuill) {
+  private registerEditor(editor: HTMLInputElement | null) {
     this.editor = editor;
-    if (editor) {
-      this.editor.focus();
+    if (this.editor) {
+      this.focus();
     }
   }
 
   @autobind
-  private handleChange(content: string) {
-    this.props.node.setContent(content);
+  private handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    this.props.node.setContent(event.currentTarget.value);
   }
 }
 

@@ -4,7 +4,6 @@ import {
   applySnapshot,
   getSnapshot,
   onSnapshot,
-  Snapshot,
   types as t,
 } from "mobx-state-tree";
 import {
@@ -27,20 +26,19 @@ export const Store = t
       self.outline = Outline.create({ id: defaultOutlineId() });
       self.visitState = OutlineVisitState.create({
         outline: defaultOutlineId(),
-        
       });
     },
     afterCreate() {
-      onSnapshot(self, (snapshot: Snapshot<IStore>) => {
+      onSnapshot(self, async (snapshot: any) => {
         // tslint:disable-next-line:no-console
         console.dir(snapshot);
-        debouncedSaveLocal(wrapMetadata(snapshot));
+        debouncedSaveLocal(await wrapMetadata(snapshot));
       });
     },
-    saveFile() {
-      download(wrapMetadata(getSnapshot(self)));
-    },
-    restoreSaved(content: string) {
+    saveFile: flow(function*() {
+      download(yield wrapMetadata(getSnapshot(self)));
+    }) as () => void,
+    loadFileContent(content: string) {
       const { snapshot } = JSON.parse(content);
       applySnapshot(self, snapshot);
     },

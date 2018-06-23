@@ -2,8 +2,6 @@ import FileSaver from "file-saver";
 import localForage from "localforage";
 import debounce from "lodash/debounce";
 import { Snapshot } from "mobx-state-tree";
-// @ts-ignore
-import manifest from "../../package.json";
 import { IStore } from "../models/Store";
 
 const LF_KEY = "fluid-outliner.file";
@@ -31,7 +29,9 @@ export const download = (content: any) => {
   FileSaver.saveAs(blob, "outline.fdor");
 };
 
-export const wrapMetadata = (snapshot: Snapshot<IStore>) => {
+export const wrapMetadata = async (snapshot: any) => {
+  // @ts-ignore
+  const manifest = await import("../../package.json");
   const wrapped: IWrappedFileData = {
     application: {
       manifest: {

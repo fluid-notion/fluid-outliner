@@ -10,6 +10,9 @@ const ModalRegistry = {
     resolve: async () =>
       (await import("./FileSelectionDialog")).FileSelectionDialog,
   }),
+  PrivacyDialog: asyncComponent({
+    resolve: async () => (await import("./PrivacyDialog")).PrivacyDialog,
+  }),
 };
 
 type IModalKey = keyof typeof ModalRegistry;

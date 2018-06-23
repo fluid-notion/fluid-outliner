@@ -5,10 +5,7 @@ import React from "react";
 import memoize from "lodash/memoize";
 import { IStoreConsumerProps } from "../models/IProviderProps";
 import { storeObserver } from "../models/Store";
-import {
-  IPotentialDropTarget,
-  NodeEditor,
-} from "./NodeEditor";
+import { IPotentialDropTarget, NodeEditor } from "./NodeEditor";
 import { OutlineTitleEditor } from "./OutlineTitleEditor";
 
 const InjectStyles = withStyles({
@@ -95,7 +92,6 @@ class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps> {
     const node = this.getUnwrappedNodeAtIdx(curIdx - 1);
     if (node) node.focus();
   }
-
 
   @autobind
   private focusDown(curIdx: number) {

@@ -4,6 +4,7 @@ import {
   Input,
   Toolbar,
   Typography,
+  Tooltip,
 } from "@material-ui/core";
 import {
   withStyles,
@@ -26,7 +27,7 @@ const styles = {
   },
   icon: {
     fontSize: "1.5rem",
-    position: "relative" as "relative"
+    position: "relative" as "relative",
   },
   searchInputWrapper: {
     padding: "3px",
@@ -64,7 +65,7 @@ export const NavbarInner = ({
   <AppBar position="static" className={classes.root}>
     <Toolbar>
       <IconButton color="inherit" aria-label="Menu" onClick={toggleDrawer}>
-        <Octicon name="settings" className={classes.icon} />
+        <Octicon name="three-bars" className={classes.icon} />
       </IconButton>
       <Typography
         variant="title"
@@ -76,7 +77,7 @@ export const NavbarInner = ({
           fontWeight: 500,
         }}
       >
-        Fluid Notion
+        Fluid Outliner
       </Typography>
       <div style={{ flex: 1 }}>
         <Input
@@ -94,25 +95,20 @@ export const NavbarInner = ({
           }}
         />
       </div>
-      <IconButton color="inherit" aria-label="Menu" onClick={store.saveFile}>
-        <Octicon
-          name="desktop-download"
-          className={classes.icon}
-        />
-      </IconButton>
-      <IconButton
-        color="inherit"
-        aria-label="Menu"
-        onClick={() => modal.activate("FileSelectionDialog")}
-      >
-        <Octicon
-          name="desktop-download"
-          className={classes.icon}
-          style={{
-            transform: "rotate(180deg)",
-          }}
-        />
-      </IconButton>
+      <Tooltip title="Save to local file">
+        <IconButton color="inherit" aria-label="Menu" onClick={store.saveFile}>
+          <Octicon name="repo-pull" className={classes.icon} />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Open local file">
+        <IconButton
+          color="inherit"
+          aria-label="Menu"
+          onClick={() => modal.activate("FileSelectionDialog")}
+        >
+          <Octicon name="repo-push" className={classes.icon} />
+        </IconButton>
+      </Tooltip>
     </Toolbar>
   </AppBar>
 );

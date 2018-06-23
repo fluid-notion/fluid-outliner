@@ -5,7 +5,10 @@ import React from "react";
 import { injectStore, IStore } from "../models/Store";
 
 @injectStore
-export class FileUploader extends React.Component<{ store?: IStore }> {
+export class FileUploader extends React.Component<{
+  store?: IStore;
+  dismiss: () => void;
+}> {
   @observable private isDragActive = false;
   public render() {
     return (
@@ -17,7 +20,7 @@ export class FileUploader extends React.Component<{ store?: IStore }> {
           fontSize: "1.5rem",
           color: "silver",
           whiteSpace: "nowrap",
-          border: this.isDragActive ? "2px dotted blue" : "2px dotted silver"
+          border: this.isDragActive ? "2px dotted blue" : "2px dotted silver",
         }}
       >
         <div
@@ -60,7 +63,8 @@ export class FileUploader extends React.Component<{ store?: IStore }> {
     const reader = new FileReader();
     reader.onload = (progEvent: FileReaderProgressEvent) => {
       const result = progEvent.target!.result;
-      this.props.store!.restoreSaved(result);
+      this.props.store!.loadFileContent(result);
+      this.props.dismiss();
     };
     reader.readAsText(file);
   }
