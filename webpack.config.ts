@@ -9,7 +9,8 @@ import DashboardPlugin from "webpack-dashboard/plugin"; // tslint:disable-line
 
 const mode =
   process.env.NODE_ENV === "production" ? "production" : "development";
-const isDev = mode === "development";
+
+// const isDev = mode === "development";
 
 export default {
   entry: "./app/index.tsx",
@@ -24,7 +25,7 @@ export default {
       template: "app/index.html",
     }),
     new BundleAnalyzerPlugin({
-      analyzerMode: isDev ? "server" : "static",
+      analyzerMode: "static", // isDev ? "server" : "static",
       openAnalyzer: false,
     }),
     new DashboardPlugin(),
