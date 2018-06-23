@@ -20,7 +20,7 @@ export class RichTextEditor extends React.Component<{ note: INote }> {
   get htmlContent() {
     return this.note.content;
   }
-  render() {
+  public render() {
     if (!this.isEditing) {
       return (
         <Paper

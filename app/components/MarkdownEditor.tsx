@@ -11,27 +11,30 @@ import Paper from "@material-ui/core/Paper/Paper";
 
 @observer
 export class MarkdownEditor extends React.Component<{ note: INote }> {
+  public converter: showdown.Converter;
+
   private textArea: HTMLTextAreaElement | null = null;
+
   private mde: SimpleMDE | null = null;
+
   @observable private isEditing = false;
-  converter: showdown.Converter;
+
   constructor(props: any) {
     super(props);
     this.converter = new showdown.Converter();
   }
+
   @computed
   get note() {
     return this.props.note;
   }
+
   @computed
   get htmlContent() {
     return this.converter.makeHtml(this.note.content);
   }
-  @autobind
-  private handleDoubleClick() {
-    this.isEditing = true;
-  }
-  render() {
+
+  public render() {
     if (!this.isEditing) {
       return (
         <Paper
@@ -47,6 +50,11 @@ export class MarkdownEditor extends React.Component<{ note: INote }> {
         <textarea ref={this.registerTextArea} />
       </div>
     );
+  }
+
+  @autobind
+  private handleDoubleClick() {
+    this.isEditing = true;
   }
 
   @autobind

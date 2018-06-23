@@ -43,14 +43,14 @@ const styles = {
   },
 };
 
-class NodeActionToolbar_ extends React.Component<
+class NodeActionToolbarInner extends React.Component<
   WithStyles<keyof typeof styles> & {
     node: INode;
     showNotes: () => void;
   }
 > {
   @observable private memoMenuAnchor: HTMLElement | null = null;
-  render() {
+  public render() {
     const { classes, node } = this.props;
     return (
       <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1) }}>
@@ -126,4 +126,4 @@ export const NodeActionToolbar: React.ComponentType<
     node: INode;
     showNotes: () => void;
   }
-> = withStyles(styles)(NodeActionToolbar_);
+> = withStyles(styles)(NodeActionToolbarInner);

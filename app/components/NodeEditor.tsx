@@ -359,12 +359,12 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
   }
 
   @autobind
-  showNotes() {
+  private showNotes() {
     this.areNotesVisible = true;
   }
 
   @autobind
-  toggleNotesVisibility() {
+  private toggleNotesVisibility() {
     this.areNotesVisible = !this.areNotesVisible;
   }
 
