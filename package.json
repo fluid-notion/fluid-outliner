@@ -16,9 +16,10 @@
   "scripts": {
     "start": "http-server dist-webpack -d false -g -o",
     "test": "jest",
+    "copy-public": "cp -r ./public/* dist-webpack",
     "build-server": "tsc",
     "build-client": "webpack --config webpack.config.ts",
-    "build": "yarn run build-server && yarn run build-client",
+    "build": "yarn run build-server && yarn run build-client && yarn run copy-public",
     "webpack-dev-server": "webpack-dev-server",
     "prettier": "prettier --write ./**/*.{ts,tsx}",
     "tslint": "tslint -p .",
