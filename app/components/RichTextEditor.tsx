@@ -1,25 +1,38 @@
 import React from "react";
-import ReactQuill from "react-quill";
 import { autobind } from "core-decorators";
 import { INote } from "../models/Note";
 import { observer } from "mobx-react";
+import {asyncComponent }from "react-async-component";
 
-import "react-quill/dist/quill.snow.css";
 import { observable, computed } from "mobx";
 import Paper from "@material-ui/core/Paper/Paper";
 
+const ReactQuill = asyncComponent({
+    resolve: async () => {
+        // @ts-ignore
+        await import("react-quill/dist/quill.snow.css");
+        return (await import("react-quill")).default;
+    }
+})
+
 @observer
 export class RichTextEditor extends React.Component<{ note: INote }> {
-  private editorRef = React.createRef<ReactQuill>();
-  @observable private isEditing = false;
+
+    private editorRef = React.createRef<import("react-quill")>();
+
+  @observable
+  private isEditing = false;
+
   @computed
   get note() {
     return this.props.note;
   }
+
   @computed
   get htmlContent() {
     return this.note.content;
   }
+
   public render() {
     if (!this.isEditing) {
       return (
@@ -34,8 +47,9 @@ export class RichTextEditor extends React.Component<{ note: INote }> {
         </Paper>
       );
     }
-    return <ReactQuill ref={this.editorRef} onChange={this.handleChange} />;
+    return <ReactQuill innerRef={this.editorRef} onChange={this.handleChange} />;
   }
+
   @autobind
   private handleDoubleClick() {
     this.isEditing = true;

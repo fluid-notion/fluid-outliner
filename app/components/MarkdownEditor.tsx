@@ -1,11 +1,10 @@
 import React from "react";
 import showdown from "showdown";
-import SimpleMDE from "simplemde";
 import { INote } from "../models/Note";
 import { autobind } from "core-decorators";
 import { observer } from "mobx-react";
 
-import "simplemde/dist/simplemde.min.css";
+
 import { observable, computed } from "mobx";
 import Paper from "@material-ui/core/Paper/Paper";
 
@@ -60,15 +59,22 @@ export class MarkdownEditor extends React.Component<{ note: INote }> {
   @autobind
   private registerTextArea(el: HTMLTextAreaElement | null) {
     this.textArea = el;
-    const { note } = this.props;
     if (el) {
-      this.mde = new SimpleMDE({
-        element: this.textArea!,
-        initialValue: note.content,
-      });
-      this.mde.codemirror.on("change", () => {
-        note.setContent(this.mde!.value());
-      });
+        this.setupEditor();
     }
   }
+
+    @autobind
+    private async setupEditor() {
+        // @ts-ignore
+        await import("simplemde/dist/simplemde.min.css");
+        const SimpleMDE = (await import("simplemde")).default;
+      this.mde = new SimpleMDE({
+        element: this.textArea!,
+        initialValue: this.note.content,
+      });
+      this.mde.codemirror.on("change", () => {
+        this.note.setContent(this.mde!.value());
+      });
+    }
 }
