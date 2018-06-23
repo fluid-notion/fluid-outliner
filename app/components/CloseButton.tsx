@@ -15,6 +15,7 @@ export const CloseButton = ({ onClick }: ICloseButtonProps) => (
       top: "10px",
       fontSize: "1.5rem",
       cursor: "pointer",
+      zIndex: 999
     }}
   />
 );

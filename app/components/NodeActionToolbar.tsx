@@ -16,6 +16,8 @@ import { palette } from "./styles/theme";
 import { Observer } from "mobx-react";
 import { autobind } from "core-decorators";
 import { observable } from "mobx";
+import { IOutlineVisitState } from "../models/OutlineVisitState";
+import { INoteFormat } from "../models/Note";
 
 const styles = {
   container: {
@@ -48,6 +50,7 @@ class NodeActionToolbarInner extends React.Component<
   WithStyles<keyof typeof styles> & {
     node: INode;
     showNotes: () => void;
+    visitState: IOutlineVisitState
   }
 > {
   @observable private memoMenuAnchor: HTMLElement | null = null;
@@ -120,17 +123,21 @@ class NodeActionToolbarInner extends React.Component<
   }
 
   @autobind
-  private addMarkdownMemo() {
-    this.props.node.addMemo("markdown");
+  private addMemo(format: INoteFormat) {
+    const memo = this.props.node.addMemo(format);
+    this.props.visitState.activateItem(memo);
     this.hideMemoMenu();
     this.props.showNotes();
   }
 
   @autobind
+  private addMarkdownMemo() {
+    this.addMemo("markdown")
+  }
+
+  @autobind
   private addRichTextMemo() {
-    this.props.node.addMemo("html");
-    this.hideMemoMenu();
-    this.props.showNotes();
+    this.addMemo("html");
   }
 
   @autobind
@@ -143,5 +150,6 @@ export const NodeActionToolbar: React.ComponentType<
   StyledComponentProps<keyof typeof styles> & {
     node: INode;
     showNotes: () => void;
+    visitState: IOutlineVisitState
   }
 > = withStyles(styles)(NodeActionToolbarInner);

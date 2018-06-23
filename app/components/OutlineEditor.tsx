@@ -84,19 +84,30 @@ class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps> {
     let node = this.nodes[idx];
     if (node) node = node.getDecoratedComponentInstance();
     if (node) node = node.getDecoratedComponentInstance();
+    if (node) node = node.wrappedInstance;
     return node || null;
   }
 
   @autobind
-  private focusUp(curIdx: number) {
+  private focusUp(curIdx: number, enableEditing = false) {
     const node = this.getUnwrappedNodeAtIdx(curIdx - 1);
-    if (node) node.focus();
+    if (node) {
+      node.focus();
+      if (enableEditing) {
+        node.editable.enableEditing();
+      }
+    }
   }
 
   @autobind
-  private focusDown(curIdx: number) {
+  private focusDown(curIdx: number, enableEditing = false) {
     const node = this.getUnwrappedNodeAtIdx(curIdx + 1);
-    if (node) node.focus();
+    if (node) {
+      node.focus();
+      if (enableEditing) {
+        node.editable.enableEditing();
+      }
+    }
   }
 
   private ensureNodeLength() {

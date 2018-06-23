@@ -1,6 +1,7 @@
 import { IExtendedObservableMap, types as t } from "mobx-state-tree";
 import { INode } from "./Node";
 import { Outline } from "./Outline";
+import { IIdentifiable, IMaybe } from "../utils/UtilTypes";
 
 interface INodeLevel {
   node: INode;
@@ -42,6 +43,7 @@ export const OutlineVisitState = t
     outline: t.reference(Outline),
     collapsedNodes: t.optional(t.map(t.boolean), {}),
     searchQuery: t.optional(t.string, ""),
+    activeItemId: t.maybe(t.string),
   })
   .views(self => ({
     get flatList(): INodeLevel[] {
@@ -50,6 +52,9 @@ export const OutlineVisitState = t
           self.outline.children
         ),
       ];
+    },
+    isActive(item: IIdentifiable) {
+      return item ? item.id === self.activeItemId : false;
     },
   }))
   .actions(self => ({
@@ -62,4 +67,19 @@ export const OutlineVisitState = t
     clearSearchQuery() {
       self.searchQuery = "";
     },
+    activateItem(item: IIdentifiable) {
+      self.activeItemId = (item && item.id) || null;
+    },
+    deactivateItem(item: IMaybe<IIdentifiable>) {
+      if (item && item.id) {
+        if (self.activeItemId === item.id) {
+          self.activeItemId = null;
+        }
+      } else {
+        self.activeItemId = null;
+      }
+    },
   }));
+
+
+export type IOutlineVisitState = typeof OutlineVisitState.Type;

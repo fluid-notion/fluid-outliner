@@ -4,8 +4,12 @@ import { INote } from "../models/Note";
 import { observer } from "mobx-react";
 import { asyncComponent } from "react-async-component";
 
-import { observable, computed } from "mobx";
+import { computed } from "mobx";
 import Paper from "@material-ui/core/Paper/Paper";
+import { injectStore } from "../models/Store";
+import { IStoreConsumerProps } from "../models/IProviderProps";
+import { Editable } from "../utils/Editable";
+import { CloseButton } from "./CloseButton";
 
 const ReactQuill = asyncComponent({
   resolve: async () => {
@@ -15,28 +19,40 @@ const ReactQuill = asyncComponent({
   },
 }) as any;
 
-@observer
-export class RichTextEditor extends React.Component<{ note: INote }> {
-  private editorRef = React.createRef<import("react-quill")>();
+export interface IRichTextEditorProps {
+  note: INote;
+}
 
-  @observable private isEditing = false;
+export type IRichTextEditorInnerProps = IRichTextEditorProps &
+  IStoreConsumerProps;
+
+export class RichTextEditorInner extends React.Component<
+  IRichTextEditorInnerProps
+> {
+  private editorRef = React.createRef<import("react-quill")>();
+  private editable: Editable;
+
+  constructor(props: IRichTextEditorInnerProps) {
+    super(props);
+    this.editable = new Editable(this);
+  }
 
   @computed
-  get note() {
+  get item() {
     return this.props.note;
   }
 
   @computed
   get htmlContent() {
-    return this.note.content;
+    return this.item.content;
   }
 
   public render() {
-    if (!this.isEditing) {
+    if (!this.editable.isEditing) {
       return (
         <Paper
-          onDoubleClick={this.handleDoubleClick}
-          style={{ overflow: "hidden", padding: "10px" }}
+          onDoubleClick={this.editable.enableEditing}
+          style={{ overflow: "hidden", padding: "10px", cursor: "pointer" }}
         >
           <div
             dangerouslySetInnerHTML={{ __html: this.htmlContent }}
@@ -46,15 +62,11 @@ export class RichTextEditor extends React.Component<{ note: INote }> {
       );
     }
     return (
-      <div style={{ background: "white" }}>
+      <div style={{ background: "white", position: "relative" }}>
+        <CloseButton onClick={() => this.editable.disableEditing()} />
         <ReactQuill ref={this.editorRef} onChange={this.handleChange} />
       </div>
     );
-  }
-
-  @autobind
-  private handleDoubleClick() {
-    this.isEditing = true;
   }
 
   @autobind
@@ -62,3 +74,7 @@ export class RichTextEditor extends React.Component<{ note: INote }> {
     this.props.note.setContent(content);
   }
 }
+
+export const RichTextEditor: React.ComponentType<
+  IRichTextEditorProps
+> = injectStore(observer(RichTextEditorInner)) as any;

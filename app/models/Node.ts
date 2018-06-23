@@ -21,7 +21,7 @@ export interface INode {
   setContent(content: string): void;
   setParent(node: INode | null): void;
   spliceChildren(start: number, delCount: number, ...nodes: INode[]): any;
-  addSibling(): void;
+  addSibling(): INode;
   indentForward(): void;
   indentBackward(): void;
   hasDescendent(id: string): boolean;
@@ -32,8 +32,8 @@ export interface INode {
   matchesQuery(q: string): boolean;
   toggleBookmark(): void;
   toggleStar(): void;
-  addMemo(format: INoteFormat): void;
-  addComment(): void;
+  addMemo(format: INoteFormat): INote;
+  addComment(): INote;
 }
 
 export const Node: IModelType<Snapshot<INode>, INode> = t
@@ -104,24 +104,24 @@ export const Node: IModelType<Snapshot<INode>, INode> = t
       }
     },
     addMemo(format: INoteFormat) {
-      self.notes.push(
-        Note.create({
-          id: uuid(),
-          format,
-          content: "",
-          placement: "main",
-        })
-      );
+      const memo = Note.create({
+        id: uuid(),
+        format,
+        content: "",
+        placement: "main",
+      });
+      self.notes.push(memo);
+      return memo;
     },
     addComment() {
-      self.notes.push(
-        Note.create({
-          id: uuid(),
-          format: "text",
-          content: "",
-          placement: "side",
-        })
-      );
+      const comment = Note.create({
+        id: uuid(),
+        format: "text",
+        content: "",
+        placement: "side",
+      });
+      self.notes.push(comment);
+      return comment;
     },
   }))
   .actions(self => ({
@@ -139,6 +139,7 @@ export const Node: IModelType<Snapshot<INode>, INode> = t
       });
       self.outline.registerNode(node);
       self.antecedent.spliceChildren(self.siblingIdx + 1, 0, node);
+      return node;
     },
     indentForward() {
       if (self.siblingIdx === 0) return;

@@ -8,6 +8,7 @@ export const Link = (
 ) => (
   <a
     target={props.href ? "_blank" : undefined}
+    rel={props.href ? "noopener" : undefined}
     {...props}
     style={{
       borderBottom: "1px dotted silver",
