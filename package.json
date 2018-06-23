@@ -25,7 +25,7 @@
     "prepublish": "yarn run tslint && yarn run build",
     "clean": "rimraf dist*",
     "burmthemall": "yarn run clean && rimraf node_modules",
-    "deploy": "yarn run clean && yarn run build && node ./scripts/publish"
+    "deploy": "yarn run clean && yarn run build && node ./scripts/deploy"
   },
   "devDependencies": {
     "@material-ui/core": "^1.2.1",
