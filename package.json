@@ -23,9 +23,9 @@
     "prettier": "prettier --write ./**/*.{ts,tsx}",
     "tslint": "tslint -p .",
     "prepublish": "yarn run tslint && yarn run build",
-    "clean": "rm -rf dist*",
-    "burmthemall": "yarn run clean && rm -rf node_modules",
-    "publish": "yarn run clean && NODE_ENV=production yarn run build && node ./scripts/publish"
+    "clean": "rimraf dist*",
+    "burmthemall": "yarn run clean && rimraf node_modules",
+    "deploy": "yarn run clean && yarn run build && node ./scripts/publish"
   },
   "devDependencies": {
     "@material-ui/core": "^1.2.1",
@@ -47,6 +47,7 @@
     "@types/simplemde": "^1.11.7",
     "@types/uuid": "^3.4.3",
     "@types/webpack-bundle-analyzer": "^2.9.2",
+    "cross-env": "^5.2.0",
     "css-loader": "^0.28.11",
     "dnd-core": "^4.0.5",
     "file-loader": "^1.1.11",
@@ -81,6 +82,7 @@
     "react-quill": "^1.2.7",
     "react-tiny-virtual-list": "^2.1.4",
     "recompose": "^0.27.1",
+    "rimraf": "^2.6.2",
     "showdown": "^1.8.6",
     "simplemde": "^1.11.2",
     "style-loader": "^0.21.0",
