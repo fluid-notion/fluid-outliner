@@ -14,13 +14,9 @@ import React from "react";
 import { asyncComponent } from "react-async-component";
 import Octicon from "react-octicon";
 import { Motion, spring } from "react-motion";
+// @ts-ignore
+import Hammer from "react-hammerjs";
 
-import {
-  IDragSourceProps,
-  IDropTargetProps,
-  NodeDragSource,
-  NodeDropTarget,
-} from "../utils/NodeDnD";
 import { INode } from "../models/Node";
 import { palette } from "./styles/theme";
 import { NodeActionToolbar } from "./NodeActionToolbar";
@@ -34,14 +30,10 @@ import { handleKeys } from "../utils/keyboard-handlers";
 const RichTextEditor = asyncComponent({
   resolve: async () => (await import("./RichTextEditor")).RichTextEditor,
 });
+
 const MarkdownEditor = asyncComponent({
   resolve: async () => (await import("./MarkdownEditor")).MarkdownEditor,
 });
-
-export interface IPotentialDropTarget {
-  id: string;
-  location: "above" | "below";
-}
 
 export interface INodeEditorPrimaryProps {
   node: INode;
@@ -49,9 +41,6 @@ export interface INodeEditorPrimaryProps {
   toggleCollapse: (id: string) => void;
   isCollapsed: boolean;
   index: number;
-  setPotentialDropTarget: (pdt: IPotentialDropTarget) => void;
-  willDrop: "above" | "below" | null;
-  completeDrop: (id: string | null) => void;
   focusUp: (idx: number, enableEditing?: boolean) => void;
   focusDown: (idx: number, enableEditing?: boolean) => void;
 }
@@ -159,27 +148,7 @@ export type INodeEditorProps = INodeEditorPrimaryProps &
 
 export type INodeEditorInnerProps = INodeEditorProps &
   WithStyles<keyof typeof styles> &
-  IStoreConsumerProps &
-  IDragSourceProps &
-  IDropTargetProps;
-
-const DropPlaceholder = ({ dir }: { dir: "up" | "down" }) => (
-  <div style={{ height: "30px" }}>
-    <div
-      style={{
-        border: "1px solid silver",
-        borderRadius: "4px",
-        background: "#ddd",
-        float: "right",
-        color: "black",
-        marginTop: "5px",
-        paddingLeft: "5px",
-      }}
-    >
-      <Octicon name={`triangle-${dir}`} />
-    </div>
-  </div>
-);
+  IStoreConsumerProps;
 
 @observer
 export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
@@ -272,22 +241,18 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
   public render() {
     const { classes } = this.props;
     const paperStyles: any = {};
-    if (this.props.willDrop) {
-      paperStyles.borderColor = "red";
-    }
     if (this.editable.isEditing) {
       paperStyles.borderColor = "#9473cd";
     } else {
       paperStyles.cursor = "pointer";
     }
-    return this.props.connectDropTarget(
+    return (
       <div
         style={{
           paddingLeft: 40 + this.props.level * 40 + "px",
         }}
         className={classes.container}
       >
-        {this.props.willDrop === "above" && <DropPlaceholder dir="down" />}
         <Motion
           style={{
             borderRadius: spring(this.editable.isEditing ? 4 : 0),
@@ -335,16 +300,16 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
                           onClick={this.toggleCollapse}
                         />
                       )}
-                      {this.props.connectDragSource(
-                        <span>
-                          <Octicon name="grabber" className={classes.grabber} />
-                        </span>
-                      )}
-                      <div className={classes.innerContainer}>
-                        {this.renderLeftMarkers()}
-                        {this.renderContent()}
-                        {this.renderRightMarkers()}
-                      </div>
+                      <span>
+                        <Octicon name="grabber" className={classes.grabber} />
+                      </span>
+                      <Hammer onSwipe={this.handleSwipe} onDoubleTap={this.handleDoubleTap}>
+                        <div className={classes.innerContainer}>
+                          {this.renderLeftMarkers()}
+                          {this.renderContent()}
+                          {this.renderRightMarkers()}
+                        </div>
+                      </Hammer>
                     </Paper>
                   </div>
                   {this.areNotesVisible && this.renderNotes()}
@@ -374,7 +339,6 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
             </Observer>
           )}
         </Motion>
-        {this.props.willDrop === "below" && <DropPlaceholder dir="up" />}
       </div>
     );
   }
@@ -383,6 +347,15 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
     this.clearBlurTimer();
     if (this.editor) this.editor.focus();
     else if (this.container) this.container.focus();
+  }
+
+  @autobind
+  private handleSwipe(event: any) {
+    if (event.deltaX > 100) {
+      this.item.indentForward();
+    } else if (event.deltaX < -100) {
+      this.item.indentBackward();
+    }
   }
 
   @autobind
@@ -407,6 +380,11 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
   }
 
   @autobind
+  private handleDoubleTap() {
+    this.focus();
+  }
+
+  @autobind
   private handleBlur() {
     this.clearBlurTimer();
     this.blurTimer = setTimeout(() => this.editable.disableEditing(), 1000);
@@ -425,7 +403,37 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
   }
 
   private renderLeftMarkers() {
-    return this.renderMarkers("left");
+    const markers = this.renderMarkers("left");
+    markers.splice(
+      0,
+      0,
+      <span
+        className="js-node-editor-grabber"
+        dangerouslySetInnerHTML={{
+          __html: `
+            <svg
+              height="32"
+              class="octicon octicon-kebab-vertical"
+              viewBox="0 0 3 16"
+              version="1.1"
+              width="6"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M0 2.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zm0 5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zM1.5 14a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"
+              />
+            </svg>
+          `,
+        }}
+        style={{
+          padding: "0 10px",
+          marginTop: "5px",
+          opacity: 0.2,
+        }}
+      />
+    );
+    return markers;
   }
 
   private renderRightMarkers() {
@@ -514,4 +522,4 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
 
 export const NodeEditor: React.ComponentType<INodeEditorProps> = withStyles(
   styles
-)(NodeDragSource(NodeDropTarget(storeObserver(NodeEditorInner)))) as any; // TODO FIXME
+)(storeObserver(NodeEditorInner)) as any; // TODO FIXME

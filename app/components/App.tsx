@@ -2,8 +2,6 @@ import { CssBaseline, MuiThemeProvider } from "@material-ui/core";
 
 import { Provider } from "mobx-react";
 import React from "react";
-import { DragDropContextProvider } from "react-dnd";
-import HTML5Backend from "react-dnd-html5-backend";
 
 import { Store } from "../models/Store";
 import { Body } from "./Body";
@@ -21,7 +19,6 @@ export class App extends React.Component {
     return (
       <>
         <CssBaseline />
-        <DragDropContextProvider backend={HTML5Backend}>
           <Provider store={store}>
             <MuiThemeProvider theme={theme}>
               <ModalContainer>
@@ -29,7 +26,6 @@ export class App extends React.Component {
               </ModalContainer>
             </MuiThemeProvider>
           </Provider>
-        </DragDropContextProvider>
       </>
     );
   }

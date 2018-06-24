@@ -1,12 +1,13 @@
 import { withStyles, WithStyles } from "@material-ui/core/styles";
 import { autobind, decorate } from "core-decorators";
-import { observable } from "mobx";
 import React from "react";
 import memoize from "lodash/memoize";
 import { IStoreConsumerProps } from "../models/IProviderProps";
 import { storeObserver } from "../models/Store";
-import { IPotentialDropTarget, NodeEditor } from "./NodeEditor";
+import { NodeEditor } from "./NodeEditor";
 import { OutlineTitleEditor } from "./OutlineTitleEditor";
+// @ts-ignore
+import { Container, Draggable } from "react-smooth-dnd";
 
 const InjectStyles = withStyles({
   root: {
@@ -24,8 +25,6 @@ const InjectStyles = withStyles({
 type IOutlineEditorInnerProps = IStoreConsumerProps & WithStyles<any>;
 
 class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps> {
-  @observable private potentialDropTarget: IPotentialDropTarget | null = null;
-
   private nodes: any[] = [];
 
   get outline() {
@@ -48,34 +47,36 @@ class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps> {
     this.ensureNodeLength();
   }
 
-  @autobind
-  public setPotentialDropTarget(pdt: IPotentialDropTarget) {
-    this.potentialDropTarget = pdt;
-  }
-
   public render(): React.ReactNode {
     const { classes } = this.props;
     return (
       <div className={classes!.root} key={this.outline.id}>
         <OutlineTitleEditor outline={this.outline} />
-        {this.flatNodeList.map(({ node, level, isCollapsed }, index) => {
-          return (
-            <NodeEditor
-              index={index}
-              key={node.id}
-              isCollapsed={isCollapsed}
-              level={level}
-              node={node}
-              toggleCollapse={this.visitState.toggleCollapse}
-              setPotentialDropTarget={this.setPotentialDropTarget}
-              willDrop={this.dropLocationFor(node.id)}
-              completeDrop={this.completeDrop}
-              innerRef={this.registerNode(index)}
-              focusUp={this.focusUp}
-              focusDown={this.focusDown}
-            />
-          );
-        })}
+        <Container
+          onDrop={this.handleDrop}
+          dragHandleSelector=".js-node-editor-grabber"
+          lockAxis="y"
+          onDragStart={this.handleDragStart}
+          onDragEnd={this.handleDragEnd}
+        >
+          {this.flatNodeList.map(({ node, level, isCollapsed }, index) => {
+            return (
+              <Draggable key={node.id}>
+                <NodeEditor
+                  index={index}
+                  key={node.id}
+                  isCollapsed={isCollapsed}
+                  level={level}
+                  node={node}
+                  toggleCollapse={this.visitState.toggleCollapse}
+                  innerRef={this.registerNode(index)}
+                  focusUp={this.focusUp}
+                  focusDown={this.focusDown}
+                />
+              </Draggable>
+            );
+          })}
+        </Container>
       </div>
     );
   }
@@ -86,6 +87,29 @@ class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps> {
     if (node) node = node.getDecoratedComponentInstance();
     if (node) node = node.wrappedInstance;
     return node || null;
+  }
+
+  @autobind
+  private handleDragStart() {
+    document.body.style.overflow = "hidden";
+  }
+
+  @autobind
+  private handleDragEnd() {
+    document.body.style.overflow = "auto";
+  }
+
+  @autobind
+  private handleDrop(p: { addedIndex: number; removedIndex: number }) {
+    const source = this.flatNodeList[p.removedIndex].node;
+    const targetIndex = p.removedIndex < p.addedIndex ? p.removedIndex + 1 : p.removedIndex;
+    if (this.flatNodeList[targetIndex]) {
+      const target = this.flatNodeList[targetIndex].node;
+      source.relocateBefore(target);
+    } else if (this.flatNodeList[targetIndex - 1]) {
+      const target = this.flatNodeList[targetIndex].node;
+      source.relocateAfter(target);
+    }
   }
 
   @autobind
@@ -119,25 +143,6 @@ class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps> {
     return (el: any | null) => {
       this.nodes[idx] = el;
     };
-  }
-
-  @autobind
-  private completeDrop(sourceId: string | null) {
-    const pdt = this.potentialDropTarget;
-    this.potentialDropTarget = null;
-    if (!pdt || !sourceId) return;
-    const target = this.outline.getNode(pdt.id);
-    if (pdt.location === "above") {
-      target.relocateBefore(sourceId);
-    } else {
-      target.relocateAfter(sourceId);
-    }
-  }
-
-  private dropLocationFor(id: string) {
-    if (!this.potentialDropTarget) return null;
-    if (this.potentialDropTarget.id !== id) return null;
-    return this.potentialDropTarget.location;
   }
 }
 

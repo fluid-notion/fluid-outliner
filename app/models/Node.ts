@@ -25,8 +25,8 @@ export interface INode {
   indentForward(): void;
   indentBackward(): void;
   hasDescendent(id: string): boolean;
-  relocateBefore(id: string): void;
-  relocateAfter(id: string): void;
+  relocateBefore(node: INode): void;
+  relocateAfter(node: INode): void;
   moveUp(): void;
   moveDown(): void;
   matchesQuery(q: string): boolean;
@@ -161,21 +161,19 @@ export const Node: IModelType<Snapshot<INode>, INode> = t
       gAnt!.spliceChildren(newIdx, 0, self as any);
       self.parent = gParent;
     },
-    relocateBefore(id: string) {
-      const node = self.outline.getNode(id);
-      node.antecedent.spliceChildren(node.siblingIdx, 1);
-      self.antecedent.spliceChildren(self.siblingIdx, 0, node);
-      node.setParent(self.parent);
+    relocateBefore(node: INode) {
+      self.antecedent.spliceChildren(self.siblingIdx, 1);
+      node.antecedent.spliceChildren(node.siblingIdx, 0, self as any);
+      self.setParent(node.parent);
     },
-    relocateAfter(id: string) {
-      const node = self.outline.getNode(id);
-      node.antecedent.spliceChildren(node.siblingIdx, 1);
-      if (self.children.length === 0) {
-        self.antecedent.spliceChildren(self.siblingIdx + 1, 0, node);
-        node.setParent(self.parent);
+    relocateAfter(node: INode) {
+      self.antecedent.spliceChildren(self.siblingIdx, 1);
+      if (node.children.length === 0) {
+        node.antecedent.spliceChildren(node.siblingIdx + 1, 0, self as any);
+        self.setParent(node.parent);
       } else {
-        self.spliceChildren(0, 0, node);
-        node.setParent(self as any);
+        node.spliceChildren(0, 0, self as any);
+        self.setParent(node);
       }
     },
     moveUp() {
