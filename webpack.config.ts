@@ -41,6 +41,7 @@ export default {
       externals: [
         "https://fonts.googleapis.com/icon?family=Material+Icons",
         "https://fonts.googleapis.com/css?family=Roboto:300,400,500",
+        "favicon.ico"
       ],
     }),
   ],
@@ -50,6 +51,9 @@ export default {
   },
   watchOptions: {
     ignored: /node_modules/,
+  },
+  devServer: {
+    contentBase: path.join(__dirname, 'dist-webpack'),
   },
   module: {
     rules: [

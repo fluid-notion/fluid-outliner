@@ -8,6 +8,7 @@ import { NodeEditor } from "./NodeEditor";
 import { OutlineTitleEditor } from "./OutlineTitleEditor";
 // @ts-ignore
 import { Container, Draggable } from "react-smooth-dnd";
+import { OutlineActionToolbar } from "./OutlineActionToolbar";
 
 const InjectStyles = withStyles({
   root: {
@@ -51,10 +52,18 @@ class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps> {
     const { classes } = this.props;
     return (
       <div className={classes!.root} key={this.outline.id}>
+        <OutlineActionToolbar
+          style={{
+            float: "right",
+            marginRight: "40px",
+            position: "relative",
+            top: "15px",
+          }}
+          outline={this.outline}
+        />
         <OutlineTitleEditor outline={this.outline} />
         <Container
           onDrop={this.handleDrop}
-          dragHandleSelector=".js-node-editor-grabber"
           lockAxis="y"
           onDragStart={this.handleDragStart}
           onDragEnd={this.handleDragEnd}
@@ -102,7 +111,8 @@ class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps> {
   @autobind
   private handleDrop(p: { addedIndex: number; removedIndex: number }) {
     const source = this.flatNodeList[p.removedIndex].node;
-    const targetIndex = p.removedIndex < p.addedIndex ? p.removedIndex + 1 : p.removedIndex;
+    const targetIndex =
+      p.removedIndex < p.addedIndex ? p.removedIndex + 1 : p.removedIndex;
     if (this.flatNodeList[targetIndex]) {
       const target = this.flatNodeList[targetIndex].node;
       source.relocateBefore(target);

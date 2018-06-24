@@ -63,7 +63,7 @@ export class RichTextEditorInner extends React.Component<
     }
     return (
       <div style={{ background: "white", position: "relative" }}>
-        <CloseButton onClick={() => this.editable.disableEditing()} />
+        <CloseButton name="check" onClick={() => this.editable.disableEditing()} />
         <ReactQuill ref={this.editorRef} onChange={this.handleChange} />
       </div>
     );

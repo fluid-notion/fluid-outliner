@@ -4,12 +4,13 @@ import { INote } from "../models/Note";
 import { autobind } from "core-decorators";
 import { observer } from "mobx-react";
 
-import { computed } from "mobx";
+import { computed, autorun, IReactionDisposer } from "mobx";
 import Paper from "@material-ui/core/Paper/Paper";
 import { injectStore } from "../models/Store";
 import { IStoreConsumerProps } from "../models/IProviderProps";
 import { Editable } from "../utils/Editable";
 import { CloseButton } from "./CloseButton";
+import { IMaybe } from "../utils/UtilTypes";
 
 interface IMarkdownEditorProps {
   note: INote;
@@ -27,6 +28,7 @@ export class MarkdownEditorInner extends React.Component<
   private mde: SimpleMDE | null = null;
 
   private editable: Editable;
+  private disposeMDESync: IMaybe<IReactionDisposer>;
 
   constructor(props: any) {
     super(props);
@@ -49,6 +51,14 @@ export class MarkdownEditorInner extends React.Component<
     return this.converter.makeHtml(this.item.content);
   }
 
+  get codemirror() {
+    return this.mde && this.mde.codemirror;
+  }
+
+  get content() {
+    return this.codemirror && this.codemirror.getValue();
+  }
+
   public render() {
     if (!this.editable.isEditing) {
       return (
@@ -67,7 +77,7 @@ export class MarkdownEditorInner extends React.Component<
     }
     return (
       <div style={{ background: "white", position: "relative" }}>
-        <CloseButton onClick={() => this.editable.disableEditing()} />
+        <CloseButton name="check" onClick={() => this.editable.disableEditing()} />
         <textarea ref={this.registerTextArea} />
       </div>
     );
@@ -78,6 +88,8 @@ export class MarkdownEditorInner extends React.Component<
     this.textArea = el;
     if (el) {
       this.setupEditor();
+    } else if (this.disposeMDESync) {
+      this.disposeMDESync();
     }
   }
 
@@ -90,8 +102,12 @@ export class MarkdownEditorInner extends React.Component<
       element: this.textArea!,
       initialValue: this.item.content,
     });
-    this.mde.codemirror.on("change", () => {
-      this.item.setContent(this.mde!.value());
+    this.codemirror.on("change", () => {
+      this.item.setContent(this.content!);
+    });
+    this.disposeMDESync = autorun(() => {
+      if (this.content === this.item.content) return;
+      this.codemirror.setValue(this.item.content);
     });
   }
 }

@@ -13,6 +13,10 @@ const ModalRegistry = {
   PrivacyDialog: asyncComponent({
     resolve: async () => (await import("./PrivacyDialog")).PrivacyDialog,
   }),
+  OutlineDeletionDialog: asyncComponent({
+    resolve: async () => 
+      (await import("./OutlineDeletionDialog")).OutlineDeletionDialog
+  })
 };
 
 type IModalKey = keyof typeof ModalRegistry;

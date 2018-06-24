@@ -51,10 +51,12 @@ export class BodyInner extends React.Component<IBodyInnerProps> {
         {this.isPreloading ? (
           <Loader />
         ) : (
-          <>
-            {this.outline && <OutlineEditor />}
-            <AppFooter />
-          </>
+          this.outline && (
+            <>
+              <OutlineEditor />
+              <AppFooter />
+            </>
+          )
         )}
       </>
     );

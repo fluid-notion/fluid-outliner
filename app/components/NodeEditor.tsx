@@ -5,6 +5,7 @@ import {
   withStyles,
   StyledComponentProps,
   Typography,
+  Icon,
 } from "@material-ui/core";
 import { default as AddIcon } from "@material-ui/icons/Add";
 import { autobind } from "core-decorators";
@@ -16,6 +17,8 @@ import Octicon from "react-octicon";
 import { Motion, spring } from "react-motion";
 // @ts-ignore
 import Hammer from "react-hammerjs";
+// @ts-ignore
+import Highlighter from "react-highlight-words";
 
 import { INode } from "../models/Node";
 import { palette } from "./styles/theme";
@@ -50,7 +53,7 @@ const styles = {
     paddingRight: "40px",
   },
   notesContainer: {
-    borderLeft: "2px solid silver",
+    borderLeft: "10px solid #e8d6b4",
   },
   paper: {
     outline: 0,
@@ -62,7 +65,7 @@ const styles = {
     "& .ql-tooltip": {
       zIndex: 1000,
     },
-    "&:hover $foldControl, &:hover $grabber": {
+    "&:hover $foldControl": {
       display: "block",
     },
     "&:focus": {
@@ -72,6 +75,13 @@ const styles = {
   collapseControl: {
     position: "absolute" as "absolute",
     left: "-35px",
+    top: "7px",
+    fontSize: "2rem",
+    color: "silver",
+  },
+  zoomControl: {
+    position: "absolute" as "absolute",
+    right: "-40px",
     top: "7px",
     fontSize: "2rem",
     color: "silver",
@@ -96,12 +106,10 @@ const styles = {
     paddingTop: "2px",
   },
   grabber: {
-    position: "absolute" as "absolute",
-    right: "-45px",
+    position: "relative" as "relative",
     top: "7px",
     color: "silver",
     fontSize: "2rem",
-    display: "none",
   },
   input: {
     border: 0,
@@ -229,6 +237,11 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
   }
 
   @computed
+  get searchQuery() {
+    return this.visitState.searchQuery;
+  }
+
+  @computed
   get item() {
     return this.props.node;
   }
@@ -250,6 +263,8 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
       <div
         style={{
           paddingLeft: 40 + this.props.level * 40 + "px",
+          paddingTop: "0.5px",
+          paddingBottom: "0.5px",
         }}
         className={classes.container}
       >
@@ -300,10 +315,26 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
                           onClick={this.toggleCollapse}
                         />
                       )}
-                      <span>
-                        <Octicon name="grabber" className={classes.grabber} />
-                      </span>
-                      <Hammer onSwipe={this.handleSwipe} onDoubleTap={this.handleDoubleTap}>
+                      {this.editable.isEditing &&
+                        (this.visitState.currentRoot === this.props.node.id ? (
+                          <Icon
+                            className={classes.zoomControl}
+                            onClick={this.visitState.zoomOut}
+                          >
+                            reply_all
+                          </Icon>
+                        ) : (
+                          <Icon
+                            className={classes.zoomControl}
+                            onClick={this.handleZoomIn}
+                          >
+                            center_focus_strong
+                          </Icon>
+                        ))}
+                      <Hammer
+                        onSwipe={this.handleSwipe}
+                        onDoubleTap={this.handleDoubleTap}
+                      >
                         <div className={classes.innerContainer}>
                           {this.renderLeftMarkers()}
                           {this.renderContent()}
@@ -347,6 +378,11 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
     this.clearBlurTimer();
     if (this.editor) this.editor.focus();
     else if (this.container) this.container.focus();
+  }
+
+  @autobind
+  private handleZoomIn() {
+    this.visitState.zoomIn(this.props.node.id);
   }
 
   @autobind
@@ -403,37 +439,7 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
   }
 
   private renderLeftMarkers() {
-    const markers = this.renderMarkers("left");
-    markers.splice(
-      0,
-      0,
-      <span
-        className="js-node-editor-grabber"
-        dangerouslySetInnerHTML={{
-          __html: `
-            <svg
-              height="32"
-              class="octicon octicon-kebab-vertical"
-              viewBox="0 0 3 16"
-              version="1.1"
-              width="6"
-              aria-hidden="true"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M0 2.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zm0 5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zM1.5 14a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"
-              />
-            </svg>
-          `,
-        }}
-        style={{
-          padding: "0 10px",
-          marginTop: "5px",
-          opacity: 0.2,
-        }}
-      />
-    );
-    return markers;
+    return this.renderMarkers("left");
   }
 
   private renderRightMarkers() {
@@ -494,6 +500,12 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
         />
       );
     }
+    let content: React.ReactChild = node.content;
+    if (this.searchQuery.length > 0) {
+      content = (
+        <Highlighter searchWords={[this.searchQuery]} textToHighlight={content}/>
+      );
+    }
     return (
       <Typography
         variant="body1"
@@ -501,7 +513,7 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
         onDoubleClick={this.editable.enableEditing}
         innerRef={this.registerContainer}
       >
-        {node.content}
+        {content}
       </Typography>
     );
   }

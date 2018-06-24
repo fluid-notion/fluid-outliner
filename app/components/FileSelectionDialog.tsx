@@ -1,11 +1,10 @@
 import {
-  ButtonBase,
   Dialog,
   DialogContent,
   DialogTitle,
   Divider,
-  Paper,
   Typography,
+  Button,
 } from "@material-ui/core";
 import { autobind } from "core-decorators";
 import { observable } from "mobx";
@@ -34,7 +33,13 @@ export class FileSelectionDialogInner extends React.Component<
     return (
       <Dialog open={true} onClose={this.handleClose}>
         {this.isClosable && <CloseButton onClick={this.props.modal.dismiss} />}
-        <DialogTitle>Open Outline</DialogTitle>
+        <DialogTitle
+          style={{
+            background: "#e0e0e0",
+          }}
+        >
+          Open Outline
+        </DialogTitle>
         <Divider />
         <DialogContent>
           <div
@@ -43,33 +48,39 @@ export class FileSelectionDialogInner extends React.Component<
               maxWidth: "80%",
               display: "flex",
               flexDirection: "row",
+              justifyContent: "space-between",
             }}
           >
             {this.isUploadActive ? (
               <FileUploader dismiss={this.props.modal.dismiss} />
             ) : (
               <>
-                <ButtonBase
-                  style={{ marginRight: "1rem" }}
+                <Button
+                  style={{ marginRight: "1rem", padding: "10px" }}
                   onClick={this.activateUpload}
+                  variant="contained"
                 >
-                  <Paper>
-                    <IconPair
-                      primary="insert_drive_file"
-                      secondary="arrow_upward"
-                    />
-                    <Typography variant="headline">Select a File</Typography>
-                  </Paper>
-                </ButtonBase>
-                <ButtonBase onClick={this.handleCreateNew}>
-                  <Paper>
-                    <IconPair
-                      primary="insert_drive_file"
-                      secondary="add_circle_outline"
-                    />
-                    <Typography variant="headline">Create New</Typography>
-                  </Paper>
-                </ButtonBase>
+                  <IconPair
+                    primary="insert_drive_file"
+                    secondary="arrow_upward"
+                  />
+                  <Typography variant="button" style={{ paddingRight: "10px" }}>
+                    Select a File
+                  </Typography>
+                </Button>
+                <Button
+                  style={{ padding: "10px" }}
+                  variant="contained"
+                  onClick={this.handleCreateNew}
+                >
+                  <IconPair
+                    primary="insert_drive_file"
+                    secondary="add_circle_outline"
+                  />
+                  <Typography variant="button" style={{ paddingRight: "10px" }}>
+                    Create New
+                  </Typography>
+                </Button>
               </>
             )}
           </div>

@@ -5,12 +5,21 @@ import {
   IModelType,
   Snapshot,
   types as t,
+  onPatch,
+  IJsonPatch,
+  applyPatch
 } from "mobx-state-tree";
 import { v4 as uuid } from "uuid";
 import { INode, Node } from "./Node";
 
 export const defaultRootNodeId = memoize(() => uuid());
 export const defaultOutlineId = memoize(() => uuid());
+
+interface IPatchLink {
+  originalTimestamp: number;
+  forward: IJsonPatch;
+  backward: IJsonPatch;
+}
 
 export interface IOutline {
   id: string;
@@ -22,6 +31,8 @@ export interface IOutline {
   setTitle(t: string): void;
   getNode(id: string): INode;
   removeNode(id: string): void;
+  undo(): void;
+  redo(): void;
 }
 
 export const Outline: IModelType<Snapshot<IOutline>, IOutline> = t
@@ -32,7 +43,7 @@ export const Outline: IModelType<Snapshot<IOutline>, IOutline> = t
       [defaultRootNodeId()]: {
         outline: defaultOutlineId(),
         id: defaultRootNodeId(),
-        content: "Edit Me",
+        content: "Double click/tap to edit me",
       },
     }),
     children: t.optional(t.array(t.reference(Node)), [defaultRootNodeId()]),
@@ -56,4 +67,58 @@ export const Outline: IModelType<Snapshot<IOutline>, IOutline> = t
       if (node.parent) node.parent.spliceChildren(node.siblingIdx, 1);
       self.allNodes.delete(id);
     },
-  }));
+  }))
+  .actions(self => {
+    // History of patches:
+    let patches: IPatchLink[] = [];
+    let patchPos = 0;
+    let trackPatches = true;
+    const afterCreate = () => {
+      onPatch(self, (forward, backward) => {
+        if (!trackPatches) return;
+        const patchLink: IPatchLink = {forward, backward, originalTimestamp: Date.now()};
+        // We leave the first patch because otherwise
+        // we will not be able to revert to the original pristine state
+        if (patches.length > 1) {
+          const lastPatch = patches[patches.length-1];
+          if (
+            (lastPatch.forward.op === patchLink.forward.op) &&
+            (lastPatch.forward.path === patchLink.forward.path) &&
+            (patchLink.originalTimestamp - lastPatch.originalTimestamp <= 1000)
+          ) {
+            // Consolidate changes to the same patch within a second
+            lastPatch.forward.value = forward.value;
+            lastPatch.backward.value = backward.value;
+            return;
+          }
+        }
+        // New patch entry:
+        patches.splice(patchPos, patches.length - patchPos, patchLink);
+        patchPos++;
+        // Cap patch history
+        if (patches.length > 1000) {
+          patches = patches.slice(-1000);
+          patchPos = patches.length;
+        }
+      })
+    };
+    const undo = () => {
+      if (patches.length === 0 || patchPos === 0) return;
+      trackPatches = false;
+      patchPos--;
+      applyPatch(self, patches[patchPos].backward);
+      trackPatches = true;
+    }
+    const redo = () => {
+        if (patchPos === patches.length) return;
+        trackPatches = false;
+        applyPatch(self, patches[patchPos].forward);
+        patchPos++;
+        trackPatches = true;
+    }
+    return {
+      afterCreate,
+      undo,
+      redo
+    };
+  });

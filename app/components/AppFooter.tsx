@@ -1,5 +1,5 @@
 import React from "react";
-import { Divider, Typography } from "@material-ui/core";
+import { Divider, Typography, Button } from "@material-ui/core";
 import { IModalConsumerProps } from "./ModalContainer";
 import { inject } from "mobx-react";
 import { Link } from "./Link";
@@ -25,10 +25,13 @@ export const AppFooter: React.StatelessComponent<{}> = inject(
     </Typography>
     <Divider />
     <Typography variant="body1" style={{ padding: "10px" }}>
-      <Link href="https://github.com/fluid-notion/fluid-outliner">Source Code</Link>{" | "}
-      <Link href="https://github.com/fluid-notion/fluid-outliner/issues">Issues</Link>{" | "}
-      <Link href="https://github.com/fluid-notion/fluid-outliner/projects/1">Roadmap</Link>{" | "} 
-      <Link href="https://twitter.com/lorefnon">@lorefnon</Link>
+      {[
+        ["Source Code", "https://github.com/fluid-notion/fluid-outliner"],
+        ["Roadmap", "https://github.com/fluid-notion/fluid-outliner/projects/1"],
+        ["@lorefnon", "https://twitter.com/lorefnon"]
+      ].map(([label, href]) => (
+        <Button href={href} key={label} target="_blank" rel="noopener">{label}</Button>
+      ))}
     </Typography>
   </div>
 )) as any;

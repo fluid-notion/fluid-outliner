@@ -3,12 +3,13 @@ import Octicon from "react-octicon";
 
 interface ICloseButtonProps {
   onClick: () => void;
+  name?: string;
 }
 
-export const CloseButton = ({ onClick }: ICloseButtonProps) => (
+export const CloseButton = ({ onClick, name="x" }: ICloseButtonProps) => (
   <Octicon
     onClick={onClick}
-    name="x"
+    name={name}
     style={{
       position: "absolute",
       right: "10px",
