@@ -1,7 +1,6 @@
 import { flow } from "mobx"
 import { inject, observer } from "mobx-react"
 import {
-    applySnapshot,
     getSnapshot,
     onSnapshot,
     types as t,
@@ -15,6 +14,7 @@ import {
 import { IProviderProps } from "./IProviderProps"
 import { defaultOutlineId, Outline } from "./Outline"
 import { OutlineVisitState } from "./OutlineVisitState"
+import { safeApplySnapshot } from "../utils/mobx-helpers";
 
 export const Store = t
     .model("Store", {
@@ -40,15 +40,14 @@ export const Store = t
         }) as () => void,
         loadFileContent(content: string) {
             const { snapshot } = JSON.parse(content)
-            applySnapshot(self, snapshot)
+            return safeApplySnapshot(self, snapshot)
         },
     }))
     .actions(self => ({
         restoreSaved: flow(function*() {
             const fileData = yield restoreLocal()
             if (fileData && fileData.snapshot) {
-                applySnapshot(self, fileData.snapshot)
-                return true
+                return safeApplySnapshot(self, fileData.snapshot)
             }
             return false
         }),

@@ -96,8 +96,6 @@ class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps> {
 
     private getUnwrappedNodeAtIdx(idx: number) {
         let node = this.nodes[idx]
-        if (node) node = node.getDecoratedComponentInstance()
-        if (node) node = node.getDecoratedComponentInstance()
         if (node) node = node.wrappedInstance
         return node || null
     }

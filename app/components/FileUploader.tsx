@@ -65,8 +65,9 @@ export class FileUploader extends React.Component<{
         const reader = new FileReader()
         reader.onload = (progEvent: FileReaderProgressEvent) => {
             const result = progEvent.target!.result
-            this.props.store!.loadFileContent(result)
-            this.props.dismiss()
+            if (this.props.store!.loadFileContent(result)) {
+                this.props.dismiss()
+            }
         }
         reader.readAsText(file)
     }

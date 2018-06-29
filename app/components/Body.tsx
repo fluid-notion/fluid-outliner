@@ -11,6 +11,7 @@ import { Loader } from "./Loader"
 import { Navbar } from "./NavBar"
 import { autobind } from "core-decorators"
 import { asyncComponent } from "react-async-component"
+import { BodyErrorWrapper } from "./BodyErrorWrapper"
 
 type IBodyInnerProps = IModalConsumerProps & { store: IStore }
 
@@ -53,7 +54,9 @@ export class BodyInner extends React.Component<IBodyInnerProps> {
                 ) : (
                     this.outline && (
                         <>
-                            <OutlineEditor />
+                            <BodyErrorWrapper>
+                                <OutlineEditor />
+                            </BodyErrorWrapper>
                             <AppFooter />
                         </>
                     )
