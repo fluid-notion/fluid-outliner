@@ -1,4 +1,4 @@
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createMuiTheme } from "@material-ui/core/styles"
 
 // https://material.io/tools/color/#!/?view.left=0&view.right=0&primary.color=546E7A&secondary.color=AFB42B&secondary.text.color=F0F4C3&primary.text.color=ffffff
 // https://codepen.io/anon/pen/jKmJMK
@@ -20,20 +20,20 @@ import { createMuiTheme } from "@material-ui/core/styles";
 // });
 
 export const palette = {
-  primary: {
-    light: "#9a67ea",
-    dark: "#320b86",
-    main: "#673ab7",
-    contrastText: "#e3f2fd",
-  },
-  secondary: {
-    main: "#2196f3",
-    light: "#6ec6ff",
-    dark: "#0069c0",
-    contrastText: "#e3f2fd",
-  },
-};
+    primary: {
+        light: "#9a67ea",
+        dark: "#320b86",
+        main: "#673ab7",
+        contrastText: "#e3f2fd",
+    },
+    secondary: {
+        main: "#2196f3",
+        light: "#6ec6ff",
+        dark: "#0069c0",
+        contrastText: "#e3f2fd",
+    },
+}
 
 export const theme = createMuiTheme({
-  palette,
-});
+    palette,
+})

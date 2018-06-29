@@ -1,9 +1,9 @@
-import { IStore } from "./Store";
+import { IStore } from "./Store"
 
 export interface IProviderProps {
-  store: IStore;
+    store: IStore
 }
 
 export interface IStoreConsumerProps {
-  store: IStore;
+    store: IStore
 }
