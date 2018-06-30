@@ -21,6 +21,9 @@ const InjectStyles = withStyles({
             left: "40px",
         },
     },
+    nodeUnderDrag: {
+        opacity: 0.5
+    }
 })
 
 type IOutlineEditorInnerProps = IStoreConsumerProps & WithStyles<any>
@@ -73,6 +76,7 @@ export class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps
                     lockAxis="y"
                     onDragStart={this.handleDragStart}
                     onDragEnd={this.handleDragEnd}
+                    dragClass={classes.nodeUnderDrag}
                 >
                     {this.flatNodeList.map(
                         ({ node, level, isCollapsed }, index) => {
@@ -120,12 +124,12 @@ export class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps
     private handleDrop(p: { addedIndex: number; removedIndex: number }) {
         const source = this.flatNodeList[p.removedIndex].node
         const targetIndex =
-            p.removedIndex < p.addedIndex ? p.removedIndex + 1 : p.removedIndex
+            p.removedIndex < p.addedIndex ? p.addedIndex + 1 : p.addedIndex
         if (this.flatNodeList[targetIndex]) {
             const target = this.flatNodeList[targetIndex].node
             source.relocateBefore(target)
         } else if (this.flatNodeList[targetIndex - 1]) {
-            const target = this.flatNodeList[targetIndex].node
+            const target = this.flatNodeList[targetIndex - 1].node
             source.relocateAfter(target)
         }
     }
