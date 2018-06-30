@@ -14,7 +14,7 @@ const InjectStyles = withStyles({
     root: {
         minHeight: "100%",
         maxWidth: "1280px",
-        margin: "90px auto",
+        margin: "20px auto",
         padding: "0",
         position: "relative",
         "@media(min-width: 1280px)": {
@@ -25,7 +25,7 @@ const InjectStyles = withStyles({
 
 type IOutlineEditorInnerProps = IStoreConsumerProps & WithStyles<any>
 
-class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps> {
+export class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps> {
     private nodes: any[] = []
 
     get outline() {
@@ -46,6 +46,12 @@ class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps> {
 
     public componentDidUpdate() {
         this.ensureNodeLength()
+    }
+
+    public focusFirst() {
+        const node = this.getUnwrappedNodeAtIdx(0);
+        if (!node) return;
+        node.focus();
     }
 
     public render(): React.ReactNode {

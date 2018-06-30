@@ -77,6 +77,9 @@ export const OutlineVisitState = t
         isActive(item: IIdentifiable) {
             return item ? item.id === self.activeItemId : false
         },
+        get isAnyActive() {
+            return !isNil(self.activeItemId)
+        }
     }))
     .actions(self => ({
         zoomIn(id: string) {

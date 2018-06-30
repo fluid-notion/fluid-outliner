@@ -1,10 +1,10 @@
 import {
     AppBar,
     IconButton,
-    Input,
     Toolbar,
     Typography,
     Tooltip,
+    Input,
 } from "@material-ui/core"
 import {
     withStyles,
@@ -46,6 +46,7 @@ const styles = {
 
 interface INavbarCommonProps {
     toggleDrawer: () => void
+    searchRef: React.Ref<any>
 }
 
 type INavbarInnerProps = WithStyles<keyof typeof styles> &
@@ -61,6 +62,7 @@ export const NavbarInner = ({
     classes,
     toggleDrawer,
     modal,
+    searchRef
 }: INavbarInnerProps) => (
     <AppBar position="static" className={classes.root}>
         <Toolbar>
@@ -85,6 +87,7 @@ export const NavbarInner = ({
             </Typography>
             <div style={{ flex: 1 }}>
                 <Input
+                    innerRef={searchRef}
                     placeholder="Search ..."
                     className={classes.searchInputWrapper}
                     value={

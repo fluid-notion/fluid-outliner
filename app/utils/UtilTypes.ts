@@ -12,6 +12,14 @@ export type IWitness<U extends T, T> = U
 
 export type IIdentifiable = IMaybe<{ id: IMaybe<string> }>
 
+export type IFn0<Out = void> = () => Out
+
+export type IFn1<In, Out = void> = (i: In) => Out
+
+export type IFn2<In1, In2, Out = void> = (i1: In1, i2: In2) => Out
+
+export type IFn3<In1, In2, In3, Out = void> = (i1: In1, i2: In2, i3: In3) => Out
+
 export interface IPropHost<T> {
     props: T
 }

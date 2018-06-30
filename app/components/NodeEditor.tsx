@@ -28,7 +28,11 @@ import { SwitchSlider } from "./SwitchSlider"
 import { storeObserver } from "../models/Store"
 import { IStoreConsumerProps } from "../models/IProviderProps"
 import { Editable } from "../utils/Editable"
-import { handleKeys } from "../utils/keyboard-handlers"
+import {
+    handleKeys,
+    withoutModifiers,
+    KbdEvt,
+} from "../utils/keyboard-handlers"
 
 const RichTextEditor = asyncComponent({
     resolve: async () => (await import("./RichTextEditor")).RichTextEditor,
@@ -168,8 +172,9 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
     private blurTimer: any
     private editable: Editable
 
-    private handleKeyDown = handleKeys({
-        esc: {
+    private handleKeyDown = handleKeys([
+        {
+            keys: ["esc"],
             handle: () => {
                 if (this.editable.isEditing) {
                     this.editable.disableEditing()
@@ -179,29 +184,52 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
                 }
             },
         },
-        enter: (event: React.KeyboardEvent) => {
-            if (event.shiftKey || this.editable.isEditing) {
-                const node = this.item.addSibling()
-                this.editable.visitState.activateItem(node)
-            } else {
-                this.editable.enableEditing()
-            }
+        {
+            keys: ["enter"],
+            handle: (event: KbdEvt) => {
+                if (event.shiftKey || this.editable.isEditing) {
+                    const node = this.item.addSibling()
+                    this.editable.visitState.activateItem(node)
+                } else {
+                    this.editable.enableEditing()
+                }
+            },
         },
-        delete: {
-            unless: () => this.editable.isEditing,
+        {
+            keys: ["delete", "#"],
+            unless: this.isEditing,
             handle: () => {
                 this.item.outline.removeNode(this.item.id)
             },
         },
-        tab: (event: React.KeyboardEvent) => {
-            if (event.shiftKey) {
-                this.item.indentBackward()
-            } else {
+        {
+            keys: [
+                { key: "tab", shift: false },
+                { ...withoutModifiers("l"), unless: this.isEditing },
+                { ...withoutModifiers("right"), unless: this.isEditing },
+            ],
+            handle: () => {
                 this.item.indentForward()
-            }
+            },
         },
-        up: {
-            handle: (event: React.KeyboardEvent) => {
+        {
+            keys: [
+                { key: "tab", shift: true },
+                { ...withoutModifiers("h"), unless: this.isEditing },
+                { ...withoutModifiers("right"), unless: this.isEditing },
+            ],
+            handle: () => {
+                this.item.indentBackward()
+            },
+        },
+        {
+            keys: [withoutModifiers("k")],
+            unless: this.isEditing,
+            handle: this.focusUp,
+        },
+        {
+            keys: ["up"],
+            handle: (event: KbdEvt) => {
                 if (event.ctrlKey) {
                     if (!this.props.isCollapsed) {
                         this.props.toggleCollapse(this.item.id)
@@ -209,25 +237,53 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
                 } else if (event.shiftKey) {
                     this.item.moveUp()
                 } else {
-                    this.props.focusUp(
-                        this.props.index,
-                        this.editable.isEditing
-                    )
+                    this.focusUp()
                 }
             },
         },
-        down: (event: React.KeyboardEvent) => {
-            if (event.ctrlKey) {
-                if (this.props.isCollapsed) {
-                    this.props.toggleCollapse(this.item.id)
-                }
-            } else if (event.shiftKey) {
-                this.item.moveDown()
-            } else {
-                this.props.focusDown(this.props.index, this.editable.isEditing)
-            }
+        {
+            keys: [withoutModifiers("j")],
+            unless: this.isEditing,
+            handle: this.focusDown,
         },
-    })
+        {
+            keys: ["down"],
+            handle: (event: KbdEvt) => {
+                if (event.ctrlKey) {
+                    if (this.props.isCollapsed) {
+                        this.props.toggleCollapse(this.item.id)
+                    }
+                } else if (event.shiftKey) {
+                    this.item.moveDown()
+                } else {
+                    this.focusDown()
+                }
+            },
+        },
+        {
+            keys: [withoutModifiers("-")],
+            handle: this.collapse,
+            unless: this.isEditing
+        },
+        {
+            keys: [
+                { ...withoutModifiers("+"), shift: undefined },
+                { ...withoutModifiers("="), shift: undefined },
+            ],
+            handle: this.expand,
+            unless: this.isEditing
+        },
+        {
+            keys: [withoutModifiers("z")],
+            handle: this.zoomIn,
+            unless: this.isEditing
+        },
+        {
+            keys: [{...withoutModifiers("z"), shift: true}],
+            unless: this.isEditing,
+            handle: this.zoomOut
+        }
+    ])
 
     constructor(props: INodeEditorInnerProps) {
         super(props)
@@ -353,7 +409,7 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
                                                             classes.zoomControl
                                                         }
                                                         onClick={
-                                                            this.handleZoomIn
+                                                            this.zoomIn
                                                         }
                                                     >
                                                         center_focus_strong
@@ -417,7 +473,12 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
     }
 
     @autobind
-    private handleZoomIn() {
+    private zoomOut() {
+        this.visitState.zoomOut();
+    }
+
+    @autobind
+    private zoomIn() {
         this.visitState.zoomIn(this.props.node.id)
     }
 
@@ -439,6 +500,18 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
     @autobind
     private registerContainer(el: HTMLDivElement | null) {
         this.container = el
+    }
+
+    @autobind
+    private expand() {
+        if (!this.props.isCollapsed) return
+        this.toggleCollapse()
+    }
+
+    @autobind
+    private collapse() {
+        if (this.props.isCollapsed) return
+        this.toggleCollapse()
     }
 
     @autobind
@@ -568,6 +641,21 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
     @autobind
     private handleChange(event: React.ChangeEvent<HTMLInputElement>) {
         this.props.node.setContent(event.currentTarget.value)
+    }
+
+    @autobind
+    private isEditing() {
+        return this.editable.isEditing
+    }
+
+    @autobind
+    private focusDown() {
+        this.props.focusDown(this.props.index, this.editable.isEditing)
+    }
+
+    @autobind
+    private focusUp() {
+        this.props.focusUp(this.props.index, this.editable.isEditing)
     }
 }
 

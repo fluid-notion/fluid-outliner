@@ -2,7 +2,7 @@ import React from "react"
 import { withStyles, Button } from "@material-ui/core"
 import { palette } from "./styles/theme"
 
-export const SecondaryActionLink = withStyles({
+const S = withStyles({
     link: {
         color: "slategray",
         fontSize: "1.6rem",
@@ -14,7 +14,9 @@ export const SecondaryActionLink = withStyles({
             color: palette.primary.main,
         },
     },
-})(({ className, classes, ...restProps }: any) => (
+});
+
+export const SecondaryActionLink = S(({ className, classes, ...restProps }: any) => (
     <Button
         size="small"
         {...restProps}

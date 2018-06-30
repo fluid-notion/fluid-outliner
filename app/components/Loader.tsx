@@ -10,7 +10,6 @@ export const Loader = () => (
             fontSize: "3rem",
             textAlign: "center",
             textTransform: "uppercase",
-            marginTop: "100px",
         }}
     >
         <Typography variant="headline">
