@@ -10,22 +10,21 @@ import { autobind } from "core-decorators"
 import { observable } from "mobx"
 import React from "react"
 import { asyncComponent } from "react-async-component"
-import flow from "lodash/flow"
 import { IconPair } from "./IconPair"
-import { IStoreConsumerProps } from "../models/IProviderProps"
-import { IModalConsumerProps } from "./ModalContainer"
-import { inject, observer } from "mobx-react"
+import { IProviderProps } from "../models/IProviderProps"
+import { observer } from "mobx-react"
 import { AppFooter } from "./AppFooter"
 import { CloseButton } from "./CloseButton"
+import { injectStore } from "../models/Store";
 
 const FileUploader = asyncComponent({
     resolve: () => import("./FileUploader").then(({ FileUploader: F }) => F),
 })
 
-type IFileSelectionDialogInner = IStoreConsumerProps & IModalConsumerProps
-
-export class FileSelectionDialogInner extends React.Component<
-    IFileSelectionDialogInner
+@injectStore
+@observer
+export class FileSelectionDialog extends React.Component<
+    Partial<IProviderProps>
 > {
     @observable private isUploadActive = false
 
@@ -33,7 +32,7 @@ export class FileSelectionDialogInner extends React.Component<
         return (
             <Dialog open={true} onClose={this.handleClose}>
                 {this.isClosable && (
-                    <CloseButton onClick={this.props.modal.dismiss} />
+                    <CloseButton onClick={this.props.modal!.dismiss} />
                 )}
                 <DialogTitle
                     style={{
@@ -54,7 +53,7 @@ export class FileSelectionDialogInner extends React.Component<
                         }}
                     >
                         {this.isUploadActive ? (
-                            <FileUploader dismiss={this.props.modal.dismiss} />
+                            <FileUploader dismiss={this.props.modal!.dismiss} />
                         ) : (
                             <>
                                 <Button
@@ -102,20 +101,20 @@ export class FileSelectionDialogInner extends React.Component<
     }
 
     private get isClosable() {
-        return !!this.props.store.outline
+        return !!this.props.store!.outline
     }
 
     @autobind
     private handleClose() {
         if (!this.isClosable) return false
-        this.props.modal.dismiss()
+        this.props.modal!.dismiss()
         return true
     }
 
     @autobind
     private handleCreateNew() {
-        this.props.store.createNew()
-        this.props.modal.dismiss()
+        this.props.store!.createNew()
+        this.props.modal!.dismiss()
     }
 
     @autobind
@@ -123,8 +122,3 @@ export class FileSelectionDialogInner extends React.Component<
         this.isUploadActive = true
     }
 }
-
-export const FileSelectionDialog: React.ComponentType<{}> = flow(
-    observer,
-    inject(({ store, modal }) => ({ store, modal }))
-)(FileSelectionDialogInner)

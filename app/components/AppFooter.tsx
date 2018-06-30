@@ -1,12 +1,9 @@
 import React from "react"
 import { Divider, Typography, Button } from "@material-ui/core"
-import { IModalConsumerProps } from "./ModalContainer"
-import { inject } from "mobx-react"
+import { IModalConsumerProps, injectModal } from "./ModalContainer"
 import { Link } from "./Link"
 
-export const AppFooter: React.StatelessComponent<{}> = inject(
-    ({ modal }: IModalConsumerProps) => ({ modal })
-)(({ modal }: IModalConsumerProps) => (
+export const AppFooter: React.StatelessComponent<Partial<IModalConsumerProps>> = injectModal(({ modal }: Partial<IModalConsumerProps>) => (
     <div
         style={{
             maxWidth: "1200px",
@@ -17,7 +14,7 @@ export const AppFooter: React.StatelessComponent<{}> = inject(
         <Divider />
         <Typography variant="body1" style={{ padding: "10px" }}>
             Fluid Outliner cares about your privacy.{" "}
-            <Link onClick={() => modal.activate("PrivacyDialog", true)}>
+            <Link onClick={() => modal!.activate("PrivacyDialog", true)}>
                 Know More
             </Link>
         </Typography>
@@ -40,4 +37,4 @@ export const AppFooter: React.StatelessComponent<{}> = inject(
             ))}
         </Typography>
     </div>
-)) as any
+))

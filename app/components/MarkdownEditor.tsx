@@ -2,24 +2,24 @@ import React from "react"
 import showdown from "showdown"
 import { INote } from "../models/Note"
 import { autobind } from "core-decorators"
-import { observer } from "mobx-react"
+import { observer} from "mobx-react"
 
 import { computed, autorun, IReactionDisposer } from "mobx"
 import Paper from "@material-ui/core/Paper/Paper"
-import { injectStore } from "../models/Store"
 import { IStoreConsumerProps } from "../models/IProviderProps"
 import { Editable } from "../utils/Editable"
 import { CloseButton } from "./CloseButton"
 import { IMaybe } from "../utils/UtilTypes"
+import { injectStore } from "../models/Store";
 
-interface IMarkdownEditorProps {
+interface IMarkdownEditorProps extends Partial<IStoreConsumerProps> {
     note: INote
 }
 
-type IMarkdownEditorInnerProps = IMarkdownEditorProps & IStoreConsumerProps
-
-export class MarkdownEditorInner extends React.Component<
-    IMarkdownEditorInnerProps
+@injectStore
+@observer
+export class MarkdownEditor extends React.Component<
+    IMarkdownEditorProps
 > {
     public converter: showdown.Converter
 
@@ -38,7 +38,7 @@ export class MarkdownEditorInner extends React.Component<
 
     @computed
     get visitState() {
-        return this.props.store.visitState!
+        return this.props.store!.visitState!
     }
 
     @computed
@@ -116,7 +116,3 @@ export class MarkdownEditorInner extends React.Component<
         })
     }
 }
-
-export const MarkdownEditor: React.ComponentType<
-    IMarkdownEditorProps
-> = injectStore(observer(MarkdownEditorInner))

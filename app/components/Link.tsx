@@ -1,13 +1,13 @@
 import React from "react"
 
-export const Link = (
-    props: React.DetailedHTMLProps<
-        React.AnchorHTMLAttributes<HTMLAnchorElement> & {
-            nodeType?: string | React.ReactType<React.AnchorHTMLAttributes<any>>
-        },
-        HTMLAnchorElement
-    >
-) => {
+type ILinkProps = React.DetailedHTMLProps<
+    React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+        nodeType?: string | React.ReactType<React.AnchorHTMLAttributes<any>>
+    },
+    HTMLAnchorElement
+>
+
+export const Link = (props: ILinkProps) => {
     const Presenter = props.nodeType || "a"
     return (
         <Presenter

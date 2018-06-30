@@ -1,6 +1,5 @@
-import { Typography, WithStyles } from "@material-ui/core"
+import { Typography, StyledComponentProps } from "@material-ui/core"
 import Input from "@material-ui/core/Input/Input"
-import withStyles from "@material-ui/core/styles/withStyles"
 import { autobind } from "core-decorators"
 import keycode from "keycode"
 import { observable } from "mobx"
@@ -8,6 +7,7 @@ import { observer } from "mobx-react"
 import React from "react"
 import Octicon from "react-octicon"
 import { IOutline } from "../models/Outline"
+import { withStyles } from "../utils/type-overrides";
 
 const styles = {
     input: {
@@ -33,9 +33,12 @@ const styles = {
     },
 }
 
-type I = { outline: IOutline } & WithStyles<keyof typeof styles>
+type I = { outline: IOutline } & StyledComponentProps<keyof typeof styles>
 
-class OutlineTitleEditorInner extends React.Component<I> {
+
+@withStyles<keyof typeof styles, I>(styles)
+@observer
+export class OutlineTitleEditor extends React.Component<I> {
     @observable private isEditing = false
     public render() {
         const { classes } = this.props
@@ -44,9 +47,9 @@ class OutlineTitleEditorInner extends React.Component<I> {
                 <Input
                     value={this.props.outline.title}
                     onChange={this.handleTitleChange}
-                    className={classes.inputWrapper}
+                    className={classes!.inputWrapper}
                     inputProps={{
-                        className: this.props.classes.input,
+                        className: this.props.classes!.input,
                         onKeyDown: this.handleTitleKeyDown,
                     }}
                 />
@@ -54,14 +57,14 @@ class OutlineTitleEditorInner extends React.Component<I> {
         }
         return (
             <Typography
-                className={classes.title}
+                className={classes!.title}
                 variant="headline"
                 onDoubleClick={this.toggleEditing}
             >
                 {this.props.outline.title}
                 <Octicon
                     name="pencil"
-                    className={this.props.classes.editControl}
+                    className={this.props.classes!.editControl}
                     onClick={this.toggleEditing}
                 />
             </Typography>
@@ -83,7 +86,3 @@ class OutlineTitleEditorInner extends React.Component<I> {
         }
     }
 }
-
-export const OutlineTitleEditor = withStyles(styles)(
-    observer(OutlineTitleEditorInner)
-)

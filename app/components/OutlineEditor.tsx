@@ -1,34 +1,36 @@
-import { withStyles, WithStyles } from "@material-ui/core/styles"
+import { StyledComponentProps } from "@material-ui/core/styles"
 import { autobind, decorate } from "core-decorators"
 import React from "react"
 import memoize from "lodash/memoize"
-import { IStoreConsumerProps } from "../models/IProviderProps"
-import { storeObserver } from "../models/Store"
+import { IStoreConsumerProps, IProviderProps } from "../models/IProviderProps"
 import { NodeEditor } from "./NodeEditor"
 import { OutlineTitleEditor } from "./OutlineTitleEditor"
 // @ts-ignore
 import { Container, Draggable } from "react-smooth-dnd"
 import { OutlineActionToolbar } from "./OutlineActionToolbar"
+import { withStyles } from "../utils/type-overrides";
+import { observer, inject } from "mobx-react";
 
-const InjectStyles = withStyles({
+const styles = {
     root: {
         minHeight: "100%",
-        maxWidth: "1280px",
-        margin: "20px auto",
-        padding: "0",
-        position: "relative",
-        "@media(min-width: 1280px)": {
-            left: "40px",
-        },
+        position: "relative" as "relative",
+        flexGrow: 1,
+        flexShrink: 1,
+        flexBasis: "1280px",
+        padding: "40px 0"
     },
     nodeUnderDrag: {
         opacity: 0.5
     }
-})
+};
 
-type IOutlineEditorInnerProps = IStoreConsumerProps & WithStyles<any>
+type IOutlineEditorProps = Partial<IStoreConsumerProps> & StyledComponentProps<keyof typeof styles>
 
-export class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps> {
+@inject(({store}: IProviderProps) => ({store}))
+@withStyles(styles)
+@observer
+export class OutlineEditor extends React.Component<IOutlineEditorProps> {
     private nodes: any[] = []
 
     get outline() {
@@ -76,7 +78,7 @@ export class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps
                     lockAxis="y"
                     onDragStart={this.handleDragStart}
                     onDragEnd={this.handleDragEnd}
-                    dragClass={classes.nodeUnderDrag}
+                    dragClass={classes!.nodeUnderDrag}
                 >
                     {this.flatNodeList.map(
                         ({ node, level, isCollapsed }, index) => {
@@ -168,4 +170,3 @@ export class OutlineEditorInner extends React.Component<IOutlineEditorInnerProps
     }
 }
 
-export const OutlineEditor = InjectStyles(storeObserver(OutlineEditorInner))

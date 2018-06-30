@@ -5,14 +5,15 @@ import {
     TableBody,
     TableRow,
     TableCell,
+    withStyles,
+    StyledComponentProps,
 } from "@material-ui/core"
+import { table } from "./styles/drawer";
 
-interface IKeyBindingsGlossaryProps {
-    classes: any
-}
+const styles = {table};
 
-export const KeyBindingsGlossary = ({ classes }: IKeyBindingsGlossaryProps) => (
-    <Table className={classes.table}>
+export const KeyBindingsRefList = withStyles(styles)(({ classes }: StyledComponentProps<keyof typeof styles>) => (
+    <Table className={classes!.table}>
         <TableBody>
             <TableRow>
                 <TableCell>Save To File</TableCell>
@@ -61,4 +62,4 @@ export const KeyBindingsGlossary = ({ classes }: IKeyBindingsGlossaryProps) => (
             </TableRow>
         </TableBody>
     </Table>
-)
+))

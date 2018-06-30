@@ -1,6 +1,6 @@
-import { IExtendedObservableMap, types as t } from "mobx-state-tree"
+import { types as t } from "mobx-state-tree"
 import isNil from "lodash/isNil"
-import { INode } from "./Node"
+import { INode, Node } from "./Node"
 import { Outline } from "./Outline"
 import { IIdentifiable, IMaybe } from "../utils/UtilTypes"
 
@@ -13,9 +13,9 @@ interface INodeLevel {
 }
 
 const iterateVisible = (
-    collapsedNodes: IExtendedObservableMap<boolean>,
+    collapsedNodes: {get(id: string): boolean | undefined},
     searchQuery: string,
-    currentRoot: IMaybe<string>
+    currentRoot: IMaybe<INode>
 ) => {
     const normQuery = searchQuery.toLowerCase().trim()
     return function* iterate(
@@ -29,7 +29,7 @@ const iterateVisible = (
             const numChildren = node.children.length
             const curLevel = { node, level, isCollapsed, numChildren, didMatch }
             const encounteredRootYet =
-                encounteredRoot || node.id === currentRoot
+                encounteredRoot || node === currentRoot
             const nextLevel = encounteredRootYet ? level + 1 : level
             if (isCollapsed) {
                 if (didMatch) {
@@ -51,13 +51,16 @@ const iterateVisible = (
     }
 }
 
+const isBookmarked = (item: INodeLevel) =>
+    item.node.markers.find((m) => m.icon === "bookmark");
+
 export const OutlineVisitState = t
     .model("OutlineVisitState", {
         outline: t.reference(Outline),
         collapsedNodes: t.optional(t.map(t.boolean), {}),
         searchQuery: t.optional(t.string, ""),
         activeItemId: t.maybe(t.string),
-        zoomStack: t.optional(t.array(t.string), []),
+        zoomStack: t.optional(t.array(t.reference(Node)), []),
     })
     .views(self => ({
         get currentRoot() {
@@ -74,6 +77,15 @@ export const OutlineVisitState = t
                 )(self.outline.children),
             ]
         },
+        get fullFlatList(): INodeLevel[] {
+            return [...iterateVisible(new Map(), '', undefined)(self.outline.children)];
+        },
+        get bookmarkList(): INodeLevel[] {
+            return this.flatList.filter(isBookmarked);
+        },
+        get fullBookmarkList(): INodeLevel[] {
+            return this.fullFlatList.filter(isBookmarked);
+        },
         isActive(item: IIdentifiable) {
             return item ? item.id === self.activeItemId : false
         },
@@ -82,8 +94,8 @@ export const OutlineVisitState = t
         }
     }))
     .actions(self => ({
-        zoomIn(id: string) {
-            self.zoomStack.push(id)
+        zoomIn(node: INode) {
+            self.zoomStack.push(node)
         },
         zoomOut() {
             self.zoomStack.pop()

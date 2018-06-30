@@ -6,17 +6,15 @@ import {
     Tooltip,
     Input,
 } from "@material-ui/core"
-import {
-    withStyles,
-    WithStyles,
-    StyledComponentProps,
-} from "@material-ui/core/styles"
+import { StyledComponentProps } from "@material-ui/core/styles"
 import React from "react"
-import { IStoreConsumerProps } from "../models/IProviderProps"
 import flow from "lodash/flow"
+import { IStoreConsumerProps } from "../models/IProviderProps"
 import Octicon from "react-octicon"
-import { observer, inject } from "mobx-react"
-import { IModalConsumerProps } from "./ModalContainer"
+import { observer } from "mobx-react"
+import { IModalConsumerProps, injectModal } from "./ModalContainer"
+import { injectStore } from "../models/Store"
+import { withStyles } from "../utils/type-overrides"
 
 const styles = {
     root: {
@@ -49,89 +47,110 @@ interface INavbarCommonProps {
     searchRef: React.Ref<any>
 }
 
-type INavbarInnerProps = WithStyles<keyof typeof styles> &
+type INavbarProps = StyledComponentProps<keyof typeof styles> &
     INavbarCommonProps &
-    IStoreConsumerProps &
-    IModalConsumerProps
+    Partial<IStoreConsumerProps> &
+    Partial<IModalConsumerProps>
 
-type INavbarProps = INavbarCommonProps &
-    StyledComponentProps<keyof typeof styles>
+const injectStyles = withStyles<keyof typeof styles, INavbarProps>(styles)
 
-export const NavbarInner = ({
-    store,
-    classes,
-    toggleDrawer,
-    modal,
-    searchRef
-}: INavbarInnerProps) => (
-    <AppBar position="static" className={classes.root}>
-        <Toolbar>
-            <IconButton
-                color="inherit"
-                aria-label="Menu"
-                onClick={toggleDrawer}
-            >
-                <Octicon name="three-bars" className={classes.icon} />
-            </IconButton>
-            <Typography
-                variant="title"
-                color="inherit"
-                style={{
-                    flex: "0 1 0%",
-                    whiteSpace: "nowrap",
-                    padding: "0 10px 0 0",
-                    fontWeight: 500,
-                }}
-            >
-                Fluid Outliner
-            </Typography>
-            <div style={{ flex: 1 }}>
-                <Input
-                    innerRef={searchRef}
-                    placeholder="Search ..."
-                    className={classes.searchInputWrapper}
-                    value={
-                        (store!.visitState && store!.visitState!.searchQuery) ||
-                        ""
-                    }
-                    onChange={event =>
-                        store!.visitState!.setSearchQuery(event.target.value)
-                    }
-                    inputProps={{
-                        style: {
-                            padding: "10px",
-                            borderBottom: "1px solid rgba(255, 255, 255, 0.2)",
-                        },
-                    }}
-                />
-            </div>
-            <Tooltip title="Save to local file">
-                <IconButton
-                    color="inherit"
-                    aria-label="Menu"
-                    onClick={store.saveFile}
-                >
-                    <Octicon name="repo-pull" className={classes.icon} />
-                </IconButton>
-            </Tooltip>
-            <Tooltip title="Open local file">
-                <IconButton
-                    color="inherit"
-                    aria-label="Menu"
-                    onClick={() => modal.activate("FileSelectionDialog")}
-                >
-                    <Octicon name="repo-push" className={classes.icon} />
-                </IconButton>
-            </Tooltip>
-        </Toolbar>
-    </AppBar>
+const decorate = flow(
+    observer,
+    injectStore,
+    injectModal,
+    injectStyles
 )
 
-export const Navbar: React.ComponentType<INavbarProps> = flow(
-    observer,
-    withStyles(styles),
-    inject(({ store, modal }: IStoreConsumerProps & IModalConsumerProps) => ({
-        store,
-        modal,
-    }))
-)(NavbarInner) as any
+export const Navbar = decorate(
+    ({ store, classes, toggleDrawer, modal, searchRef }: INavbarProps) => (
+        <AppBar position="static" className={classes!.root}>
+            <Toolbar>
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        flexGrow: 1
+                    }}
+                >
+                    <div style={{ flexBasis: "300px", display: "flex" }}>
+                        <IconButton
+                            color="inherit"
+                            aria-label="Menu"
+                            onClick={toggleDrawer}
+                        >
+                            <Octicon
+                                name="three-bars"
+                                className={classes!.icon}
+                            />
+                        </IconButton>
+                        <Typography
+                            variant="title"
+                            color="inherit"
+                            style={{
+                                flex: "0 1 0%",
+                                whiteSpace: "nowrap",
+                                padding: "0 10px 0 0",
+                                fontWeight: 500,
+                                lineHeight: "3rem"
+                            }}
+                        >
+                            Fluid Outliner
+                        </Typography>
+                    </div>
+                    <div style={{ flex: 1, paddingTop: "3px" }}>
+                        <Input
+                            innerRef={searchRef}
+                            placeholder="Search ..."
+                            className={classes!.searchInputWrapper}
+                            value={
+                                (store!.visitState &&
+                                    store!.visitState!.searchQuery) ||
+                                ""
+                            }
+                            onChange={event =>
+                                store!.visitState!.setSearchQuery(
+                                    event.target.value
+                                )
+                            }
+                            inputProps={{
+                                style: {
+                                    padding: "10px",
+                                    borderBottom:
+                                        "1px solid rgba(255, 255, 255, 0.2)",
+                                },
+                            }}
+                        />
+                    </div>
+                    <div style={{ flexBasis: "300px", textAlign: "right" }}>
+                        <Tooltip title="Save to local file">
+                            <IconButton
+                                color="inherit"
+                                aria-label="Menu"
+                                onClick={store!.saveFile}
+                            >
+                                <Octicon
+                                    name="repo-pull"
+                                    className={classes!.icon}
+                                />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Open local file">
+                            <IconButton
+                                color="inherit"
+                                aria-label="Menu"
+                                onClick={() =>
+                                    modal!.activate("FileSelectionDialog")
+                                }
+                            >
+                                <Octicon
+                                    name="repo-push"
+                                    className={classes!.icon}
+                                />
+                            </IconButton>
+                        </Tooltip>
+                    </div>
+                </div>
+            </Toolbar>
+        </AppBar>
+    )
+)

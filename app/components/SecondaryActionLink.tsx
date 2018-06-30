@@ -20,6 +20,6 @@ export const SecondaryActionLink = S(({ className, classes, ...restProps }: any)
     <Button
         size="small"
         {...restProps}
-        className={`${className || ""} ${classes.link}` as any}
+        className={`${className || ""} ${classes.link}`}
     />
 ))

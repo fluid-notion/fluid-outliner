@@ -2,13 +2,15 @@ import { ButtonBase } from "@material-ui/core"
 import { autobind } from "core-decorators"
 import { observable } from "mobx"
 import React from "react"
-import { injectStore, IStore } from "../models/Store"
+import { injectStore } from "../models/Store"
+import { IStoreConsumerProps } from "../models/IProviderProps";
+
+interface IFileUploaderProps extends Partial<IStoreConsumerProps> {
+    dismiss: () => void
+}
 
 @injectStore
-export class FileUploader extends React.Component<{
-    store?: IStore
-    dismiss: () => void
-}> {
+export class FileUploader extends React.Component<IFileUploaderProps>{
     @observable private isDragActive = false
     public render() {
         return (

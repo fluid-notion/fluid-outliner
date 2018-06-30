@@ -3,7 +3,7 @@ import { IStoreConsumerProps } from "../models/IProviderProps"
 import { autobind } from "core-decorators"
 import { computed } from "mobx"
 
-export interface IEditableSource extends IPropHost<IStoreConsumerProps> {
+export interface IEditableSource extends IPropHost<Partial<IStoreConsumerProps>> {
     item: IIdentifiable
 }
 
@@ -17,7 +17,7 @@ export class Editable {
     constructor(private target: IEditableSource) {}
     @computed
     get visitState() {
-        return this.target.props.store.visitState!
+        return this.target.props.store!.visitState!
     }
     @computed
     get isEditing() {

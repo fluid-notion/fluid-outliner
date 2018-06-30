@@ -17,22 +17,20 @@ const ReactQuill = asyncComponent({
         await import("react-quill/dist/quill.snow.css")
         return (await import("react-quill")).default
     },
-}) as any
+})
 
-export interface IRichTextEditorProps {
+export interface IRichTextEditorProps extends Partial<IStoreConsumerProps>{
     note: INote
 }
 
-export type IRichTextEditorInnerProps = IRichTextEditorProps &
-    IStoreConsumerProps
-
-export class RichTextEditorInner extends React.Component<
-    IRichTextEditorInnerProps
+@injectStore
+@observer
+export class RichTextEditor extends React.Component<
+    IRichTextEditorProps
 > {
-    private editorRef = React.createRef<import("react-quill")>()
     private editable: Editable
 
-    constructor(props: IRichTextEditorInnerProps) {
+    constructor(props: IRichTextEditorProps) {
         super(props)
         this.editable = new Editable(this)
     }
@@ -71,7 +69,7 @@ export class RichTextEditorInner extends React.Component<
                     name="check"
                     onClick={() => this.editable.disableEditing()}
                 />
-                <ReactQuill ref={this.editorRef} onChange={this.handleChange} />
+                <ReactQuill onChange={this.handleChange} />
             </div>
         )
     }
@@ -81,7 +79,3 @@ export class RichTextEditorInner extends React.Component<
         this.props.note.setContent(content)
     }
 }
-
-export const RichTextEditor: React.ComponentType<
-    IRichTextEditorProps
-> = injectStore(observer(RichTextEditorInner)) as any

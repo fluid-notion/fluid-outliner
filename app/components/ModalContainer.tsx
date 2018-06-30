@@ -1,35 +1,9 @@
 import React from "react"
-import { asyncComponent } from "react-async-component"
 import { autobind, decorate } from "core-decorators"
 import { observable } from "mobx"
 import memoize from "lodash/memoize"
 import { observer, Provider } from "mobx-react"
-
-const ModalRegistry = {
-    FileSelectionDialog: asyncComponent({
-        resolve: async () =>
-            (await import("./FileSelectionDialog")).FileSelectionDialog,
-    }),
-    PrivacyDialog: asyncComponent({
-        resolve: async () => (await import("./PrivacyDialog")).PrivacyDialog,
-    }),
-    OutlineDeletionDialog: asyncComponent({
-        resolve: async () =>
-            (await import("./OutlineDeletionDialog")).OutlineDeletionDialog,
-    }),
-}
-
-type IModalKey = keyof typeof ModalRegistry
-
-export interface IModalFacade {
-    activeModal: IModalKey | null
-    activate: (m: IModalKey, retainPrev?: boolean) => void
-    dismiss: () => void
-}
-
-export interface IModalConsumerProps {
-    modal: IModalFacade
-}
+import { IModalKey, IModalFacade, ModalRegistry } from "../utils/ModalRegistry";
 
 @observer
 export class ModalContainer extends React.Component {
@@ -68,7 +42,7 @@ export class ModalContainer extends React.Component {
             return null
         }
         const Modal = ModalRegistry[this.activeModal]
-        return <Modal />
+        return <Modal modal={this.getModalFacade()}/>
     }
     @autobind
     private dismissModal() {
@@ -76,3 +50,5 @@ export class ModalContainer extends React.Component {
         this.activeModal = prevModal || null
     }
 }
+
+export * from "../utils/ModalRegistry"

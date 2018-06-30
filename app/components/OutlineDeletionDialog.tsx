@@ -7,13 +7,10 @@ import {
     DialogContentText,
 } from "@material-ui/core"
 import React from "react"
-import { inject } from "mobx-react"
-import { IModalConsumerProps } from "./ModalContainer"
 import { clearLocal } from "../utils/persistence"
+import { IModalConsumerProps } from "../utils/ModalRegistry";
 
-export const OutlineDeletionDialog: React.StatelessComponent<{}> = inject(
-    ({ modal }: IModalConsumerProps) => ({ modal })
-)(({ modal }: IModalConsumerProps) => (
+export const OutlineDeletionDialog = (({ modal }: IModalConsumerProps) => (
     <Dialog open={true} onClose={modal.dismiss}>
         <DialogContent>
             <Icon
@@ -41,4 +38,4 @@ export const OutlineDeletionDialog: React.StatelessComponent<{}> = inject(
             </Button>
         </DialogActions>
     </Dialog>
-)) as any
+))

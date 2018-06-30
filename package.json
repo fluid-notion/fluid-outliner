@@ -77,9 +77,12 @@
     "react-big-calendar": "^0.19.1",
     "react-dom": "^16.4.0",
     "react-fa": "^5.0.0",
+    "react-hammerjs": "^1.0.1",
+    "react-highlight-words": "^0.11.0",
     "react-motion": "^0.5.2",
     "react-octicon": "^3.0.1",
     "react-quill": "^1.2.7",
+    "react-smooth-dnd": "^0.4.9",
     "react-tiny-virtual-list": "^2.1.4",
     "recompose": "^0.27.1",
     "rimraf": "^2.6.2",
@@ -96,16 +99,15 @@
     "webpack-bundle-analyzer": "^2.13.1",
     "webpack-cli": "^3.0.4",
     "webpack-dashboard": "^2.0.0",
-    "webpack-dev-server": "^3.1.4",
-    "react-hammerjs": "^1.0.1",
-    "react-highlight-words": "^0.11.0",
-    "react-smooth-dnd": "^0.4.9"
+    "webpack-dev-server": "^3.1.4"
   },
   "dependencies": {
+    "@types/react-responsive": "^3.0.1",
     "core-decorators": "^0.20.0",
     "debug": "^3.1.0",
     "express": "^4.16.3",
     "http-server": "^0.11.1",
-    "lodash": "^4.17.10"
+    "lodash": "^4.17.10",
+    "react-responsive": "^4.1.0"
   }
 }

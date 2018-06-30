@@ -6,15 +6,14 @@ import {
     Typography,
 } from "@material-ui/core"
 import React from "react"
-import { inject } from "mobx-react"
-import { IModalConsumerProps } from "./ModalContainer"
 import { CloseButton } from "./CloseButton"
+import { IModalConsumerProps } from "../utils/ModalRegistry"
 
-export const PrivacyDialog: React.StatelessComponent<{}> = inject(
-    ({ modal }: IModalConsumerProps) => ({ modal })
-)(({ modal }: IModalConsumerProps) => (
-    <Dialog open={true} onClose={modal.dismiss}>
-        <CloseButton onClick={modal.dismiss} />
+export const PrivacyDialog: React.StatelessComponent<
+    Partial<IModalConsumerProps>
+> = ({ modal }: Partial<IModalConsumerProps>) => (
+    <Dialog open={true} onClose={modal!.dismiss}>
+        <CloseButton onClick={modal!.dismiss} />
         <DialogTitle>Fluid Outliner cares about your Privacy</DialogTitle>
         <Divider style={{ marginBottom: "20px" }} />
         <DialogContent>
@@ -33,4 +32,4 @@ export const PrivacyDialog: React.StatelessComponent<{}> = inject(
             </Typography>
         </DialogContent>
     </Dialog>
-)) as any
+)

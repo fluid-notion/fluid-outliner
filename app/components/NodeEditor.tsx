@@ -1,8 +1,6 @@
 import {
     Button,
     Paper,
-    WithStyles,
-    withStyles,
     StyledComponentProps,
     Typography,
     Icon,
@@ -25,7 +23,6 @@ import { palette } from "./styles/theme"
 import { NodeActionToolbar } from "./NodeActionToolbar"
 import { INote } from "../models/Note"
 import { SwitchSlider } from "./SwitchSlider"
-import { storeObserver } from "../models/Store"
 import { IStoreConsumerProps } from "../models/IProviderProps"
 import { Editable } from "../utils/Editable"
 import {
@@ -33,6 +30,8 @@ import {
     withoutModifiers,
     KbdEvt,
 } from "../utils/keyboard-handlers"
+import { withStyles } from "../utils/type-overrides"
+import { injectStore } from "../models/Store"
 
 const RichTextEditor = asyncComponent({
     resolve: async () => (await import("./RichTextEditor")).RichTextEditor,
@@ -42,7 +41,9 @@ const MarkdownEditor = asyncComponent({
     resolve: async () => (await import("./MarkdownEditor")).MarkdownEditor,
 })
 
-export interface INodeEditorPrimaryProps {
+export interface INodeEditorProps
+    extends StyledComponentProps<keyof typeof styles>,
+        Partial<IStoreConsumerProps> {
     node: INode
     level: number
     toggleCollapse: (id: string) => void
@@ -155,15 +156,10 @@ const styles = {
     },
 }
 
-export type INodeEditorProps = INodeEditorPrimaryProps &
-    StyledComponentProps<keyof typeof styles>
-
-export type INodeEditorInnerProps = INodeEditorProps &
-    WithStyles<keyof typeof styles> &
-    IStoreConsumerProps
-
+@injectStore
+@withStyles<keyof typeof styles, INodeEditorProps>(styles)
 @observer
-export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
+export class NodeEditor extends React.Component<INodeEditorProps> {
     private container: HTMLDivElement | null = null
     private editor: HTMLInputElement | null = null
 
@@ -263,7 +259,7 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
         {
             keys: [withoutModifiers("-")],
             handle: this.collapse,
-            unless: this.isEditing
+            unless: this.isEditing,
         },
         {
             keys: [
@@ -271,28 +267,28 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
                 { ...withoutModifiers("="), shift: undefined },
             ],
             handle: this.expand,
-            unless: this.isEditing
+            unless: this.isEditing,
         },
         {
             keys: [withoutModifiers("z")],
             handle: this.zoomIn,
-            unless: this.isEditing
+            unless: this.isEditing,
         },
         {
-            keys: [{...withoutModifiers("z"), shift: true}],
+            keys: [{ ...withoutModifiers("z"), shift: true }],
             unless: this.isEditing,
-            handle: this.zoomOut
-        }
+            handle: this.zoomOut,
+        },
     ])
 
-    constructor(props: INodeEditorInnerProps) {
+    constructor(props: INodeEditorProps) {
         super(props)
         this.editable = new Editable(this)
     }
 
     @computed
     get visitState() {
-        return this.props.store.visitState!
+        return this.props.store!.visitState!
     }
 
     @computed
@@ -325,7 +321,7 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
                     paddingTop: "0.5px",
                     paddingBottom: "0.5px",
                 }}
-                className={classes.container}
+                className={classes!.container}
             >
                 <Motion
                     style={{
@@ -358,7 +354,7 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
                                     }
                                 >
                                     <div
-                                        className={classes.paper}
+                                        className={classes!.paper}
                                         style={paperStyles}
                                         tabIndex={0}
                                         onKeyDown={
@@ -378,11 +374,13 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
                                                             : "fold"
                                                     }
                                                     className={`${
-                                                        classes.collapseControl
+                                                        classes!.collapseControl
                                                     } ${
                                                         this.props.isCollapsed
-                                                            ? classes.unfoldControl
-                                                            : classes.foldControl
+                                                            ? classes!
+                                                                  .unfoldControl
+                                                            : classes!
+                                                                  .foldControl
                                                     }`}
                                                     onClick={
                                                         this.toggleCollapse
@@ -391,10 +389,10 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
                                             )}
                                             {this.editable.isEditing &&
                                                 (this.visitState.currentRoot ===
-                                                this.props.node.id ? (
+                                                this.props.node ? (
                                                     <Icon
                                                         className={
-                                                            classes.zoomControl
+                                                            classes!.zoomControl
                                                         }
                                                         onClick={
                                                             this.visitState
@@ -406,11 +404,9 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
                                                 ) : (
                                                     <Icon
                                                         className={
-                                                            classes.zoomControl
+                                                            classes!.zoomControl
                                                         }
-                                                        onClick={
-                                                            this.zoomIn
-                                                        }
+                                                        onClick={this.zoomIn}
                                                     >
                                                         center_focus_strong
                                                     </Icon>
@@ -423,7 +419,7 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
                                             >
                                                 <div
                                                     className={
-                                                        classes.innerContainer
+                                                        classes!.innerContainer
                                                     }
                                                 >
                                                     {this.renderLeftMarkers()}
@@ -437,7 +433,7 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
                                     {s.fgOpacity === 1 && (
                                         <NodeActionToolbar
                                             visitState={
-                                                this.props.store.visitState!
+                                                this.props.store!.visitState!
                                             }
                                             node={this.props.node}
                                             showNotes={this.showNotes}
@@ -451,7 +447,7 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
                                             style={{
                                                 opacity: s.fgOpacity,
                                             }}
-                                            className={classes.editBubble}
+                                            className={classes!.editBubble}
                                             onClick={this.handleEditBubbleClick}
                                         >
                                             <AddIcon />
@@ -474,12 +470,12 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
 
     @autobind
     private zoomOut() {
-        this.visitState.zoomOut();
+        this.visitState.zoomOut()
     }
 
     @autobind
     private zoomIn() {
-        this.visitState.zoomIn(this.props.node.id)
+        this.visitState.zoomIn(this.props.node)
     }
 
     @autobind
@@ -542,7 +538,7 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
                 <Octicon
                     name={m.icon}
                     key={m.id!}
-                    className={this.props.classes.icon}
+                    className={this.props.classes!.icon}
                 />
             ))
     }
@@ -578,7 +574,7 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
 
     private renderNotes() {
         return (
-            <div className={this.props.classes.notesContainer}>
+            <div className={this.props.classes!.notesContainer}>
                 {this.props.node.notes.map(this.renderNote)}
             </div>
         )
@@ -603,7 +599,7 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
                     ref={this.registerEditor}
                     value={node.content}
                     onChange={this.handleChange}
-                    className={classes.input}
+                    className={classes!.input}
                     onBlur={this.handleBlur}
                     onKeyDown={this.handleKeyDown}
                 />
@@ -621,7 +617,7 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
         return (
             <Typography
                 variant="body1"
-                className={classes.contentLine}
+                className={classes!.contentLine}
                 onDoubleClick={this.editable.enableEditing}
                 innerRef={this.registerContainer}
             >
@@ -658,7 +654,3 @@ export class NodeEditorInner extends React.Component<INodeEditorInnerProps> {
         this.props.focusUp(this.props.index, this.editable.isEditing)
     }
 }
-
-export const NodeEditor: React.ComponentType<INodeEditorProps> = withStyles(
-    styles
-)(storeObserver(NodeEditorInner)) as any // TODO FIXME
