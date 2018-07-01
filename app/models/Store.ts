@@ -1,10 +1,6 @@
 import { flow } from "mobx"
 import { inject, observer } from "mobx-react"
-import {
-    getSnapshot,
-    onSnapshot,
-    types as t,
-} from "mobx-state-tree"
+import { getSnapshot, onSnapshot, types as t } from "mobx-state-tree"
 import {
     debouncedSaveLocal,
     download,
@@ -14,7 +10,7 @@ import {
 import { IProviderProps } from "./IProviderProps"
 import { defaultOutlineId, Outline } from "./Outline"
 import { OutlineVisitState } from "./OutlineVisitState"
-import { safeApplySnapshot } from "../utils/mobx-helpers";
+import { safeApplySnapshot } from "../utils/mobx-helpers"
 
 export const Store = t
     .model("Store", {

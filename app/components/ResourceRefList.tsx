@@ -1,26 +1,31 @@
 import React from "react"
 import { DrawerSection } from "./DrawerSection"
-import { Typography, List, ListItem, StyledComponentProps } from "@material-ui/core"
+import {
+    Typography,
+    List,
+    ListItem,
+    StyledComponentProps,
+} from "@material-ui/core"
 import Octicon from "react-octicon"
-import { Link } from "./Link";
-import { icon } from "./styles/drawer";
-import { withStyles } from "../utils/type-overrides";
+import { Link } from "./Link"
+import { icon } from "./styles/drawer"
+import { withStyles } from "../utils/type-overrides"
 
 const styles = {
-    icon
+    icon,
 }
 
 @withStyles(styles)
-export class ResourceRefList extends React.Component<StyledComponentProps<keyof typeof styles>> {
+export class ResourceRefList extends React.Component<
+    StyledComponentProps<keyof typeof styles>
+> {
     public render() {
-        const classes = this.props.classes!;
+        const classes = this.props.classes!
         return (
-            <DrawerSection>
+            <DrawerSection title="Thanks !">
                 <Typography variant="body1">
-                    This project wouldn't exist without following amazing open
-                    source projects
-                    <br />
-                    (and the hard work of contributors working on them).
+                    This project wouldn't exist without these amazing open
+                    source projects:
                 </Typography>
                 <List dense style={{ marginLeft: "-20px" }}>
                     <ListItem>

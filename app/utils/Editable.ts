@@ -3,7 +3,8 @@ import { IStoreConsumerProps } from "../models/IProviderProps"
 import { autobind } from "core-decorators"
 import { computed } from "mobx"
 
-export interface IEditableSource extends IPropHost<Partial<IStoreConsumerProps>> {
+export interface IEditableSource
+    extends IPropHost<Partial<IStoreConsumerProps>> {
     item: IIdentifiable
 }
 

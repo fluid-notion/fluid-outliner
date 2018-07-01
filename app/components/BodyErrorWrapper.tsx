@@ -36,8 +36,8 @@ export class BodyErrorWrapper extends React.Component {
                         </Link>.
                     </Typography>
                     <Button onClick={this.reset} variant="contained">
-                        <Icon style={{ marginRight: "5px" }}>cached</Icon>{" "}
-                        Reset State
+                        <Icon style={{ marginRight: "5px" }}>cached</Icon> Reset
+                        State
                     </Button>
                 </div>
             )

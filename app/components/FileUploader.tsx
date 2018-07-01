@@ -3,14 +3,14 @@ import { autobind } from "core-decorators"
 import { observable } from "mobx"
 import React from "react"
 import { injectStore } from "../models/Store"
-import { IStoreConsumerProps } from "../models/IProviderProps";
+import { IStoreConsumerProps } from "../models/IProviderProps"
 
 interface IFileUploaderProps extends Partial<IStoreConsumerProps> {
     dismiss: () => void
 }
 
 @injectStore
-export class FileUploader extends React.Component<IFileUploaderProps>{
+export class FileUploader extends React.Component<IFileUploaderProps> {
     @observable private isDragActive = false
     public render() {
         return (

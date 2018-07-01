@@ -18,10 +18,12 @@ export interface INode {
     notes: INote[]
     outline: IOutline
     siblingIdx: number
+    hasChildren: boolean
     setContent(content: string): void
     setParent(node: INode | null): void
     spliceChildren(start: number, delCount: number, ...nodes: INode[]): any
     addSibling(): INode
+    addChild(): INode
     indentForward(): void
     indentBackward(): void
     hasDescendent(id: string): boolean
@@ -47,6 +49,9 @@ export const Node: IModelType<Snapshot<INode>, INode> = t
         markers: t.optional(t.array(Marker), () => []),
     })
     .views(self => ({
+        get hasChildren() {
+            return self.children.length > 0
+        },
         get antecedent() {
             return self.parent || self.outline
         },
@@ -139,6 +144,15 @@ export const Node: IModelType<Snapshot<INode>, INode> = t
             })
             self.outline.registerNode(node)
             self.antecedent.spliceChildren(self.siblingIdx + 1, 0, node)
+            return node
+        },
+        addChild() {
+            const node = Node.create({
+                parent: self,
+                outline: self.outline,
+            })
+            self.outline.registerNode(node)
+            self.spliceChildren(0, 0, node)
             return node
         },
         indentForward() {

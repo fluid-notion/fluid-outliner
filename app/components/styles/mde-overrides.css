@@ -1,0 +1,11 @@
+.editor-preview-side {
+    z-index: 1300 !important;
+}
+
+.editor-toolbar.fullscreen {
+    z-index: 1300 !important;
+}
+
+.CodeMirror-fullscreen {
+    z-index: 1300 !important;
+}

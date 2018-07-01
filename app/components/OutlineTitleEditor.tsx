@@ -7,7 +7,7 @@ import { observer } from "mobx-react"
 import React from "react"
 import Octicon from "react-octicon"
 import { IOutline } from "../models/Outline"
-import { withStyles } from "../utils/type-overrides";
+import { withStyles } from "../utils/type-overrides"
 
 const styles = {
     input: {
@@ -34,7 +34,6 @@ const styles = {
 }
 
 type I = { outline: IOutline } & StyledComponentProps<keyof typeof styles>
-
 
 @withStyles<keyof typeof styles, I>(styles)
 @observer

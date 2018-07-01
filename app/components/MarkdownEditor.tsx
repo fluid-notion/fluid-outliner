@@ -2,7 +2,7 @@ import React from "react"
 import showdown from "showdown"
 import { INote } from "../models/Note"
 import { autobind } from "core-decorators"
-import { observer} from "mobx-react"
+import { observer } from "mobx-react"
 
 import { computed, autorun, IReactionDisposer } from "mobx"
 import Paper from "@material-ui/core/Paper/Paper"
@@ -10,7 +10,7 @@ import { IStoreConsumerProps } from "../models/IProviderProps"
 import { Editable } from "../utils/Editable"
 import { CloseButton } from "./CloseButton"
 import { IMaybe } from "../utils/UtilTypes"
-import { injectStore } from "../models/Store";
+import { injectStore } from "../models/Store"
 
 interface IMarkdownEditorProps extends Partial<IStoreConsumerProps> {
     note: INote
@@ -18,9 +18,7 @@ interface IMarkdownEditorProps extends Partial<IStoreConsumerProps> {
 
 @injectStore
 @observer
-export class MarkdownEditor extends React.Component<
-    IMarkdownEditorProps
-> {
+export class MarkdownEditor extends React.Component<IMarkdownEditorProps> {
     public converter: showdown.Converter
 
     private textArea: HTMLTextAreaElement | null = null
@@ -78,7 +76,10 @@ export class MarkdownEditor extends React.Component<
             )
         }
         return (
-            <div style={{ background: "white", position: "relative" }}>
+            <div
+                style={{ background: "white", position: "relative" }}
+                className="non-draggable"
+            >
                 <CloseButton
                     name="check"
                     onClick={() => this.editable.disableEditing()}
@@ -102,6 +103,8 @@ export class MarkdownEditor extends React.Component<
     private async setupEditor() {
         // @ts-ignore
         await import("simplemde/dist/simplemde.min.css")
+        // @ts-ignore
+        await import("./styles/mde-overrides.css")
         const SimpleMDE = (await import("simplemde")).default
         this.mde = new SimpleMDE({
             element: this.textArea!,

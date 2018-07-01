@@ -3,7 +3,6 @@ import {
     Paper,
     StyledComponentProps,
     Typography,
-    Icon,
 } from "@material-ui/core"
 import { default as AddIcon } from "@material-ui/icons/Add"
 import { autobind } from "core-decorators"
@@ -32,6 +31,12 @@ import {
 } from "../utils/keyboard-handlers"
 import { withStyles } from "../utils/type-overrides"
 import { injectStore } from "../models/Store"
+import { NodeZoomControls } from "./NodeZoomControls"
+import { NodeFoldControls } from "./NodeFoldControls"
+import { SelectionOverview } from "./SelectionOverview"
+import { Portal } from "react-overlays"
+import { NoteOverview } from "./NoteOverview"
+import { DrawerSection } from "./DrawerSection"
 
 const RichTextEditor = asyncComponent({
     resolve: async () => (await import("./RichTextEditor")).RichTextEditor,
@@ -51,6 +56,7 @@ export interface INodeEditorProps
     index: number
     focusUp: (idx: number, enableEditing?: boolean) => void
     focusDown: (idx: number, enableEditing?: boolean) => void
+    overviewRef: React.RefObject<SelectionOverview>
 }
 
 const styles = {
@@ -160,13 +166,33 @@ const styles = {
 @withStyles<keyof typeof styles, INodeEditorProps>(styles)
 @observer
 export class NodeEditor extends React.Component<INodeEditorProps> {
+    public editable: Editable
+
     private container: HTMLDivElement | null = null
     private editor: HTMLInputElement | null = null
+    private containerRef = React.createRef<HTMLDivElement>()
 
     @observable private areNotesVisible = false
+    @observable private hasFocus = false
 
     private blurTimer: any
-    private editable: Editable
+
+    public get node() {
+        return this.props.node
+    }
+
+    public get isRoot() {
+        return this.visitState.currentRoot === this.node
+    }
+
+    public get boundingRect() {
+        const c = this.containerRef.current
+        if (!c) return null
+        return {
+            left: c.offsetLeft,
+            top: c.offsetTop,
+        }
+    }
 
     private handleKeyDown = handleKeys([
         {
@@ -298,12 +324,16 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
 
     @computed
     get item() {
-        return this.props.node
+        return this.node
     }
 
     @computed
     get notes() {
         return this.item.notes
+    }
+
+    get showNotesOverview() {
+        return this.hasFocus && this.boundingRect && !this.areNotesVisible
     }
 
     public render() {
@@ -322,6 +352,7 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
                     paddingBottom: "0.5px",
                 }}
                 className={classes!.container}
+                ref={this.containerRef}
             >
                 <Motion
                     style={{
@@ -354,9 +385,11 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
                                     }
                                 >
                                     <div
-                                        className={classes!.paper}
+                                        className={`${classes!.paper}`}
                                         style={paperStyles}
                                         tabIndex={0}
+                                        onFocus={() => (this.hasFocus = true)}
+                                        onBlur={() => (this.hasFocus = false)}
                                         onKeyDown={
                                             this.editable.isEditing
                                                 ? undefined
@@ -365,52 +398,28 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
                                         ref={this.registerContainer}
                                     >
                                         <Paper>
-                                            {this.props.node.children.length >
-                                                0 && (
-                                                <Octicon
-                                                    name={
+                                            {this.node.hasChildren && (
+                                                <NodeFoldControls
+                                                    isCollapsed={
                                                         this.props.isCollapsed
-                                                            ? "unfold"
-                                                            : "fold"
                                                     }
-                                                    className={`${
-                                                        classes!.collapseControl
-                                                    } ${
-                                                        this.props.isCollapsed
-                                                            ? classes!
-                                                                  .unfoldControl
-                                                            : classes!
-                                                                  .foldControl
-                                                    }`}
-                                                    onClick={
+                                                    toggleCollapse={
                                                         this.toggleCollapse
+                                                    }
+                                                    classes={this.props.classes}
+                                                />
+                                            )}
+                                            {(this.hasFocus || this.isRoot) && (
+                                                <NodeZoomControls
+                                                    node={this.node}
+                                                    isRoot={this.isRoot}
+                                                    zoomIn={this.zoomIn}
+                                                    zoomOut={this.zoomOut}
+                                                    classes={
+                                                        this.props.classes!
                                                     }
                                                 />
                                             )}
-                                            {this.editable.isEditing &&
-                                                (this.visitState.currentRoot ===
-                                                this.props.node ? (
-                                                    <Icon
-                                                        className={
-                                                            classes!.zoomControl
-                                                        }
-                                                        onClick={
-                                                            this.visitState
-                                                                .zoomOut
-                                                        }
-                                                    >
-                                                        reply_all
-                                                    </Icon>
-                                                ) : (
-                                                    <Icon
-                                                        className={
-                                                            classes!.zoomControl
-                                                        }
-                                                        onClick={this.zoomIn}
-                                                    >
-                                                        center_focus_strong
-                                                    </Icon>
-                                                ))}
                                             <Hammer
                                                 onSwipe={this.handleSwipe}
                                                 onDoubleTap={
@@ -435,7 +444,7 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
                                             visitState={
                                                 this.props.store!.visitState!
                                             }
-                                            node={this.props.node}
+                                            node={this.node}
                                             showNotes={this.showNotes}
                                         />
                                     )}
@@ -458,6 +467,28 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
                         </Observer>
                     )}
                 </Motion>
+                {this.showNotesOverview && (
+                    <Portal container={this.props.overviewRef.current}>
+                        <DrawerSection
+                            title="Notes"
+                            show={this.notes.length > 0}
+                            style={{
+                                position: "absolute",
+                                top: this.boundingRect!.top + 70,
+                                marginRight: "10px",
+                                maxWidth: "250px",
+                            }}
+                        >
+                            <ul style={{ marginLeft: "-20px" }}>
+                                {this.notes.map(n => (
+                                    <li>
+                                        <NoteOverview note={n} />
+                                    </li>
+                                ))}
+                            </ul>
+                        </DrawerSection>
+                    </Portal>
+                )}
             </div>
         )
     }
@@ -475,7 +506,7 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
 
     @autobind
     private zoomIn() {
-        this.visitState.zoomIn(this.props.node)
+        this.visitState.zoomIn(this.node)
     }
 
     @autobind
@@ -489,7 +520,12 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
 
     @autobind
     private handleEditBubbleClick() {
-        const node = this.props.node.addSibling()
+        let node
+        if (this.visitState.currentRoot === this.node) {
+            node = this.node.addChild()
+        } else {
+            node = this.node.addSibling()
+        }
         this.editable.visitState.activateItem(node)
     }
 
@@ -512,7 +548,7 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
 
     @autobind
     private toggleCollapse() {
-        this.props.toggleCollapse(this.props.node.id)
+        this.props.toggleCollapse(this.node.id)
     }
 
     @autobind
@@ -575,7 +611,7 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
     private renderNotes() {
         return (
             <div className={this.props.classes!.notesContainer}>
-                {this.props.node.notes.map(this.renderNote)}
+                {this.node.notes.map(this.renderNote)}
             </div>
         )
     }
@@ -599,7 +635,7 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
                     ref={this.registerEditor}
                     value={node.content}
                     onChange={this.handleChange}
-                    className={classes!.input}
+                    className={`${classes!.input} non-draggable`}
                     onBlur={this.handleBlur}
                     onKeyDown={this.handleKeyDown}
                 />
@@ -636,7 +672,7 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
 
     @autobind
     private handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-        this.props.node.setContent(event.currentTarget.value)
+        this.node.setContent(event.currentTarget.value)
     }
 
     @autobind

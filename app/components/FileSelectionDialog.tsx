@@ -15,7 +15,7 @@ import { IProviderProps } from "../models/IProviderProps"
 import { observer } from "mobx-react"
 import { AppFooter } from "./AppFooter"
 import { CloseButton } from "./CloseButton"
-import { injectStore } from "../models/Store";
+import { injectStore } from "../models/Store"
 
 const FileUploader = asyncComponent({
     resolve: () => import("./FileUploader").then(({ FileUploader: F }) => F),

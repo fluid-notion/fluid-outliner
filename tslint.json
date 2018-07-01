@@ -9,6 +9,7 @@
     "no-implicit-dependencies": [true, "dev"],
     "curly": [true, "ignore-same-line"],
     "ordered-imports": false,
-    "variable-name": [false]
+    "variable-name": [false],
+    "prefer-conditional-expression": false
   }
 }

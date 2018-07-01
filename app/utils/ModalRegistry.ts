@@ -1,17 +1,20 @@
-import { asyncComponent } from "react-async-component";
-import { inject } from "mobx-react";
+import { asyncComponent } from "react-async-component"
+import { inject } from "mobx-react"
 
 export const ModalRegistry = {
     FileSelectionDialog: asyncComponent({
         resolve: async () =>
-            (await import("../components/FileSelectionDialog")).FileSelectionDialog,
+            (await import("../components/FileSelectionDialog"))
+                .FileSelectionDialog,
     }),
     PrivacyDialog: asyncComponent({
-        resolve: async () => (await import("../components/PrivacyDialog")).PrivacyDialog,
+        resolve: async () =>
+            (await import("../components/PrivacyDialog")).PrivacyDialog,
     }),
     OutlineDeletionDialog: asyncComponent({
         resolve: async () =>
-            (await import("../components/OutlineDeletionDialog")).OutlineDeletionDialog,
+            (await import("../components/OutlineDeletionDialog"))
+                .OutlineDeletionDialog,
     }),
 }
 
@@ -27,4 +30,6 @@ export interface IModalConsumerProps {
     modal: IModalFacade
 }
 
-export const injectModal = inject(({modal}: IModalConsumerProps) => ({modal}))
+export const injectModal = inject(({ modal }: IModalConsumerProps) => ({
+    modal,
+}))

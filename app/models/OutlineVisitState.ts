@@ -4,7 +4,7 @@ import { INode, Node } from "./Node"
 import { Outline } from "./Outline"
 import { IIdentifiable, IMaybe } from "../utils/UtilTypes"
 
-interface INodeLevel {
+export interface INodeLevel {
     node: INode
     level: number
     isCollapsed: boolean
@@ -13,7 +13,7 @@ interface INodeLevel {
 }
 
 const iterateVisible = (
-    collapsedNodes: {get(id: string): boolean | undefined},
+    collapsedNodes: { get(id: string): boolean | undefined },
     searchQuery: string,
     currentRoot: IMaybe<INode>
 ) => {
@@ -28,8 +28,7 @@ const iterateVisible = (
             const isCollapsed = collapsedNodes.get(node.id)
             const numChildren = node.children.length
             const curLevel = { node, level, isCollapsed, numChildren, didMatch }
-            const encounteredRootYet =
-                encounteredRoot || node === currentRoot
+            const encounteredRootYet = encounteredRoot || node === currentRoot
             const nextLevel = encounteredRootYet ? level + 1 : level
             if (isCollapsed) {
                 if (didMatch) {
@@ -52,7 +51,7 @@ const iterateVisible = (
 }
 
 const isBookmarked = (item: INodeLevel) =>
-    item.node.markers.find((m) => m.icon === "bookmark");
+    item.node.markers.find(m => m.icon === "bookmark")
 
 export const OutlineVisitState = t
     .model("OutlineVisitState", {
@@ -78,23 +77,28 @@ export const OutlineVisitState = t
             ]
         },
         get fullFlatList(): INodeLevel[] {
-            return [...iterateVisible(new Map(), '', undefined)(self.outline.children)];
+            return [
+                ...iterateVisible(new Map(), "", undefined)(
+                    self.outline.children
+                ),
+            ]
         },
         get bookmarkList(): INodeLevel[] {
-            return this.flatList.filter(isBookmarked);
+            return this.flatList.filter(isBookmarked)
         },
         get fullBookmarkList(): INodeLevel[] {
-            return this.fullFlatList.filter(isBookmarked);
+            return this.fullFlatList.filter(isBookmarked)
         },
         isActive(item: IIdentifiable) {
             return item ? item.id === self.activeItemId : false
         },
         get isAnyActive() {
             return !isNil(self.activeItemId)
-        }
+        },
     }))
     .actions(self => ({
         zoomIn(node: INode) {
+            if (self.currentRoot === node) return
             self.zoomStack.push(node)
         },
         zoomOut() {

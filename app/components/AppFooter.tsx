@@ -3,7 +3,9 @@ import { Divider, Typography, Button } from "@material-ui/core"
 import { IModalConsumerProps, injectModal } from "./ModalContainer"
 import { Link } from "./Link"
 
-export const AppFooter: React.StatelessComponent<Partial<IModalConsumerProps>> = injectModal(({ modal }: Partial<IModalConsumerProps>) => (
+export const AppFooter: React.StatelessComponent<
+    Partial<IModalConsumerProps>
+> = injectModal(({ modal }: Partial<IModalConsumerProps>) => (
     <div
         style={{
             maxWidth: "1200px",

@@ -3,7 +3,7 @@ import { autobind, decorate } from "core-decorators"
 import { observable } from "mobx"
 import memoize from "lodash/memoize"
 import { observer, Provider } from "mobx-react"
-import { IModalKey, IModalFacade, ModalRegistry } from "../utils/ModalRegistry";
+import { IModalKey, IModalFacade, ModalRegistry } from "../utils/ModalRegistry"
 
 @observer
 export class ModalContainer extends React.Component {
@@ -42,7 +42,7 @@ export class ModalContainer extends React.Component {
             return null
         }
         const Modal = ModalRegistry[this.activeModal]
-        return <Modal modal={this.getModalFacade()}/>
+        return <Modal modal={this.getModalFacade()} />
     }
     @autobind
     private dismissModal() {

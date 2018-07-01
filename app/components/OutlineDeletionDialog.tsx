@@ -8,9 +8,9 @@ import {
 } from "@material-ui/core"
 import React from "react"
 import { clearLocal } from "../utils/persistence"
-import { IModalConsumerProps } from "../utils/ModalRegistry";
+import { IModalConsumerProps } from "../utils/ModalRegistry"
 
-export const OutlineDeletionDialog = (({ modal }: IModalConsumerProps) => (
+export const OutlineDeletionDialog = ({ modal }: IModalConsumerProps) => (
     <Dialog open={true} onClose={modal.dismiss}>
         <DialogContent>
             <Icon
@@ -38,4 +38,4 @@ export const OutlineDeletionDialog = (({ modal }: IModalConsumerProps) => (
             </Button>
         </DialogActions>
     </Dialog>
-))
+)

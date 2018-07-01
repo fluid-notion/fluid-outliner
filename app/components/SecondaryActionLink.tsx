@@ -14,12 +14,14 @@ const S = withStyles({
             color: palette.primary.main,
         },
     },
-});
+})
 
-export const SecondaryActionLink = S(({ className, classes, ...restProps }: any) => (
-    <Button
-        size="small"
-        {...restProps}
-        className={`${className || ""} ${classes.link}`}
-    />
-))
+export const SecondaryActionLink = S(
+    ({ className, classes, ...restProps }: any) => (
+        <Button
+            size="small"
+            {...restProps}
+            className={`${className || ""} ${classes.link}`}
+        />
+    )
+)

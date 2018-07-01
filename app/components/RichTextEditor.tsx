@@ -19,15 +19,13 @@ const ReactQuill = asyncComponent({
     },
 })
 
-export interface IRichTextEditorProps extends Partial<IStoreConsumerProps>{
+export interface IRichTextEditorProps extends Partial<IStoreConsumerProps> {
     note: INote
 }
 
 @injectStore
 @observer
-export class RichTextEditor extends React.Component<
-    IRichTextEditorProps
-> {
+export class RichTextEditor extends React.Component<IRichTextEditorProps> {
     private editable: Editable
 
     constructor(props: IRichTextEditorProps) {
@@ -64,12 +62,18 @@ export class RichTextEditor extends React.Component<
             )
         }
         return (
-            <div style={{ background: "white", position: "relative" }}>
+            <div
+                style={{ background: "white", position: "relative" }}
+                className="non-draggable"
+            >
                 <CloseButton
                     name="check"
                     onClick={() => this.editable.disableEditing()}
                 />
-                <ReactQuill onChange={this.handleChange} />
+                <ReactQuill
+                    onChange={this.handleChange}
+                    value={this.htmlContent}
+                />
             </div>
         )
     }

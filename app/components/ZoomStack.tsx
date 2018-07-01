@@ -1,11 +1,13 @@
-import React from "react";
-import { INode } from "../models/Node";
-import { IMaybe } from "../utils/UtilTypes";
-import { Button, Typography } from "@material-ui/core";
-import { observer } from "mobx-react";
-import { autobind } from "core-decorators";
-import { IOutlineVisitState } from "../models/OutlineVisitState";
-import Octicon from "react-octicon";
+import React from "react"
+import { INode } from "../models/Node"
+import { IMaybe } from "../utils/UtilTypes"
+import { observer } from "mobx-react"
+import { autobind } from "core-decorators"
+import { IOutlineVisitState } from "../models/OutlineVisitState"
+import Octicon from "react-octicon"
+import { DrawerSection } from "./DrawerSection"
+import { DrawerActionItem } from "./DrawerActionItem"
+import { palette } from "./styles/theme"
 
 interface IZoomStackProps {
     visitState: IOutlineVisitState
@@ -20,41 +22,50 @@ interface IStackRepr {
 @observer
 export class ZoomStack extends React.Component<IZoomStackProps> {
     public render() {
+        const items = this.items
         return (
-            <>
-                <Typography variant="headline">Zoomed Out Nodes</Typography>
-                {this.items.map((item) => (
-                    <Button onClick={() => this.zoomUpTo(item)} variant="text">
-                        <Octicon name="triangle-up"/> {item.node.content}
-                    </Button>
+            <DrawerSection title="Zoomed Out" show={items.length > 0}>
+                {items.map(item => (
+                    <DrawerActionItem
+                        onClick={() => this.zoomUpTo(item)}
+                        icon={
+                            <Octicon
+                                name="triangle-up"
+                                style={{ color: palette.primary.light }}
+                            />
+                        }
+                        label={item.node.content}
+                    />
                 ))}
-            </>
+            </DrawerSection>
         )
     }
     @autobind
     private zoomUpTo(item: IStackRepr) {
         for (let i = 0; i < item.numPastCheckpoints; i++) {
-            this.props.visitState.zoomOut();
+            this.props.visitState.zoomOut()
         }
-        this.props.visitState.zoomIn(item.node);
+        this.props.visitState.zoomIn(item.node)
     }
     private get items() {
-        const {zoomStack} = this.props.visitState;
-        let stackPos = zoomStack.length - 1;
-        let curNode: IMaybe<INode> = zoomStack[stackPos];
-        const arr: IStackRepr[] = [];
+        const { zoomStack } = this.props.visitState
+        const arr: IStackRepr[] = []
+        if (zoomStack.length === 0) return arr
+        let stackPos = zoomStack.length - 2
+        let curNode: IMaybe<INode> = zoomStack[zoomStack.length - 1].parent
         while (curNode) {
-            const isCheckpoint = zoomStack[stackPos].id === curNode.id
+            const isCheckpoint =
+                stackPos >= 0 && zoomStack[stackPos].id === curNode.id
             arr.unshift({
                 node: curNode,
                 isCheckpoint,
-                numPastCheckpoints: (zoomStack.length - 1 - stackPos)
+                numPastCheckpoints: zoomStack.length - 1 - stackPos,
             })
-            curNode = curNode.parent;
+            curNode = curNode.parent
             if (isCheckpoint) {
-                stackPos--;
+                stackPos--
             }
         }
-        return arr;
+        return arr
     }
 }

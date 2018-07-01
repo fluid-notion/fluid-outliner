@@ -16,7 +16,7 @@ import { autobind } from "core-decorators"
 import { observable } from "mobx"
 import { IOutlineVisitState } from "../models/OutlineVisitState"
 import { INoteFormat } from "../models/Note"
-import { withStyles } from "../utils/type-overrides";
+import { withStyles } from "../utils/type-overrides"
 
 const styles = {
     container: {
@@ -45,14 +45,17 @@ const styles = {
     },
 }
 
-export interface INodeActionToolbarProps extends StyledComponentProps<keyof typeof styles> {
+export interface INodeActionToolbarProps
+    extends StyledComponentProps<keyof typeof styles> {
     node: INode
     showNotes: () => void
     visitState: IOutlineVisitState
 }
 
 @withStyles<keyof typeof styles, INodeActionToolbarProps>(styles)
-export class NodeActionToolbar extends React.Component<INodeActionToolbarProps> {
+export class NodeActionToolbar extends React.Component<
+    INodeActionToolbarProps
+> {
     @observable private memoMenuAnchor: HTMLElement | null = null
     public render() {
         const { classes, node } = this.props
@@ -172,4 +175,3 @@ export class NodeActionToolbar extends React.Component<INodeActionToolbarProps> 
         this.memoMenuAnchor = null
     }
 }
-

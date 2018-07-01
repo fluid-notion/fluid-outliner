@@ -1,12 +1,13 @@
 import React from "react"
 import { inject, observer } from "mobx-react"
 import { IStoreConsumerProps } from "../models/IProviderProps"
-// import { ZoomStack } from "./ZoomStack"
+import { ZoomStack } from "./ZoomStack"
 import { IOutlineVisitState } from "../models/OutlineVisitState"
-// import { BookmarkList } from "./BookmarkList";
+import { BookmarkList } from "./BookmarkList"
 
 interface IPrimaryDrawerMenuProps {
     visitState?: IOutlineVisitState
+    scrollToNode: (id: string) => void
 }
 
 @inject(({ store }: IStoreConsumerProps) => ({
@@ -17,26 +18,19 @@ export class PrimaryDrawerMenu extends React.Component<
     IPrimaryDrawerMenuProps
 > {
     public render() {
-        // const { visitState } = this.props
-        return <div/>;
-        // return (
-        //     <div
-        //         style={{
-        //             maxWidth: "300px",
-        //             padding: "20px",
-        //         }}
-        //     >
-        //         {visitState && (
-        //             <>
-        //                 {visitState.zoomStack.length > 0 && (
-        //                     <ZoomStack visitState={visitState} />
-        //                 )}
-        //                 {visitState.fullBookmarkList.length > 0 && (
-        //                     <BookmarkList visitState={visitState} />
-        //                 )}
-        //             </>
-        //         )}
-        //     </div>
-        // )
+        const { visitState } = this.props
+        return (
+            <>
+                {visitState && (
+                    <>
+                        <ZoomStack visitState={visitState} />
+                        <BookmarkList
+                            visitState={visitState}
+                            scrollToNode={this.props.scrollToNode}
+                        />
+                    </>
+                )}
+            </>
+        )
     }
 }

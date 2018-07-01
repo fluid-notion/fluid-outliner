@@ -8,6 +8,7 @@ import { Loader } from "./Loader"
 import { Navbar } from "./NavBar"
 import { autobind } from "core-decorators"
 import MediaQuery from "react-responsive"
+import isNil from "lodash/isNil"
 import { BodyErrorWrapper } from "./BodyErrorWrapper"
 import {
     handleKeys,
@@ -21,9 +22,10 @@ import { DrawerContainer } from "./containers"
 import { SecondaryDrawerMenu } from "./SecondaryDrawerMenu"
 import { ResourceRefList } from "./ResourceRefList"
 import { KeyBindingsRefList } from "./KeyBindingsRefList"
-import { SelectionOverview } from "./SelectionOverview";
-import { injectModal } from "./ModalContainer";
-import { injectStore } from "../models/Store";
+import { SelectionOverview } from "./SelectionOverview"
+import { injectModal } from "./ModalContainer"
+import { injectStore } from "../models/Store"
+import Scrollbars from "react-custom-scrollbars"
 
 type IBodyProps = Partial<IProviderProps>
 
@@ -35,10 +37,10 @@ export class Body extends React.Component<IBodyProps> {
 
     @observable private drawerOpen = false
 
-    private outlineEditorRef = React.createRef<{
-        wrappedInstance: OutlineEditor
-    }>()
+    private outlineEditorRef = React.createRef<OutlineEditor>()
     private searchRef = React.createRef<any>()
+    private scrollerRef = React.createRef<Scrollbars>()
+    private overviewRef = React.createRef<SelectionOverview>()
 
     private handleKeys = handleKeys([
         {
@@ -60,7 +62,7 @@ export class Body extends React.Component<IBodyProps> {
                 if (!wasOnCurrent(event)) return
                 const { current } = this.outlineEditorRef
                 if (!current) return
-                current.wrappedInstance.focusFirst()
+                current.focusFirst()
             },
         },
         {
@@ -118,55 +120,86 @@ export class Body extends React.Component<IBodyProps> {
                 <Navbar
                     toggleDrawer={this.toggleDrawer}
                     searchRef={this.searchRef}
+                    drawerOpen={this.drawerOpen}
                 />
-                <MediaQuery minWidth={1000}>
-                    {(matches: boolean) =>
-                        matches ? (
-                            <Observer>
-                                {() => (
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                        }}
-                                    >
-                                        {this.drawerOpen ? (
-                                            <DrawerContainer>
+                <Scrollbars ref={this.scrollerRef}>
+                    <MediaQuery minWidth={1000}>
+                        {(matches: boolean) =>
+                            matches ? (
+                                <Observer>
+                                    {() => (
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "row",
+                                            }}
+                                        >
+                                            {this.drawerOpen ? (
+                                                <DrawerContainer key="secondary-drawer">
+                                                    <SecondaryDrawerMenu />
+                                                    <KeyBindingsRefList />
+                                                    <ResourceRefList />
+                                                </DrawerContainer>
+                                            ) : (
+                                                <DrawerContainer key="primary-drawer">
+                                                    <PrimaryDrawerMenu
+                                                        scrollToNode={
+                                                            this.scrollToNode
+                                                        }
+                                                    />
+                                                </DrawerContainer>
+                                            )}
+                                            {this.renderBody()}
+                                            <SelectionOverview
+                                                ref={this.overviewRef}
+                                            />
+                                        </div>
+                                    )}
+                                </Observer>
+                            ) : (
+                                <Observer>
+                                    {() =>
+                                        this.drawerOpen ? (
+                                            <DrawerContainer key="combined-drawer">
+                                                <PrimaryDrawerMenu
+                                                    scrollToNode={
+                                                        this.scrollToNode
+                                                    }
+                                                />
                                                 <SecondaryDrawerMenu />
                                                 <KeyBindingsRefList />
                                                 <ResourceRefList />
                                             </DrawerContainer>
                                         ) : (
-                                            <DrawerContainer>
-                                                <PrimaryDrawerMenu />
-                                            </DrawerContainer>
-                                        )}
-                                        {this.renderBody()}
-                                        <SelectionOverview />
-                                    </div>
-                                )}
-                            </Observer>
-                        ) : (
-                            <Observer>
-                                {() =>
-                                    this.drawerOpen ? (
-                                        <DrawerContainer>
-                                            <PrimaryDrawerMenu />
-                                            <SecondaryDrawerMenu />
-                                            <KeyBindingsRefList />
-                                            <ResourceRefList />
-                                        </DrawerContainer>
-                                    ) : (
-                                        this.renderBody()
-                                    )
-                                }
-                            </Observer>
-                        )
-                    }
-                </MediaQuery>
-                <AppFooter />
+                                            this.renderBody()
+                                        )
+                                    }
+                                </Observer>
+                            )
+                        }
+                    </MediaQuery>
+                    {this.outline && <AppFooter />}
+                </Scrollbars>
             </div>
         )
+    }
+
+    @autobind
+    private scrollToNode(id: string) {
+        const scroller = this.scrollerRef.current
+        if (!scroller) return
+        let top = this.getScrollTopOfNodeEditor(id)
+        if (isNil(top)) return
+        top -= 70
+        if (top < 0) top = 0
+        scroller.scrollTop(0)
+        scroller.scrollTop(top)
+    }
+
+    private getScrollTopOfNodeEditor(id: string) {
+        const editor = this.outlineEditorRef.current!.getNodeEditorForId(id)
+        if (!editor) return null
+        return editor.boundingRect!.top
     }
 
     private renderBody() {
@@ -176,7 +209,11 @@ export class Body extends React.Component<IBodyProps> {
         if (this.outline) {
             return (
                 <BodyErrorWrapper>
-                    <OutlineEditor innerRef={this.outlineEditorRef} />
+                    <OutlineEditor
+                        overviewRef={this.overviewRef}
+                        innerRef={this.outlineEditorRef}
+                        scrollerRef={this.scrollerRef}
+                    />
                 </BodyErrorWrapper>
             )
         }

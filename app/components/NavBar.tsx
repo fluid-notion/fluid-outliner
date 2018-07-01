@@ -42,15 +42,14 @@ const styles = {
     },
 }
 
-interface INavbarCommonProps {
+interface INavbarProps
+    extends Partial<IStoreConsumerProps>,
+        Partial<IModalConsumerProps>,
+        StyledComponentProps<keyof typeof styles> {
     toggleDrawer: () => void
     searchRef: React.Ref<any>
+    drawerOpen: boolean
 }
-
-type INavbarProps = StyledComponentProps<keyof typeof styles> &
-    INavbarCommonProps &
-    Partial<IStoreConsumerProps> &
-    Partial<IModalConsumerProps>
 
 const injectStyles = withStyles<keyof typeof styles, INavbarProps>(styles)
 
@@ -62,14 +61,21 @@ const decorate = flow(
 )
 
 export const Navbar = decorate(
-    ({ store, classes, toggleDrawer, modal, searchRef }: INavbarProps) => (
+    ({
+        store,
+        classes,
+        toggleDrawer,
+        modal,
+        searchRef,
+        drawerOpen,
+    }: INavbarProps) => (
         <AppBar position="static" className={classes!.root}>
             <Toolbar>
                 <div
                     style={{
                         display: "flex",
                         flexDirection: "row",
-                        flexGrow: 1
+                        flexGrow: 1,
                     }}
                 >
                     <div style={{ flexBasis: "300px", display: "flex" }}>
@@ -79,7 +85,9 @@ export const Navbar = decorate(
                             onClick={toggleDrawer}
                         >
                             <Octicon
-                                name="three-bars"
+                                name={
+                                    drawerOpen ? "diff-removed" : "three-bars"
+                                }
                                 className={classes!.icon}
                             />
                         </IconButton>
@@ -91,10 +99,23 @@ export const Navbar = decorate(
                                 whiteSpace: "nowrap",
                                 padding: "0 10px 0 0",
                                 fontWeight: 500,
-                                lineHeight: "3rem"
+                                lineHeight: "3rem",
                             }}
                         >
-                            Fluid Outliner
+                            Fluid Outliner{" "}
+                            <span
+                                style={{
+                                    position: "relative",
+                                    background: "orange",
+                                    color: "#6d00a0",
+                                    fontSize: "0.8rem",
+                                    top: "-10px",
+                                    padding: "5px",
+                                    borderRadius: "4px",
+                                }}
+                            >
+                                Beta
+                            </span>
                         </Typography>
                     </div>
                     <div style={{ flex: 1, paddingTop: "3px" }}>

@@ -1,5 +1,5 @@
 import { IStore } from "./Store"
-import { IModalFacade } from "../components/ModalContainer";
+import { IModalFacade } from "../components/ModalContainer"
 
 export interface IProviderProps {
     store: IStore

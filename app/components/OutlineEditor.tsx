@@ -8,8 +8,12 @@ import { OutlineTitleEditor } from "./OutlineTitleEditor"
 // @ts-ignore
 import { Container, Draggable } from "react-smooth-dnd"
 import { OutlineActionToolbar } from "./OutlineActionToolbar"
-import { withStyles } from "../utils/type-overrides";
-import { observer, inject } from "mobx-react";
+import { withStyles } from "../utils/type-overrides"
+import { observer, inject } from "mobx-react"
+import Scrollbars from "react-custom-scrollbars"
+import { IMaybe } from "../utils/UtilTypes"
+import { INodeLevel } from "../models/OutlineVisitState"
+import { SelectionOverview } from "./SelectionOverview"
 
 const styles = {
     root: {
@@ -18,20 +22,26 @@ const styles = {
         flexGrow: 1,
         flexShrink: 1,
         flexBasis: "1280px",
-        padding: "40px 0"
+        padding: "40px 0",
     },
     nodeUnderDrag: {
-        opacity: 0.5
-    }
-};
+        opacity: 0.5,
+    },
+}
 
-type IOutlineEditorProps = Partial<IStoreConsumerProps> & StyledComponentProps<keyof typeof styles>
+interface IOutlineEditorProps
+    extends Partial<IStoreConsumerProps>,
+        StyledComponentProps<keyof typeof styles> {
+    scrollerRef: React.RefObject<Scrollbars>
+    overviewRef: React.RefObject<SelectionOverview>
+}
 
-@inject(({store}: IProviderProps) => ({store}))
-@withStyles(styles)
+@inject(({ store }: IProviderProps) => ({ store }))
+@withStyles<keyof typeof styles, IOutlineEditorProps>(styles)
 @observer
 export class OutlineEditor extends React.Component<IOutlineEditorProps> {
-    private nodes: any[] = []
+    private idxToNodeMapping: Map<number, NodeEditor> = new Map()
+    private idToNodeMapping: Map<string, NodeEditor> = new Map()
 
     get outline() {
         return this.props.store!.outline!
@@ -45,18 +55,10 @@ export class OutlineEditor extends React.Component<IOutlineEditorProps> {
         return this.props.store!.visitState!.flatList
     }
 
-    public componentDidMount() {
-        this.ensureNodeLength()
-    }
-
-    public componentDidUpdate() {
-        this.ensureNodeLength()
-    }
-
     public focusFirst() {
-        const node = this.getUnwrappedNodeAtIdx(0);
-        if (!node) return;
-        node.focus();
+        const node = this.getNodeEditorForIdx(0)
+        if (!node) return
+        node.focus()
     }
 
     public render(): React.ReactNode {
@@ -79,37 +81,43 @@ export class OutlineEditor extends React.Component<IOutlineEditorProps> {
                     onDragStart={this.handleDragStart}
                     onDragEnd={this.handleDragEnd}
                     dragClass={classes!.nodeUnderDrag}
+                    nonDragAreaSelector={"non-draggable"}
                 >
-                    {this.flatNodeList.map(
-                        ({ node, level, isCollapsed }, index) => {
-                            return (
-                                <Draggable key={node.id}>
-                                    <NodeEditor
-                                        index={index}
-                                        key={node.id}
-                                        isCollapsed={isCollapsed}
-                                        level={level}
-                                        node={node}
-                                        toggleCollapse={
-                                            this.visitState.toggleCollapse
-                                        }
-                                        innerRef={this.registerNode(index)}
-                                        focusUp={this.focusUp}
-                                        focusDown={this.focusDown}
-                                    />
-                                </Draggable>
-                            )
-                        }
-                    )}
+                    {this.flatNodeList.map(this.renderNodeEditor)}
                 </Container>
             </div>
         )
     }
 
-    private getUnwrappedNodeAtIdx(idx: number) {
-        let node = this.nodes[idx]
-        if (node) node = node.wrappedInstance
-        return node || null
+    public getNodeEditorForId(id: string): IMaybe<NodeEditor> {
+        return this.idToNodeMapping.get(id)
+    }
+
+    public getNodeEditorForIdx(idx: number): IMaybe<NodeEditor> {
+        return this.idxToNodeMapping.get(idx)
+    }
+
+    @autobind
+    private renderNodeEditor(
+        { node, level, isCollapsed }: INodeLevel,
+        index: number
+    ) {
+        return (
+            <Draggable key={node.id}>
+                <NodeEditor
+                    index={index}
+                    key={node.id}
+                    isCollapsed={isCollapsed}
+                    level={level}
+                    node={node}
+                    toggleCollapse={this.visitState.toggleCollapse}
+                    innerRef={this.registerNode(node.id, index)}
+                    focusUp={this.focusUp}
+                    focusDown={this.focusDown}
+                    overviewRef={this.props.overviewRef}
+                />
+            </Draggable>
+        )
     }
 
     @autobind
@@ -138,7 +146,7 @@ export class OutlineEditor extends React.Component<IOutlineEditorProps> {
 
     @autobind
     private focusUp(curIdx: number, enableEditing = false) {
-        const node = this.getUnwrappedNodeAtIdx(curIdx - 1)
+        const node = this.getNodeEditorForIdx(curIdx - 1)
         if (node) {
             node.focus()
             if (enableEditing) {
@@ -149,7 +157,7 @@ export class OutlineEditor extends React.Component<IOutlineEditorProps> {
 
     @autobind
     private focusDown(curIdx: number, enableEditing = false) {
-        const node = this.getUnwrappedNodeAtIdx(curIdx + 1)
+        const node = this.getNodeEditorForIdx(curIdx + 1)
         if (node) {
             node.focus()
             if (enableEditing) {
@@ -158,15 +166,11 @@ export class OutlineEditor extends React.Component<IOutlineEditorProps> {
         }
     }
 
-    private ensureNodeLength() {
-        this.nodes.length = this.flatNodeList.length
-    }
-
     @decorate(memoize)
-    private registerNode(idx: number) {
+    private registerNode(id: string, idx: number) {
         return (el: any | null) => {
-            this.nodes[idx] = el
+            this.idxToNodeMapping.set(idx, el)
+            this.idToNodeMapping.set(id, el)
         }
     }
 }
-
