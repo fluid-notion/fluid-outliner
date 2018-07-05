@@ -22,6 +22,7 @@ export class SelectionOverview extends React.Component<
                     flexGrow: 0,
                     flexShrink: 0,
                     padding: "20px",
+                    position: "relative"
                 }}
             />
         )

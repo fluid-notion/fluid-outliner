@@ -35,8 +35,7 @@ import { NodeZoomControls } from "./NodeZoomControls"
 import { NodeFoldControls } from "./NodeFoldControls"
 import { SelectionOverview } from "./SelectionOverview"
 import { Portal } from "react-overlays"
-import { NoteOverview } from "./NoteOverview"
-import { DrawerSection } from "./DrawerSection"
+import { NotesOverview } from "./NotesOverview"
 
 const RichTextEditor = asyncComponent({
     resolve: async () => (await import("./RichTextEditor")).RichTextEditor,
@@ -469,24 +468,15 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
                 </Motion>
                 {this.showNotesOverview && (
                     <Portal container={this.props.overviewRef.current}>
-                        <DrawerSection
-                            title="Notes"
-                            show={this.notes.length > 0}
+                        <NotesOverview
+                            notes={this.notes}
                             style={{
                                 position: "absolute",
                                 top: this.boundingRect!.top + 70,
-                                marginRight: "10px",
-                                maxWidth: "250px",
+                                right: "10px",
+                                left: "0px",
                             }}
-                        >
-                            <ul style={{ marginLeft: "-20px" }}>
-                                {this.notes.map(n => (
-                                    <li>
-                                        <NoteOverview note={n} />
-                                    </li>
-                                ))}
-                            </ul>
-                        </DrawerSection>
+                        />
                     </Portal>
                 )}
             </div>
