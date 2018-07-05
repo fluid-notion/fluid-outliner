@@ -4,7 +4,7 @@ import { INote } from "../models/Note"
 import { autobind } from "core-decorators"
 import { observer } from "mobx-react"
 
-import { computed, autorun, IReactionDisposer } from "mobx"
+import { computed, autorun, IReactionDisposer, observable } from "mobx"
 import Paper from "@material-ui/core/Paper/Paper"
 import { IStoreConsumerProps } from "../models/IProviderProps"
 import { Editable } from "../utils/Editable"
@@ -27,6 +27,8 @@ export class MarkdownEditor extends React.Component<IMarkdownEditorProps> {
 
     private editable: Editable
     private disposeMDESync: IMaybe<IReactionDisposer>
+
+    @observable private isEditorLoaded = false
 
     constructor(props: any) {
         super(props)
@@ -80,13 +82,27 @@ export class MarkdownEditor extends React.Component<IMarkdownEditorProps> {
                 style={{ background: "white", position: "relative" }}
                 className="non-draggable"
             >
-                <CloseButton
-                    name="check"
-                    onClick={() => this.editable.disableEditing()}
-                />
-                <textarea ref={this.registerTextArea} />
+                {this.isEditorLoaded ? (
+                    <>
+                        <CloseButton
+                            name="check"
+                            onClick={() => this.editable.disableEditing()}
+                        />
+                        <textarea ref={this.registerTextArea} />
+                    </>
+                ) : (
+                    <div ref={this.registerLoader}>Loading ...</div>
+                )}
             </div>
         )
+    }
+
+    @autobind
+    private async registerLoader(el: HTMLDivElement | null) {
+        if (el) {
+            await import("simplemde")
+            this.isEditorLoaded = true
+        }
     }
 
     @autobind
