@@ -64,8 +64,9 @@ export const Outline: IModelType<Snapshot<IOutline>, IOutline> = t
         removeNode(id: string) {
             const node = self.allNodes.get(id)
             if (!node) return
-            if (node.antecedent)
+            if (node.antecedent) {
                 node.antecedent.spliceChildren(node.siblingIdx, 1)
+            }
             self.allNodes.delete(id)
         },
     }))

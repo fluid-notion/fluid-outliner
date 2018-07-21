@@ -4,6 +4,7 @@ import OfflinePlugin from "offline-plugin"
 import path from "path"
 import webpack from "webpack"
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer"
+import CopyWebpackPlugin from "copy-webpack-plugin"
 // @ts-ignore
 import DashboardPlugin from "webpack-dashboard/plugin" // tslint:disable-line
 
@@ -44,6 +45,10 @@ export default {
                 "favicon.ico",
             ],
         }),
+        new CopyWebpackPlugin([{
+            from: 'public',
+            to: 'dist-webpack'
+        }])
     ],
     resolve: {
         // Add `.ts` and `.tsx` as a resolvable extension.

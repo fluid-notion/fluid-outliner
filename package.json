@@ -18,10 +18,9 @@
   "scripts": {
     "start": "./dist-tsc/server/index.js",
     "test": "jest",
-    "copy-public": "mkdir -p dist-webpack && cp -r ./public/* dist-webpack",
     "build-server": "tsc",
     "build-client": "webpack --config webpack.config.ts",
-    "build": "yarn run build-server && yarn run build-client && yarn run copy-public",
+    "build": "yarn run build-server && yarn run build-client",
     "webpack-dev-server": "webpack-dev-server",
     "prettier": "prettier --write ./**/*.{ts,tsx}",
     "tslint": "tslint -p .",
@@ -33,6 +32,7 @@
   "devDependencies": {
     "@material-ui/core": "^1.2.1",
     "@material-ui/icons": "^1.1.0",
+    "@types/copy-webpack-plugin": "^4.4.1",
     "@types/debug": "^0.0.30",
     "@types/expect-puppeteer": "^2.2.2",
     "@types/express": "^4.16.0",
@@ -52,6 +52,7 @@
     "@types/striptags": "^3.1.1",
     "@types/uuid": "^3.4.3",
     "@types/webpack-bundle-analyzer": "^2.9.2",
+    "copy-webpack-plugin": "^4.5.2",
     "cross-env": "^5.2.0",
     "css-loader": "^0.28.11",
     "dnd-core": "^4.0.5",
