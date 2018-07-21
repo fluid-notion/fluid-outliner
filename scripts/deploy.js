@@ -7,6 +7,7 @@ if (process.env.NODE_ENV !== "production") {
 
 ghpages.publish(path.join(__dirname, '../dist-webpack'), function(err) {
     if (err) {
+        console.error(err);
         console.error('Failed to deploy');
     } else {
         console.log('Success !');
