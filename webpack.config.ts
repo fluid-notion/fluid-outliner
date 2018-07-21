@@ -29,7 +29,7 @@ export default {
             template: "app/index.html",
         }),
         new BundleAnalyzerPlugin({
-            analyzerMode: "static", // isDev ? "server" : "static",
+            analyzerMode: "static",
             openAnalyzer: false,
         }),
         new DashboardPlugin(),
@@ -46,8 +46,9 @@ export default {
             ],
         }),
         new CopyWebpackPlugin([{
-            from: 'public',
-            to: 'dist-webpack'
+            from: '**/*',
+            to: '.',
+            context: 'public/'
         }])
     ],
     resolve: {
