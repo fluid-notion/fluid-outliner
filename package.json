@@ -16,7 +16,7 @@
     "fluid-outliner": "./dist-tsc/server/index.js"
   },
   "scripts": {
-    "start": "./dist-tsc/server/index.js",
+    "start": "node dist-tsc/server/index.js",
     "test": "jest",
     "build-server": "tsc",
     "build-client": "webpack --config webpack.config.ts",
