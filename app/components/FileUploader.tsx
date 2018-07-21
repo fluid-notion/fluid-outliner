@@ -14,29 +14,48 @@ export class FileUploader extends React.Component<IFileUploaderProps> {
     @observable private isDragActive = false
     public render() {
         return (
-            <ButtonBase
-                style={{
-                    textAlign: "center",
-                    padding: "30px",
-                    flexGrow: 1,
-                    fontSize: "1.5rem",
-                    color: "silver",
-                    whiteSpace: "nowrap",
-                    border: this.isDragActive
-                        ? "2px dotted blue"
-                        : "2px dotted silver",
-                }}
-            >
-                <div
-                    onDragEnter={this.handleDragEnter}
-                    onDragLeave={this.handleDragLeave}
-                    onDragOver={this.handleDragOver}
-                    onDrop={this.handleDrop}
+            <div>
+                <ButtonBase
+                    style={{
+                        textAlign: "center",
+                        padding: "30px",
+                        flexGrow: 1,
+                        fontSize: "1.5rem",
+                        color: "silver",
+                        whiteSpace: "nowrap",
+                        border: this.isDragActive
+                            ? "2px dotted blue"
+                            : "2px dotted silver",
+                        width: "100%",
+                    }}
                 >
-                    Drop File Here
-                </div>
-            </ButtonBase>
+                    <div
+                        onDragEnter={this.handleDragEnter}
+                        onDragLeave={this.handleDragLeave}
+                        onDragOver={this.handleDragOver}
+                        onDrop={this.handleDrop}
+                    >
+                        Drop File Here
+                    </div>
+                </ButtonBase>
+                <input
+                    style={{
+                        width: "100%",
+                        border: "1px solid silver",
+                        padding: "5px",
+                        marginTop: "10px",
+                    }}
+                    type="file"
+                    onChange={this.handleInputChange}
+                />
+            </div>
         )
+    }
+    @autobind
+    private handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+        const { files } = event.target
+        if (!files) return
+        this.handleUploadFiles(files)
     }
     @autobind
     private handleDragEnter() {
@@ -57,6 +76,10 @@ export class FileUploader extends React.Component<IFileUploaderProps> {
         event.stopPropagation()
         event.preventDefault()
         const { files } = event.dataTransfer
+        this.handleUploadFiles(files)
+    }
+    @autobind
+    private handleUploadFiles(files: FileList) {
         if (files.length === 0) {
             return
         }
