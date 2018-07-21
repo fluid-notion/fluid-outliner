@@ -15,7 +15,7 @@ export class NotesOverview extends React.Component<INotesOverviewProps> {
         if (notes.length === 0) return null;
         return (
             <DrawerSection
-                title="Notes"
+                title="Attached Memos"
                 show={this.props.notes.length > 0}
                 style={this.props.style}
             >

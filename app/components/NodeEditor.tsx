@@ -1,9 +1,11 @@
 import {
+    Tooltip,
     Button,
     Paper,
     StyledComponentProps,
     Typography,
 } from "@material-ui/core"
+import isNil from "lodash/isNil"
 import { default as AddIcon } from "@material-ui/icons/Add"
 import { autobind } from "core-decorators"
 import { observable, computed } from "mobx"
@@ -197,7 +199,7 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
         {
             keys: ["esc"],
             handle: () => {
-                if (this.editable.isEditing) {
+                if (this.isEditing()) {
                     this.editable.disableEditing()
                     this.container!.focus()
                 } else {
@@ -208,7 +210,7 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
         {
             keys: ["enter"],
             handle: (event: KbdEvt) => {
-                if (event.shiftKey || this.editable.isEditing) {
+                if (event.shiftKey || this.isEditing()) {
                     const node = this.item.addSibling()
                     this.editable.visitState.activateItem(node)
                 } else {
@@ -355,11 +357,11 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
             >
                 <Motion
                     style={{
-                        borderRadius: spring(this.editable.isEditing ? 4 : 0),
-                        dist1: spring(this.editable.isEditing ? 4 : 0),
-                        dist2: spring(this.editable.isEditing ? 50 : 0),
-                        bkgOpacity: spring(this.editable.isEditing ? 0.1 : 0),
-                        fgOpacity: spring(this.editable.isEditing ? 1 : 0),
+                        borderRadius: spring(this.isEditing() ? 4 : 0),
+                        dist1: spring(this.isEditing() ? 4 : 0),
+                        dist2: spring(this.isEditing() ? 50 : 0),
+                        bkgOpacity: spring(this.isEditing() ? 0.1 : 0),
+                        fgOpacity: spring(this.isEditing() ? 1 : 0),
                     }}
                 >
                     {s => (
@@ -408,7 +410,7 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
                                                     classes={this.props.classes}
                                                 />
                                             )}
-                                            {(this.hasFocus || this.isRoot) && (
+                                            {this.isZoomable() && (
                                                 <NodeZoomControls
                                                     node={this.node}
                                                     isRoot={this.isRoot}
@@ -577,12 +579,20 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
         const markers = this.renderMarkers("right")
         if (this.notes.length > 0) {
             markers.push(
-                <SwitchSlider
-                    key="note-marker"
-                    isOn={this.areNotesVisible}
-                    onToggle={this.toggleNotesVisibility}
-                    label={this.notes.length}
-                />
+                <Tooltip
+                    title={
+                        this.areNotesVisible
+                            ? "Hide attachments"
+                            : "Show attachments"
+                    }
+                >
+                    <SwitchSlider
+                        key="note-marker"
+                        isOn={this.areNotesVisible}
+                        onToggle={this.toggleNotesVisibility}
+                        label={this.notes.length}
+                    />
+                </Tooltip>
             )
         }
         return markers
@@ -665,9 +675,19 @@ export class NodeEditor extends React.Component<INodeEditorProps> {
         this.node.setContent(event.currentTarget.value)
     }
 
+    private isZoomable() {
+        const { activeItemId } = this.visitState
+        if (!isNil(activeItemId)) {
+            return this.isEditing()
+        }
+        return activeItemId === this.node.id
+    }
+
     @autobind
     private isEditing() {
-        return this.editable.isEditing
+        const { activeItemId } = this.visitState
+        if (activeItemId === this.node.id) return true
+        return this.notes.findIndex(n => n.id === activeItemId) >= 0
     }
 
     @autobind

@@ -12,8 +12,10 @@ interface ISwitchSliderProps {
 
 export class SwitchSlider extends React.Component<ISwitchSliderProps> {
     public render() {
+        const {onToggle, isOn, label, ...props} = this.props
         return (
             <Chip
+                {...props}
                 label={
                     <span style={{ marginLeft: "-3px", marginRight: "-3px" }}>
                         {this.props.label}

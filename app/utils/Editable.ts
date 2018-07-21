@@ -8,12 +8,6 @@ export interface IEditableSource
     item: IIdentifiable
 }
 
-export interface IEditable extends IEditableSource {
-    isEditing: boolean
-    enableEditing: () => void
-    disableEditing: () => void
-}
-
 export class Editable {
     constructor(private target: IEditableSource) {}
     @computed
