@@ -58,13 +58,13 @@ Fluid Outliner is still in early development.
 
 10. **Is there an mobile or desktop app?**
 
-    Not yet.
+    Early stage implementations can be found in the cordova-shell and electron-shell directories respectively. They are currently not stable enough for general use.
 
-11. **Does it have all features from my favorite app: [Y] ?**
+11. **Does it have all features from my favorite app: [X] ?**
 
     No.
 
-12. **How long until has full feature parity with app/service/utility [Y] ?**
+12. **How long until has full feature parity with app/service/utility [X] ?**
 
     Unlikely to ever happen. 
 

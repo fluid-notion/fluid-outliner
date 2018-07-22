@@ -13,6 +13,8 @@ interface IFileUploaderProps extends Partial<IStoreConsumerProps> {
 export class FileUploader extends React.Component<IFileUploaderProps> {
     @observable private isDragActive = false
 
+    private fileInputRef = React.createRef<HTMLInputElement>();
+
     public render() {
         return (
             <div>
@@ -35,6 +37,7 @@ export class FileUploader extends React.Component<IFileUploaderProps> {
                         onDragLeave={this.handleDragLeave}
                         onDragOver={this.handleDragOver}
                         onDrop={this.handleDrop}
+                        onClick={this.handleDropAreaClick}
                     >
                         Drop File Here
                     </div>
@@ -47,10 +50,18 @@ export class FileUploader extends React.Component<IFileUploaderProps> {
                         marginTop: "10px",
                     }}
                     type="file"
+                    ref={this.fileInputRef}
                     onChange={this.handleInputChange}
                 />
             </div>
         )
+    }
+
+    @autobind
+    private handleDropAreaClick() {
+        const el = this.fileInputRef.current
+        if (!el) return
+        el.click()
     }
 
     @autobind
