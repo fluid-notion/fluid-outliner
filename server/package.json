@@ -1,0 +1,13 @@
+{
+    "name": "@fluid-notion/fluid-outliner-server",
+    "version": "0.0.1",
+    "description": "Open source web based outliner",
+    "author": "Lorefnon <lorefnon@gmail.com>",
+    "license": "GPL-3.0",
+    "private": true,
+    "scripts": {
+      "start": "node dist/index.js",
+      "build": "tsc"
+    }
+  }
+  

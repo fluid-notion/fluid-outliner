@@ -6,7 +6,7 @@
   "rules": {
     "object-literal-sort-keys": false,
     "no-submodule-imports": false,
-    "no-implicit-dependencies": [true, "dev"],
+    "no-implicit-dependencies": false,
     "curly": [true, "ignore-same-line"],
     "ordered-imports": false,
     "variable-name": [false],

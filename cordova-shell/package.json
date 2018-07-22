@@ -1,0 +1,32 @@
+{
+  "name": "@fluid-notion/fluid-outliner-cordova-shell",
+  "displayName": "Fluid Outliner",
+  "version": "0.0.1",
+  "description": "Fluid Outliner Cordova Shell",
+  "main": "index.js",
+  "author": "Lorefnon <lorefnon@gmail.com>",
+  "license": "GPL-v3.0",
+  "private": true,
+  "devDependencies": {
+    "cordova": "^8.0.0"
+  },
+  "scripts": {
+    "build-client": "../node_modules/.bin/webpack",
+    "build-app": "cordova build",
+    "build": "yarn run build-client && yarn run build-app",
+    "emulate": "cordova emulate",
+    "webpack-dev-server": "../node_modules/.bin/webpack-dev-server --hot --progress --profile --colors"
+  },
+  "dependencies": {
+    "cordova-android": "^7.0.0",
+    "cordova-plugin-whitelist": "^1.3.3"
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-whitelist": {}
+    },
+    "platforms": [
+      "android"
+    ]
+  }
+}

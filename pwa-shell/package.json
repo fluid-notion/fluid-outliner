@@ -1,0 +1,18 @@
+{
+    "name": "@fluid-notion/fluid-outliner-pwa-shell",
+    "version": "0.0.1",
+    "description": "Open source web based outliner",
+    "author": "Lorefnon <lorefnon@gmail.com>",
+    "license": "GPL-3.0",
+    "private": false,
+    "publishConfig": {
+      "access": "public"
+    },
+    "scripts": {
+      "build": "../node_modules/.bin/webpack --config webpack.config.ts",
+      "webpack-dev-server": "../node_modules/.bin/webpack-dev-server --hot --progress --profile --colors",
+      "clean": "rimraf ./dist",
+      "deploy": "yarn run clean && yarn run build && node ./scripts/deploy"
+    }
+  }
+  

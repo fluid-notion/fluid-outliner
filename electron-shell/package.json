@@ -1,0 +1,79 @@
+{
+    "name": "@fluid-notion/fluid-outliner-electron-shell",
+    "version": "0.0.1",
+    "description": "Fluid Outliner Electron Shell",
+    "author": "Lorefnon <lorefnon@gmail.com>",
+    "license": "GPL-3.0",
+    "private": true,
+    "devDependencies": {
+        "@types/electron": "^1.6.10",
+        "@types/electron-builder": "^2.8.0",
+        "asar": "^0.14.3",
+        "devtron": "^1.4.0",
+        "electron": "^2.0.5",
+        "electron-builder": "^20.24.4",
+        "electron-builder-http": "^19.27.5",
+        "electron-devtools-installer": "^2.2.4",
+        "spectron": "^3.8.0"
+    },
+    "scripts": {
+        "renderer-dev-server": "../node_modules/.bin/webpack-dev-server --hot --config webpack.config.renderer.ts --progress --profile --colors",
+        "build-main": "../node_modules/.bin/webpack --config webpack.config.main.ts --progress --profile --colors",
+        "build-renderer": "../node_modules/.bin/webpack --config webpack.config.renderer.ts --progress --profile --colors",
+        "build": "yarn run build-main && yarn run build-renderer",
+        "start": "electron ./app",
+        "postinstall": "yarn run build",
+        "dev": "yarn run hot-server -- --start-hot",
+        "package": "yarn run build && build --publish never",
+        "package-win": "yarn run build && build --win --x64",
+        "package-linux": "yarn run build && build --linux",
+        "package-all": "yarn run build && build -mwl",
+        "clean": "rm -rf app/dist"
+    },
+    "build": {
+        "productName": "FluidOutliner",
+        "appId": "in.fluidnotion.fluidoutliner",
+        "dmg": {
+            "contents": [
+                {
+                    "x": 410,
+                    "y": 150,
+                    "type": "link",
+                    "path": "/Applications"
+                },
+                {
+                    "x": 130,
+                    "y": 150,
+                    "type": "file"
+                }
+            ]
+        },
+        "files": [
+            "dist/",
+            "node_modules/",
+            "app.html",
+            "main.js",
+            "main.js.map",
+            "package.json"
+        ],
+        "directories": {
+            "buildResources": "resources",
+            "output": "release"
+        },
+        "win": {
+            "target": "nsis"
+        },
+        "linux": {
+            "target": [
+                "deb",
+                "AppImage"
+            ]
+        }
+    },
+    "bin": {
+        "electron": "./node_modules/.bin/electron"
+    },
+    "dependencies": {
+        "electron-debug": "^2.0.0"
+    }
+}

@@ -1,0 +1,7 @@
+/www
+/platforms/android/app/src/main/assets
+/platforms/android/.gradle
+/platforms/android/.idea
+/platforms/android/CordovaLib/build
+/platforms/android/CordovaLib/app/build
+

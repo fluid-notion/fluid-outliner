@@ -1,6 +1,6 @@
-/node_modules
-/dist*
-/yarn-error.log
-/.idea
-/.vscode
-/.projectile
+node_modules
+dist*
+yarn-error.log
+.idea
+.vscode
+.projectile
