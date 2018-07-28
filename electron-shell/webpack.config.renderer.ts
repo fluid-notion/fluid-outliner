@@ -11,7 +11,7 @@ const port = process.env.PORT || 9666
 if (baseConfig.mode === "production") {
     entry = "./app/src/renderer.tsx"
     output = {
-        publicPath: "./dist-webpack/",
+        publicPath: "",
     }
 } else {
     entry = [
@@ -20,7 +20,7 @@ if (baseConfig.mode === "production") {
         "./app/src/renderer.tsx",
     ]
     output = {
-        publicPath: `http://localhost:${port}/dist-webpack/`,
+        publicPath: `http://localhost:${port}/dist/`,
     }
 }
 

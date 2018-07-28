@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Open source web based outliner",
   "author": "Lorefnon <lorefnon@gmail.com>",
+  "repository": "github:fluid-notion/fluid-outliner",
   "license": "GPL-3.0",
   "private": false,
   "publishConfig": {

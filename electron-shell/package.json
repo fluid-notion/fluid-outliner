@@ -1,10 +1,12 @@
 {
-    "name": "@fluid-notion/fluid-outliner-electron-shell",
+    "name": "fluid-outliner",
     "version": "0.0.1",
-    "description": "Fluid Outliner Electron Shell",
+    "description": "Open source web based outliner",
+    "homepage": "https://github.com/fluid-notion/fluid-outliner",
     "author": "Lorefnon <lorefnon@gmail.com>",
     "license": "GPL-3.0",
     "private": true,
+    "repository": "github:fluid-notion/fluid-outliner",
     "devDependencies": {
         "@types/electron": "^1.6.10",
         "@types/electron-builder": "^2.8.0",
@@ -23,15 +25,14 @@
         "build": "yarn run build-main && yarn run build-renderer",
         "start": "electron ./app",
         "postinstall": "yarn run build",
-        "dev": "yarn run hot-server -- --start-hot",
         "package": "yarn run build && build --publish never",
         "package-win": "yarn run build && build --win --x64",
         "package-linux": "yarn run build && build --linux",
         "package-all": "yarn run build && build -mwl",
-        "clean": "rm -rf app/dist"
+        "clean": "rm -rf app/dist release"
     },
     "build": {
-        "productName": "FluidOutliner",
+        "productName": "Fluid Notion Outliner",
         "appId": "in.fluidnotion.fluidoutliner",
         "dmg": {
             "contents": [
@@ -48,11 +49,17 @@
                 }
             ]
         },
+        "fileAssociations": [{
+            "ext": "fno",
+            "name": "Fluid Notion Outline"
+        }, {
+            "ext": "fnoa",
+            "name": "Fluid Notion Outline Archive"
+        }],
         "files": [
             "dist/",
             "node_modules/",
             "app.html",
-            "main.js",
             "main.js.map",
             "package.json"
         ],
@@ -67,7 +74,8 @@
             "target": [
                 "deb",
                 "AppImage"
-            ]
+            ],
+            "category": "Office"
         }
     },
     "bin": {

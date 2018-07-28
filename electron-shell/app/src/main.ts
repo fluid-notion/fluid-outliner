@@ -64,21 +64,21 @@ app.on("ready", () =>
 
         if (process.env.NODE_ENV === "development") {
             mainWindow.webContents.openDevTools()
-            mainWindow.webContents.on("context-menu", (_e, props) => {
-                const { x, y } = props
-
-                Menu.buildFromTemplate([
-                    {
-                        label: "Inspect element",
-                        click() {
-                            mainWindow!.webContents.inspectElement(x, y)
-                        },
-                    },
-                ]).popup({
-                    window: mainWindow!,
-                })
-            })
         }
+        mainWindow.webContents.on("context-menu", (_e, props) => {
+            const { x, y } = props
+
+            Menu.buildFromTemplate([
+                {
+                    label: "Inspect element",
+                    click() {
+                        mainWindow!.webContents.inspectElement(x, y)
+                    },
+                },
+            ]).popup({
+                window: mainWindow!,
+            })
+        })
 
         /*
         if (process.platform === "darwin") {

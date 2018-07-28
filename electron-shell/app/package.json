@@ -1,5 +1,5 @@
 {
-    "name": "@fluid-notion/fluid-outliner-electron-shell",
+    "name": "fluid-outliner",
     "productName": "fluid-notion",
     "version": "0.0.1",
     "description": "Open source web based outliner",
