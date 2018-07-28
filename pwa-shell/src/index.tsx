@@ -7,8 +7,14 @@ import { installOfflinePlugin } from "../../core/utils/offline-plugin-runtime"
 
 const debug = _debug("fluid-outliner:index")
 
+// @ts-ignore
+import "typeface-roboto"
+
 debug("Installing Service Workers")
 installOfflinePlugin()
 
 debug("Bootstrapping React root")
-render(<App />, document.getElementById("root"))
+
+document.addEventListener("DOMContentLoaded", () => {
+    render(<App />, document.getElementById("root"))
+})

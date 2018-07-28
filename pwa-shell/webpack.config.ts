@@ -4,7 +4,8 @@ import merge from "webpack-merge"
 import HtmlWebpackPlugin from "html-webpack-plugin" // tslint:disable-line
 // @ts-ignore
 import OfflinePlugin from "offline-plugin"
-import CopyWebpackPlugin from "copy-webpack-plugin"
+// @ts-ignore
+import FaviconsWebpackPlugin from "favicons-webpack-plugin"
 
 import commonConfig from "../webpack.config.common"
 
@@ -15,29 +16,23 @@ export default merge(commonConfig, {
     },
     output: {
         path: path.join(__dirname, "dist"),
-        filename: "[name].[hash].js"
+        filename: "[name].[hash].js",
+        publicPath:
+            commonConfig.mode === "production" ? "/fluid-outliner" : "/",
     },
     plugins: [
         new HtmlWebpackPlugin({
             title: "Fluid Outliner",
             template: "src/index.html",
+            inject: "head",
         }),
         new OfflinePlugin({
             responseStrategy: "network-first",
             appShell: "/",
-            externals: [
-                "https://fonts.googleapis.com/icon?family=Material+Icons",
-                "https://fonts.googleapis.com/css?family=Roboto:300,400,500",
-                "favicon.ico",
-            ],
         }),
-        new CopyWebpackPlugin([
-            {
-                from: "**/*",
-                to: ".",
-                context: "../public/",
-            },
-        ]),
+        new FaviconsWebpackPlugin({
+            logo: path.join(__dirname, "../assets/logo-text.png"),
+        }),
     ],
     watchOptions: {
         ignored: /node_modules/,
