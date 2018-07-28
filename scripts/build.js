@@ -1,10 +1,13 @@
+#!/usr/bin/env node
+
 const cp = require("child_process");
-const path = require("path")
+const path = require("path");
+const log = require("fancy-log");
 
 console.log("You probably don't want to build all sub-projects including the mobile and electron apps. Refer project README")
 
 const buildIn = (target, subDir, proceedAfterFailure = true) => {
-    console.log("Building:", target)
+    log("Building:", target)
     try {
         cp.spawnSync("yarn", ["run", "build"], {
             stdio: "inherit",
@@ -12,14 +15,14 @@ const buildIn = (target, subDir, proceedAfterFailure = true) => {
             shell: true
         });
     } catch (e) {
-        console.error(e)
-        console.error("Failed to build: ", target)
+        log.error(e)
+        log.error("Failed to build: ", target)
         if (!proceedAfterFailure) {
-            console.error("Terminating build")
+            log.error("Terminating build")
             process.exit(1)
         }
     }
-} 
+}
 
 buildIn("PWA", "pwa-shell", false)
 buildIn("Node Server", "server")
