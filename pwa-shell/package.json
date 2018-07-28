@@ -6,13 +6,12 @@
     "license": "GPL-3.0",
     "private": false,
     "publishConfig": {
-      "access": "public"
+        "access": "public"
     },
     "scripts": {
-      "build": "../node_modules/.bin/webpack --config webpack.config.ts",
-      "webpack-dev-server": "../node_modules/.bin/webpack-dev-server --hot --progress --profile --colors",
-      "clean": "rimraf ./dist",
-      "deploy": "yarn run clean && yarn run build && node ./scripts/deploy"
+        "build": "../node_modules/.bin/webpack --config webpack.config.ts",
+        "webpack-dev-server": "../node_modules/.bin/webpack-dev-server --hot --progress --profile --colors",
+        "clean": "../node_modules/.bin/rimraf ./dist",
+        "deploy": "yarn run clean && yarn run build && node ./scripts/deploy"
     }
-  }
-  
+}
