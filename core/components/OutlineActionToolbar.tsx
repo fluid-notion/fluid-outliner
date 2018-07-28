@@ -1,4 +1,6 @@
-import { Icon } from "@material-ui/core"
+import UndoIcon from "@material-ui/icons/Undo"
+import RedoIcon from "@material-ui/icons/Redo"
+import DeleteIcon from "@material-ui/icons/Delete"
 import React from "react"
 import { IOutline } from "../models/Outline"
 import { SecondaryActionLink } from "./SecondaryActionLink"
@@ -14,15 +16,15 @@ export const OutlineActionToolbar: React.ComponentType<any> = injectModal(
     (props: IOutlineActionToolbarProps) => (
         <div style={props.style}>
             <SecondaryActionLink>
-                <Icon onClick={props.outline.undo}>undo</Icon>
+                <UndoIcon onClick={props.outline.undo} />
             </SecondaryActionLink>
             <SecondaryActionLink>
-                <Icon onClick={props.outline.redo}>redo</Icon>
+                <RedoIcon onClick={props.outline.redo} />
             </SecondaryActionLink>
             <SecondaryActionLink
                 onClick={() => props.modal!.activate("OutlineDeletionDialog")}
             >
-                <Icon>delete</Icon>
+                <DeleteIcon />
             </SecondaryActionLink>
         </div>
     )

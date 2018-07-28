@@ -1,22 +1,22 @@
-import { Icon } from "@material-ui/core"
 import * as React from "react"
 
 interface IIconPairProps {
-    primary: string
-    secondary: string
+    primary: any // React.ComponentType
+    secondary: any // React.ComponentType
 }
 
-export const IconPair = ({ primary, secondary }: IIconPairProps) => (
+export const IconPair = ({
+    primary: Primary,
+    secondary: Secondary,
+}: IIconPairProps) => (
     <div style={{ position: "relative", display: "inline-block" }}>
-        <Icon
+        <Primary
             color="primary"
             style={{
                 fontSize: "5rem",
             }}
-        >
-            {primary}
-        </Icon>
-        <Icon
+        />
+        <Secondary
             style={{
                 color: "white",
                 position: "absolute",
@@ -24,8 +24,6 @@ export const IconPair = ({ primary, secondary }: IIconPairProps) => (
                 left: "15px",
                 fontSize: "2rem",
             }}
-        >
-            {secondary}
-        </Icon>
+        />
     </div>
 )

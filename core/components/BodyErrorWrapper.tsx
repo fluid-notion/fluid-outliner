@@ -1,7 +1,8 @@
 import React from "react"
 import { observable } from "mobx"
 import { observer } from "mobx-react"
-import { Typography, Button, Icon } from "@material-ui/core"
+import { Typography, Button } from "@material-ui/core"
+import Cached from "@material-ui/icons/Cached"
 import { Link } from "./Link"
 import { autobind } from "core-decorators"
 import { clearLocal } from "../utils/persistence"
@@ -36,8 +37,7 @@ export class BodyErrorWrapper extends React.Component {
                         </Link>.
                     </Typography>
                     <Button onClick={this.reset} variant="contained">
-                        <Icon style={{ marginRight: "5px" }}>cached</Icon> Reset
-                        State
+                        <Cached style={{ marginRight: "5px" }} /> Reset State
                     </Button>
                 </div>
             )

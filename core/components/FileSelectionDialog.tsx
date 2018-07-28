@@ -1,3 +1,6 @@
+import InsertDriveFileIcon from "@material-ui/icons/InsertDriveFile"
+import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward"
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircle"
 import {
     Dialog,
     DialogContent,
@@ -65,8 +68,8 @@ export class FileSelectionDialog extends React.Component<
                                     variant="contained"
                                 >
                                     <IconPair
-                                        primary="insert_drive_file"
-                                        secondary="arrow_upward"
+                                        primary={InsertDriveFileIcon}
+                                        secondary={ArrowUpwardIcon}
                                     />
                                     <Typography
                                         variant="button"
@@ -81,8 +84,8 @@ export class FileSelectionDialog extends React.Component<
                                     onClick={this.handleCreateNew}
                                 >
                                     <IconPair
-                                        primary="insert_drive_file"
-                                        secondary="add_circle_outline"
+                                        primary={InsertDriveFileIcon}
+                                        secondary={AddCircleOutlineIcon}
                                     />
                                     <Typography
                                         variant="button"

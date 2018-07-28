@@ -6,7 +6,7 @@ import {
     Typography,
 } from "@material-ui/core"
 import isNil from "lodash/isNil"
-import { default as AddIcon } from "@material-ui/icons/Add"
+import AddIcon from "@material-ui/icons/Add"
 import { autobind } from "core-decorators"
 import { observable, computed } from "mobx"
 import { observer, Observer } from "mobx-react"

@@ -1,5 +1,7 @@
 import React from "react"
-import { Icon, Tooltip } from "@material-ui/core"
+import { Tooltip } from "@material-ui/core"
+import ReplyAllIcon from "@material-ui/icons/ReplyAll"
+import CenterFocusStrongIcon from "@material-ui/icons/CenterFocusStrong"
 import { INode } from "../models/Node"
 
 interface INodeZoomControlsProps {
@@ -13,14 +15,16 @@ interface INodeZoomControlsProps {
 export const NodeZoomControls = (props: INodeZoomControlsProps) =>
     props.isRoot ? (
         <Tooltip title="Unzoom">
-            <Icon className={props.classes.zoomControl} onClick={props.zoomOut}>
-                reply_all
-            </Icon>
+            <ReplyAllIcon
+                className={props.classes.zoomControl}
+                onClick={props.zoomOut}
+            />
         </Tooltip>
     ) : (
         <Tooltip title="Zoom in to this node">
-            <Icon className={props.classes.zoomControl} onClick={props.zoomIn}>
-                center_focus_strong
-            </Icon>
+            <CenterFocusStrongIcon
+                className={props.classes.zoomControl}
+                onClick={props.zoomIn}
+            />
         </Tooltip>
     )

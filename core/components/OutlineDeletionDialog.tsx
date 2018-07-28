@@ -1,9 +1,9 @@
+import WarningIcon from "@material-ui/icons/Warning"
 import {
     Dialog,
     DialogContent,
     DialogActions,
     Button,
-    Icon,
     DialogContentText,
 } from "@material-ui/core"
 import React from "react"
@@ -13,8 +13,7 @@ import { IModalConsumerProps } from "../utils/ModalRegistry"
 export const OutlineDeletionDialog = ({ modal }: IModalConsumerProps) => (
     <Dialog open={true} onClose={modal.dismiss}>
         <DialogContent>
-            <Icon
-                children="warning"
+            <WarningIcon
                 style={{ float: "left", color: "red", fontSize: "3rem" }}
             />
             <DialogContentText style={{ marginLeft: "70px" }}>
