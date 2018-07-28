@@ -26,7 +26,7 @@ export const download = (content: any) => {
     const blob = new Blob([json], {
         type: "application/json;charset=utf-8",
     })
-    FileSaver.saveAs(blob, "outline.fdor")
+    FileSaver.saveAs(blob, "outline.fno")
 }
 
 export const wrapMetadata = async (snapshot: any) => {
