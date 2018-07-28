@@ -50,7 +50,7 @@ const commonConfig: Partial<webpack.Configuration> = {
                             configFile: "tsconfig.client.json",
                         },
                     } /*,
-                    
+
                     TODO: Fix react-hot-loader support
 
                     {
@@ -69,7 +69,7 @@ const commonConfig: Partial<webpack.Configuration> = {
                                 "react-hot-loader/babel",
                             ]),
                         },
-                    }, */
+                    }, */,
                 ],
                 exclude: /node_modules/,
             },

@@ -1,6 +1,8 @@
 import path from "path"
 import merge from "webpack-merge"
 
+// @ts-ignore
+import WebpackPwaManifest from "webpack-pwa-manifest"
 import HtmlWebpackPlugin from "html-webpack-plugin" // tslint:disable-line
 // @ts-ignore
 import OfflinePlugin from "offline-plugin"
@@ -24,7 +26,6 @@ export default merge(commonConfig, {
         new HtmlWebpackPlugin({
             title: "Fluid Outliner",
             template: "src/index.html",
-            inject: "head",
         }),
         new OfflinePlugin({
             responseStrategy: "network-first",
@@ -32,6 +33,22 @@ export default merge(commonConfig, {
         }),
         new FaviconsWebpackPlugin({
             logo: path.join(__dirname, "../assets/logo-text.png"),
+        }),
+        new WebpackPwaManifest({
+            name: "Fluid Outliner",
+            short_name: "Outliner",
+            display: "standalone",
+            theme_color: "#673ab7",
+            background_color: "#673ab7",
+            orientation: "portrait",
+            inject: true,
+            fingerprints: true,
+            icons: [
+                {
+                    src: path.join(__dirname, "../assets/colored-logo.png"),
+                    sizes: [96, 128, 192, 256, 384, 512],
+                },
+            ],
         }),
     ],
     watchOptions: {
