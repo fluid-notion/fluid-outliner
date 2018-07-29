@@ -1,3 +1,4 @@
+import webpack from "webpack"
 import merge from "webpack-merge"
 // tslint:disable-next-line:
 import HtmlWebpackPlugin from "html-webpack-plugin"
@@ -8,7 +9,7 @@ import HtmlWebpackHardiskPlugin from "html-webpack-harddisk-plugin"
 let entry
 let output
 
-const port = process.env.PORT || 9666
+const port = process.env.DEV_SERVER_PORT || 9666
 
 if (baseConfig.mode === "production") {
     entry = "./app/src/renderer.tsx"
@@ -37,7 +38,13 @@ export default merge(baseConfig, {
             alwaysWriteToDisk: true,
         }),
         new HtmlWebpackHardiskPlugin(),
+        new webpack.DefinePlugin({
+            SHELL_ID: JSON.stringify("ELECTRON"),
+        }),
     ],
+    devServer: {
+        port,
+    },
     // https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works
     target: "electron-renderer",
 })

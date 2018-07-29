@@ -16,6 +16,8 @@ import { IModalConsumerProps, injectModal } from "./ModalContainer"
 import { injectStore } from "../models/Store"
 import { withStyles } from "../utils/type-overrides"
 
+declare var SHELL_ID: string
+
 const styles = {
     root: {
         position: "fixed" as "fixed",
@@ -142,34 +144,36 @@ export const Navbar = decorate(
                             }}
                         />
                     </div>
-                    <div style={{ flexBasis: "300px", textAlign: "right" }}>
-                        <Tooltip title="Save to local file">
-                            <IconButton
-                                color="inherit"
-                                aria-label="Menu"
-                                onClick={store!.saveFile}
-                            >
-                                <Octicon
-                                    name="repo-pull"
-                                    className={classes!.icon}
-                                />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Open local file">
-                            <IconButton
-                                color="inherit"
-                                aria-label="Menu"
-                                onClick={() =>
-                                    modal!.activate("FileSelectionDialog")
-                                }
-                            >
-                                <Octicon
-                                    name="repo-push"
-                                    className={classes!.icon}
-                                />
-                            </IconButton>
-                        </Tooltip>
-                    </div>
+                    {SHELL_ID === "PWA" && (
+                        <div style={{ flexBasis: "300px", textAlign: "right" }}>
+                            <Tooltip title="Save to local file">
+                                <IconButton
+                                    color="inherit"
+                                    aria-label="Menu"
+                                    onClick={store!.saveFile}
+                                >
+                                    <Octicon
+                                        name="repo-pull"
+                                        className={classes!.icon}
+                                    />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Open local file">
+                                <IconButton
+                                    color="inherit"
+                                    aria-label="Menu"
+                                    onClick={() =>
+                                        modal!.activate("FileSelectionDialog")
+                                    }
+                                >
+                                    <Octicon
+                                        name="repo-push"
+                                        className={classes!.icon}
+                                    />
+                                </IconButton>
+                            </Tooltip>
+                        </div>
+                    )}
                 </div>
             </Toolbar>
         </AppBar>

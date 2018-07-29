@@ -1,17 +1,15 @@
 import path from "path"
+import webpack from "webpack"
 import merge from "webpack-merge"
 
 // @ts-ignore
-import WebpackPwaManifest from "webpack-pwa-manifest"
-import HtmlWebpackPlugin from "html-webpack-plugin" // tslint:disable-line
-// @ts-ignore
-import OfflinePlugin from "offline-plugin"
-// @ts-ignore
 import FaviconsWebpackPlugin from "favicons-webpack-plugin"
+// @ts-ignore
+import WebpackPwaManifest from "webpack-pwa-manifest"
 
-import commonConfig from "../webpack.config.common"
+import pwaBaseConfig from "./webpack.config.base"
 
-export default merge(commonConfig, {
+export default merge(pwaBaseConfig, {
     entry: {
         main: "./src/index.tsx",
         "outdated-browser-check": "./src/outdated-browser-check.js",
@@ -20,16 +18,11 @@ export default merge(commonConfig, {
         path: path.join(__dirname, "dist"),
         filename: "[name].[hash].js",
         publicPath:
-            commonConfig.mode === "production" ? "/fluid-outliner" : "/",
+            pwaBaseConfig.mode === "production" ? "/fluid-outliner" : "/",
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            title: "Fluid Outliner",
-            template: "src/index.html",
-        }),
-        new OfflinePlugin({
-            responseStrategy: "network-first",
-            appShell: "/",
+        new webpack.DefinePlugin({
+            SHELL_ID: JSON.stringify("PWA"),
         }),
         new FaviconsWebpackPlugin({
             logo: path.join(__dirname, "../assets/logo-text.png"),
@@ -51,10 +44,4 @@ export default merge(commonConfig, {
             ],
         }),
     ],
-    watchOptions: {
-        ignored: /node_modules/,
-    },
-    devServer: {
-        contentBase: path.join(__dirname, "dist"),
-    },
 })

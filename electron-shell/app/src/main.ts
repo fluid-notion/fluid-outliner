@@ -1,5 +1,6 @@
 import { app, BrowserWindow, Menu /*, shell */ } from "electron"
 import path from "path"
+import log from "fancy-log"
 
 // let menu: Menu | null = null
 // let template: any[] = []
@@ -25,70 +26,87 @@ app.on("window-all-closed", () => {
 })
 
 const installExtensions = () => {
-    if (isDev) {
-        const installer = require("electron-devtools-installer") // eslint-disable-line global-require
+    if (!isDev) return Promise.resolve([])
+    const installer = require("electron-devtools-installer") // eslint-disable-line global-require
 
-        const extensions = ["REACT_DEVELOPER_TOOLS", "MOBX_DEVTOOLS"]
-        const forceDownload = !!process.env.UPGRADE_EXTENSIONS
-        return Promise.all(
-            extensions.map(name =>
-                installer.default(installer[name], forceDownload)
-            )
+    const extensions = ["REACT_DEVELOPER_TOOLS", "MOBX_DEVTOOLS"]
+    const forceDownload = !!process.env.UPGRADE_EXTENSIONS
+    return Promise.all(
+        extensions.map(name =>
+            installer.default(installer[name], forceDownload)
         )
-    }
-
-    return Promise.resolve([])
+    )
 }
 
-app.on("ready", () =>
-    installExtensions().then(() => {
-        mainWindow = new BrowserWindow({
-            show: false,
-            width: 1024,
-            height: 728,
-            webPreferences: {
-                allowRunningInsecureContent: true,
-            },
-        })
+app.on("ready", async () => {
+    log("Installing extensions")
+    await installExtensions()
+
+    log("Creating browser window")
+    mainWindow = new BrowserWindow({
+        show: false,
+        width: 1024,
+        height: 728,
+        webPreferences: {
+            allowRunningInsecureContent: true,
+        },
+    })
+
+    if (isDev) {
+        const devUrl = `http://localhost:${
+            process.env.DEV_SERVER_PORT
+        }/dist/index.html`
+        log("Loading renderer dev server url:", devUrl)
+        mainWindow.loadURL(devUrl)
+    } else {
+        log("Loading local file")
+        mainWindow.loadURL(`file://${__dirname}/index.html`)
+    }
+
+    const inputFiles = process.argv.filter(it => it.match(/\.fnoa?$/))
+
+    mainWindow.webContents.on("did-finish-load", () => {
+        log("Finished loading")
+        if (!mainWindow) return
+        mainWindow.show()
+        mainWindow.focus()
 
         if (isDev) {
-            mainWindow.loadURL(
-                `http://localhost:${process.env.DEV_SERVER_PORT}`
-            )
-        } else {
-            mainWindow.loadURL(`file://${__dirname}/index.html`)
-        }
-
-        mainWindow.webContents.on("did-finish-load", () => {
-            if (mainWindow) {
-                mainWindow.show()
-                mainWindow.focus()
-            }
-        })
-
-        mainWindow.on("closed", () => {
-            mainWindow = null
-        })
-
-        if (isDev) {
+            log("Launching dev tools")
             mainWindow.webContents.openDevTools()
         }
-        mainWindow.webContents.on("context-menu", (_e, props) => {
-            const { x, y } = props
 
-            Menu.buildFromTemplate([
-                {
-                    label: "Inspect element",
-                    click() {
-                        mainWindow!.webContents.inspectElement(x, y)
-                    },
+        if (inputFiles.length > 0) {
+            if (inputFiles.length > 1) {
+                console.error(
+                    "Multiple input files are currently not supported"
+                )
+            }
+            log("Visiting file")
+            mainWindow.webContents.send("fno:visit-file", inputFiles[0])
+        }
+    })
+
+    mainWindow.on("closed", () => {
+        mainWindow = null
+    })
+
+    mainWindow.webContents.on("context-menu", (_e, props) => {
+        const { x, y } = props
+        const menu = Menu.buildFromTemplate([
+            {
+                label: "Inspect element",
+                click() {
+                    mainWindow!.webContents.inspectElement(x, y)
                 },
-            ]).popup({
-                window: mainWindow!,
-            })
+            },
+        ])
+        menu.popup({
+            window: mainWindow!,
         })
+    })
 
-        /*
+    /*
         if (process.platform === "darwin") {
             template = [
                 {
@@ -372,5 +390,4 @@ app.on("ready", () =>
             menu = Menu.buildFromTemplate(template)
             mainWindow.setMenu(menu)
         } */
-    })
-)
+})

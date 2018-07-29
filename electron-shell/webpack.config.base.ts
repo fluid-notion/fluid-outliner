@@ -15,7 +15,7 @@ if (commonConfig.mode === "development") {
 }
 
 export default merge(commonConfig, {
-    plugins: [],
+    plugins,
     output: {
         path: path.join(__dirname, "app/dist"),
         filename: "bundle.js",
