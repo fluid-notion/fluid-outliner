@@ -68,6 +68,7 @@
     "font-awesome": "^4.7.0",
     "fuzzysearch": "^1.0.3",
     "gh-pages": "^1.2.0",
+    "html-webpack-harddisk-plugin": "^0.2.0",
     "html-webpack-plugin": "^3.2.0",
     "in-publish": "^2.0.0",
     "jest": "^23.1.0",

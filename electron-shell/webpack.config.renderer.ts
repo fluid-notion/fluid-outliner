@@ -2,6 +2,8 @@ import merge from "webpack-merge"
 // tslint:disable-next-line:
 import HtmlWebpackPlugin from "html-webpack-plugin"
 import baseConfig from "./webpack.config.base"
+// @ts-ignore
+import HtmlWebpackHardiskPlugin from "html-webpack-harddisk-plugin"
 
 let entry
 let output
@@ -32,7 +34,9 @@ export default merge(baseConfig, {
         new HtmlWebpackPlugin({
             filename: "index.html",
             template: "app/src/index.html",
+            alwaysWriteToDisk: true,
         }),
+        new HtmlWebpackHardiskPlugin(),
     ],
     // https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works
     target: "electron-renderer",

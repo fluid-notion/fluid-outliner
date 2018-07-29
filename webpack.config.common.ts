@@ -16,7 +16,7 @@ const plugins = [
     }),
     new DashboardPlugin(),
     new webpack.DefinePlugin({
-        NODE_ENV: mode,
+        "process.env.NODE_ENV": JSON.stringify(mode),
     }),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.LoaderOptionsPlugin({

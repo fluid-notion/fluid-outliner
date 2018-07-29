@@ -31,6 +31,6 @@ export default merge(baseConfig, {
 
     externals: {
         "electron-devtools-installer": "electron-devtools-installer",
-        "electron-debug": "electron-debug"
-    }
+        "electron-debug": "electron-debug",
+    },
 })

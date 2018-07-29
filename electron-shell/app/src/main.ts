@@ -5,12 +5,14 @@ import path from "path"
 // let template: any[] = []
 let mainWindow: BrowserWindow | null = null
 
+const isDev = process.env.NODE_ENV === "development"
+
 // if (process.env.NODE_ENV === 'production') {
 //   const sourceMapSupport = require('source-map-support'); // eslint-disable-line
 //   sourceMapSupport.install();
 // }
 
-if (process.env.NODE_ENV === "development") {
+if (isDev) {
     // tslint:disable-next-line:no-var-requires
     require("electron-debug")() // eslint-disable-line global-require
     const p = path.join(__dirname, "..", "app", "node_modules") // eslint-disable-line
@@ -23,7 +25,7 @@ app.on("window-all-closed", () => {
 })
 
 const installExtensions = () => {
-    if (process.env.NODE_ENV === "development") {
+    if (isDev) {
         const installer = require("electron-devtools-installer") // eslint-disable-line global-require
 
         const extensions = ["REACT_DEVELOPER_TOOLS", "MOBX_DEVTOOLS"]
@@ -49,7 +51,13 @@ app.on("ready", () =>
             },
         })
 
-        mainWindow.loadURL(`file://${__dirname}/index.html`)
+        if (isDev) {
+            mainWindow.loadURL(
+                `http://localhost:${process.env.DEV_SERVER_PORT}`
+            )
+        } else {
+            mainWindow.loadURL(`file://${__dirname}/index.html`)
+        }
 
         mainWindow.webContents.on("did-finish-load", () => {
             if (mainWindow) {
@@ -62,7 +70,7 @@ app.on("ready", () =>
             mainWindow = null
         })
 
-        if (process.env.NODE_ENV === "development") {
+        if (isDev) {
             mainWindow.webContents.openDevTools()
         }
         mainWindow.webContents.on("context-menu", (_e, props) => {
