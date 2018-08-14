@@ -15,7 +15,7 @@ import { safeApplySnapshot } from "../utils/mobx-helpers"
 export const Store = t
     .model("Store", {
         outline: t.maybe(Outline),
-        visitState: t.maybe(OutlineVisitState),
+        visitState: t.maybe(OutlineVisitState)
     })
     .actions(self => ({
         createNew() {

@@ -8,6 +8,10 @@ export type IPartial<T> = { [P in keyof T]?: T[P] }
 
 export type IMaybe<T> = T | null | undefined
 
+export type IMaybeArray<T> = T | T[]
+
+export type IMaybeLazy<T> = T | (() => T)
+
 export type IWitness<U extends T, T> = U
 
 export type IIdentifiable = IMaybe<{ id: IMaybe<string> }>

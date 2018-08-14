@@ -3,7 +3,7 @@ import webpack from "webpack"
 import merge from "webpack-merge"
 
 // @ts-ignore
-import FaviconsWebpackPlugin from "favicons-webpack-plugin"
+// import FaviconsWebpackPlugin from "favicons-webpack-plugin"
 // @ts-ignore
 import WebpackPwaManifest from "webpack-pwa-manifest"
 
@@ -24,9 +24,9 @@ export default merge(pwaBaseConfig, {
         new webpack.DefinePlugin({
             SHELL_ID: JSON.stringify("PWA"),
         }),
-        new FaviconsWebpackPlugin({
-            logo: path.join(__dirname, "../assets/logo-text.png"),
-        }),
+        // new FaviconsWebpackPlugin({
+        //     logo: path.join(__dirname, "../assets/logo-text.png"),
+        // }),
         new WebpackPwaManifest({
             name: "Fluid Outliner",
             short_name: "Outliner",

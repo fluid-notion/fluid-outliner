@@ -23,14 +23,13 @@ import { SecondaryDrawerMenu } from "./SecondaryDrawerMenu"
 import { ResourceRefList } from "./ResourceRefList"
 import { KeyBindingsRefList } from "./KeyBindingsRefList"
 import { SelectionOverview } from "./SelectionOverview"
-import { injectModal } from "./ModalContainer"
 import { injectStore } from "../models/Store"
 import Scrollbars from "react-custom-scrollbars"
+import { Redirect } from "react-router-dom"
 
 type IBodyProps = Partial<IProviderProps>
 
 @injectStore
-@injectModal
 @observer
 export class Body extends React.Component<IBodyProps> {
     @observable private isPreloading = true
@@ -88,22 +87,25 @@ export class Body extends React.Component<IBodyProps> {
         return this.props.store!.outline
     }
 
-    public componentDidMount() {
-        this.props.store!.restoreSaved().then(() => {
-            this.isPreloading = false
-            if (!this.outline) {
-                this.props.modal!.activate("FileSelectionDialog")
-            }
-        })
-    }
-
-    public componentDidUpdate() {
-        if (!this.outline && !this.props.modal!.activeModal) {
-            this.props.modal!.activate("FileSelectionDialog")
-        }
-    }
+    // public componentDidMount() {
+    //     this.props.store!.restoreSaved().then(() => {
+    //         this.isPreloading = false
+    //         if (!this.outline) {
+    //             this.props.modal!.activate("FileSelectionDialog")
+    //         }
+    //     })
+    // }
+    //
+    // public componentDidUpdate() {
+    //     if (!this.outline && !this.props.modal!.activeModal) {
+    //         this.props.modal!.activate("FileSelectionDialog")
+    //     }
+    // }
 
     public render() {
+        if (!this.outline) {
+            return <Redirect to="/welcome" />
+        }
         return (
             <div
                 style={{

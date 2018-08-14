@@ -1,30 +1,44 @@
-import { CssBaseline, MuiThemeProvider } from "@material-ui/core"
-
-import { Provider } from "mobx-react"
 import React from "react"
+import { Navbar } from "./NavBar";
+import { observer, inject } from "mobx-react";
+import { IRepositoryClient } from "../utils/repository-client";
+import { OutlineWindowPresenter } from "./OutlineWindowPresenter";
 
-import { Body } from "./Body"
-import { theme } from "./styles/theme"
-import { ModalContainer } from "./ModalContainer"
-import { store } from "../store"
+interface IAppProps {
+    repository?: IRepositoryClient
+}
 
-export class App extends React.Component {
-    public shouldComponentUpdate() {
-        return false
+@inject('repository')
+@observer
+export class App extends React.Component<IAppProps> {
+    
+    private searchRef = React.createRef<any>()
+
+    get repository() {
+        return this.props.repository!
     }
 
     public render() {
         return (
-            <>
-                <CssBaseline />
-                <Provider store={store}>
-                    <MuiThemeProvider theme={theme}>
-                        <ModalContainer>
-                            <Body />
-                        </ModalContainer>
-                    </MuiThemeProvider>
-                </Provider>
-            </>
+            <div
+                style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    top: "65px",
+                    bottom: 0,
+                    overflow: "auto",
+                }}
+                tabIndex={0}
+            >
+                <Navbar
+                    toggleDrawer={() => {}}
+                    searchRef={this.searchRef}
+                    drawerOpen={() => {}}
+                />
+                <OutlineWindowPresenter />
+            </div>
         )
     }
+
 }

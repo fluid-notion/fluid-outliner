@@ -39,6 +39,9 @@ const commonConfig: Partial<webpack.Configuration> = {
     },
     devtool: isProd ? "source-map" : "inline-source-map",
     plugins,
+    output: {
+        globalObject: 'this'
+    },
     module: {
         rules: [
             {
