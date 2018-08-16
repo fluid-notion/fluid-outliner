@@ -10,6 +10,7 @@
     "curly": [true, "ignore-same-line"],
     "ordered-imports": false,
     "variable-name": [false],
-    "prefer-conditional-expression": false
+    "prefer-conditional-expression": false,
+    "interface-name" : [true, "never-prefix"]
   }
 }

@@ -3,12 +3,12 @@ import path from "path"
 import pwaConfig from "../pwa-shell/webpack.config"
 
 export default {
-    ...pwaConfig, 
+    ...pwaConfig,
     entry: {
-        main: "./src/index.tsx"
+        main: "./src/index.tsx",
     },
     output: {
         path: path.join(__dirname, "www"),
-        filename: "[name].[hash].js"
-    }
+        filename: "[name].[hash].js",
+    },
 }

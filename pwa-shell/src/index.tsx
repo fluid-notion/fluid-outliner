@@ -2,9 +2,9 @@ import _debug from "debug"
 
 import React from "react"
 import { render } from "react-dom"
-import { App } from "../../core/components/App"
+import { App } from "../../core/views/components/App"
 import { AppContainer } from "./components/AppContainer"
-import { installOfflinePlugin } from "../../core/utils/offline-plugin-runtime"
+import { installOfflinePlugin } from "../../core/helpers/offline-plugin-runtime"
 
 const debug = _debug("fluid-outliner:index")
 

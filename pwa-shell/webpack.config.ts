@@ -17,8 +17,7 @@ export default merge(pwaBaseConfig, {
     output: {
         path: path.join(__dirname, "dist"),
         filename: "[name].[hash].js",
-        publicPath:
-            pwaBaseConfig.mode === "production" ? "/fluid-outliner" : "/",
+        publicPath: pwaBaseConfig.mode === "production" ? "/fluid-outliner" : "/",
     },
     plugins: [
         new webpack.DefinePlugin({

@@ -3,8 +3,7 @@ import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer"
 // @ts-ignore
 import DashboardPlugin from "webpack-dashboard/plugin" // tslint:disable-line
 
-const mode: "production" | "development" =
-    process.env.NODE_ENV === "production" ? "production" : "development"
+const mode: "production" | "development" = process.env.NODE_ENV === "production" ? "production" : "development"
 
 const isProd = mode === "production"
 // const isDev = mode === "development"
@@ -40,7 +39,7 @@ const commonConfig: Partial<webpack.Configuration> = {
     devtool: isProd ? "source-map" : "inline-source-map",
     plugins,
     output: {
-        globalObject: 'this'
+        globalObject: "this",
     },
     module: {
         rules: [

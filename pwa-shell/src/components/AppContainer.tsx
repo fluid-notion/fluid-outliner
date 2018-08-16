@@ -1,34 +1,34 @@
 import { CssBaseline, MuiThemeProvider } from "@material-ui/core"
 import { Provider, observer } from "mobx-react"
 import React from "react"
-
-import { theme } from "../../../core/components/styles/theme"
-import { RouteState } from "../../../core/models/RouteState"
-import { ModalContainer } from "./ModalContainer"
-import { RoutePersistenceCoordinator } from "../utils/RoutePersistenceCoordinator"
-import * as RepositoryClient from "../../../core/utils/repository-client"
 import { observable } from "mobx"
-import { IMaybe } from "../../../core/utils/UtilTypes"
+
+import { theme } from "../../../core/views/styles/theme"
+import { RouteViewModel } from "../../../core/views/models/RouteViewModel"
+import { ModalContainer } from "./ModalContainer"
+import { RepositoryViewModel } from "../../../core/views/models/RepositoryViewModel"
+import { Maybe } from "../../../core/helpers/types"
+import { RoutePersistenceCoordinator } from "../helpers/RoutePersistenceCoordinator"
 
 // @ts-ignore
-import RepositoryWorker from "worker-loader!../utils/repository"
+import RepositoryWorker from "worker-loader!../models/Repository"
 
 @observer
 export class AppContainer extends React.Component {
-    private routeState: RouteState
-    private routePersistenceCoordinator: IMaybe<RoutePersistenceCoordinator>
-
-    @observable private repository: IMaybe<import("../../../core/utils/repository").Repository>
+    private route: RouteViewModel
+    private routePersistenceCoordinator: Maybe<RoutePersistenceCoordinator>
+    @observable private repository: Maybe<RepositoryViewModel>
 
     constructor(props: {}) {
         super(props)
-        this.routeState = RouteState.instance()
+        this.route = RouteViewModel.instance()
     }
 
     public async componentDidMount() {
-        this.routeState.observe()
-        this.repository = await RepositoryClient.instance(new RepositoryWorker())
-        this.routePersistenceCoordinator = new RoutePersistenceCoordinator(this.routeState, this.repository!)
+        this.route.observe()
+        this.repository = await RepositoryViewModel.instance(RepositoryWorker)
+        this.route = await RouteViewModel.instance()
+        this.routePersistenceCoordinator = new RoutePersistenceCoordinator(this.route, this.repository!)
         this.routePersistenceCoordinator.init()
     }
 
@@ -38,7 +38,7 @@ export class AppContainer extends React.Component {
                 <CssBaseline />
                 {this.repository && (
                     <Provider
-                        routeState={this.routeState}
+                        route={this.route}
                         routePersistenceCoordinator={this.routePersistenceCoordinator}
                         repository={this.repository}
                     >

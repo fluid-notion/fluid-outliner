@@ -31,11 +31,7 @@ const installExtensions = () => {
 
     const extensions = ["REACT_DEVELOPER_TOOLS", "MOBX_DEVTOOLS"]
     const forceDownload = !!process.env.UPGRADE_EXTENSIONS
-    return Promise.all(
-        extensions.map(name =>
-            installer.default(installer[name], forceDownload)
-        )
-    )
+    return Promise.all(extensions.map(name => installer.default(installer[name], forceDownload)))
 }
 
 app.on("ready", async () => {
@@ -53,9 +49,7 @@ app.on("ready", async () => {
     })
 
     if (isDev) {
-        const devUrl = `http://localhost:${
-            process.env.DEV_SERVER_PORT
-        }/dist/index.html`
+        const devUrl = `http://localhost:${process.env.DEV_SERVER_PORT}/dist/index.html`
         log("Loading renderer dev server url:", devUrl)
         mainWindow.loadURL(devUrl)
     } else {
@@ -78,9 +72,7 @@ app.on("ready", async () => {
 
         if (inputFiles.length > 0) {
             if (inputFiles.length > 1) {
-                console.error(
-                    "Multiple input files are currently not supported"
-                )
+                console.error("Multiple input files are currently not supported")
             }
             log("Visiting file")
             mainWindow.webContents.send("fno:visit-file", inputFiles[0])

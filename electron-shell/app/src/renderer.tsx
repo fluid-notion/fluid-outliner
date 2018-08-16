@@ -1,11 +1,10 @@
 import * as React from "react"
-import * as fs from "fs"
+// import * as fs from "fs"
 import { render } from "react-dom"
-import { ipcRenderer } from "electron"
+// import { ipcRenderer } from "electron"
 import { AppContainer } from "react-hot-loader"
 
-import { App } from "../../../core/components/App"
-import { store } from "../../../core/store"
+import { App } from "../../../core/views/components/App"
 
 const renderApp = () => {
     render(
@@ -24,10 +23,10 @@ if ((module as any).hot) {
     })
 }
 
-ipcRenderer.on("fno:visit-file", (_event: any, filePath: string) => {
-    store.loadFileContent(
-        fs.readFileSync(filePath, {
-            encoding: "utf-8",
-        })
-    )
-})
+// ipcRenderer.on("fno:visit-file", (_event: any, filePath: string) => {
+//     store.loadFileContent(
+//         fs.readFileSync(filePath, {
+//             encoding: "utf-8",
+//         })
+//     )
+// })
