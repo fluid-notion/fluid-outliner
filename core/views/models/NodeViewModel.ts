@@ -1,4 +1,4 @@
-import { computed, action } from "mobx";
+import { computed } from "mobx";
 
 import { Node } from "../../models/OutlineShell"
 import { NodeState } from "../../models/OutlineVisitState"
@@ -42,7 +42,9 @@ export class NodeViewModel implements NodeViewModelParams {
     get content() {
         return this.node.content
     }
-
+    get output() {
+        return this.node.output
+    }
     get hasChildren() {
         return this.numChildren > 0
     }
@@ -126,8 +128,12 @@ export class NodeViewModel implements NodeViewModelParams {
     }
 
     @autobind
-    @action
-    setContent(content: string) {
-        this.outlineShellProxy.setContent(this.id, content);
+    setContent(content: string, output?: string) {
+        this.outlineShellProxy.setContent(this.id, content, output);
+    }
+
+    @autobind
+    setFormat(format: string) {
+        this.outlineShellProxy.setFormat(this.id, format);
     }
 }

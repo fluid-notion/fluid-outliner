@@ -21,7 +21,8 @@ export interface NodeParent {
 export interface Node extends NodeParent {
     id: string
     parentId: Maybe<string>
-    content: string
+    contentId: Maybe<string>
+    content: Maybe<string>
     format: string
     output?: string
 }
@@ -34,8 +35,9 @@ export interface Outline extends NodeParent {
 
 export const createDefaultNode: Fn0<Node> = () => ({
     parentId: null,
+    contentId: null,
+    content: null,
     id: uuid(),
-    content: "Edit Me",
     format: "text",
     children: [],
 })
@@ -124,12 +126,21 @@ export class OutlineShell {
         this.makeChange(outline => this.changeNodeParent(id, parentId, index, outline), `Relocate node: ${id}`)
     }
 
-    public async setContent(id: string, content: string) {
+    public async setContent(id: string, content: string, output?: string) {
         this.makeChange(outline => {
             const node = this.getNode(id, outline)
             node.content = content
+            node.output = output
             return outline
         })
+    }
+
+    public async setFormat(id: string, format: string) {
+        this.makeChange(outline => {
+            const node = this.getNode(id, outline);
+            node.format = format;
+            return outline;
+        });
     }
 
     public setTitle(title: string) {

@@ -124,10 +124,14 @@ export class NodeToolbar extends React.Component<NodeToolbarProps> {
                     <div className={classes.group}>
                         <Octicon name="file" className={`${classes.primaryIcon} ${classes.groupLeaderIcon}`} />
                         <div className={classes.groupInner}>
-                            <select className={classes.select}>
+                            <select className={classes.select} onChange={(e) => {
+                                debugger
+                                node.setFormat(e.target.value);
+                            }}>
                                 <option value="text">Plain Text</option>
                                 <option value="html">Rich Text (HTML)</option>
                                 <option value="markdown">Markdown</option>
+                                <option value="image">Image</option>
                             </select>
                         </div>
                     </div>

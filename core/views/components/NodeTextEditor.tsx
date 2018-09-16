@@ -3,7 +3,6 @@ import { StyledComponentProps } from "@material-ui/core"
 
 import { observer } from "../../../node_modules/mobx-react"
 import { withStyles } from "../helpers/type-overrides"
-import { NodePaperWrapper } from "./NodePresenter";
 import { NodeViewModel } from "../models/NodeViewModel";
 import { autobind } from "../../../node_modules/core-decorators";
 
@@ -30,23 +29,21 @@ export class NodeTextEditor extends React.Component<NodeTextEditorProps> {
     }
 
     render() {
-        const { classes, ...props } = this.props;
+        const { classes } = this.props;
         return (
-            <NodePaperWrapper {...props}>
-                <textarea
-                    defaultValue={this.props.node.content}
-                    className={classes!.textField}
-                    ref={this.textFieldRef}
-                    style={{ width: '100%' }}
-                    onBlur={this.handleBlur}
-                />
-            </NodePaperWrapper>
+            <textarea
+                defaultValue={this.props.node.content}
+                className={classes!.textField}
+                ref={this.textFieldRef}
+                style={{ width: '100%' }}
+                onBlur={this.handleBlur}
+            />
         )
     }
 
     @autobind
     private handleBlur(e: React.FocusEvent<HTMLTextAreaElement>) {
-        this.props.node.setContent(e.target.value);
+        this.props.node.setContent(e.target.value, e.target.value);
         this.props.node.deactivateEditing();
     }
 }

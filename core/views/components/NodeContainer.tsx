@@ -1,4 +1,4 @@
-import { StyledComponentProps } from "@material-ui/core"
+import { StyledComponentProps, Paper } from "@material-ui/core"
 import { observer } from "mobx-react"
 import React from "react"
 import { autobind } from "core-decorators"
@@ -7,6 +7,7 @@ import { observable } from "mobx"
 import { NodeViewModel } from "../models/NodeViewModel"
 import { withStyles } from "../helpers/type-overrides"
 import { NodeFoldControls } from "./NodeFoldControls"
+import { palette } from "../styles/theme";
 
 const styles = {
     container: {
@@ -26,6 +27,10 @@ const styles = {
             opacity: 1
         }
     },
+    paper: {
+        padding: "10px",
+        borderRadius: 0,
+    }
 }
 
 interface NodePresenterProps extends StyledComponentProps<keyof typeof styles> {
@@ -45,6 +50,7 @@ export class NodeContainer extends React.Component<NodePresenterProps> {
     render() {
         const classes = this.props.classes!
         const distLeft = this.props.node.level * 20
+        const { node } = this.props;
         return (
             <div
                 tabIndex={0}
@@ -55,10 +61,17 @@ export class NodeContainer extends React.Component<NodePresenterProps> {
                     paddingLeft: distLeft,
                 }}
             >
-                {this.props.node.hasChildren && (
-                    <NodeFoldControls node={this.props.node} classes={this.props.classes} style={{ left: `${distLeft - 35}px` }} />
-                )}
-                {this.props.children}
+                <Paper
+                    className={classes!.paper}
+                    style={{
+                        border: (node.isActive ? `1px solid ${palette.primary.light}` : null) as any,
+                    }}
+                >
+                    {this.props.node.hasChildren && (
+                        <NodeFoldControls node={this.props.node} classes={this.props.classes} style={{ left: `${distLeft - 35}px` }} />
+                    )}
+                    {this.props.children}
+                </Paper>
             </div>
         )
     }

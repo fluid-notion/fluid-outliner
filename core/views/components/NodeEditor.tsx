@@ -6,11 +6,11 @@ import { NodeContainer } from "./NodeContainer";
 
 const nodeEditors: { [key: string]: any } = {
     text: Loadable(() => import("./NodeTextEditor")),
-    // html: Loadable(import("./NodeHTMLEditor")),
-    //markdown: Loadable(import("./NodeMarkdownEditor"))
+    html: Loadable(() => import("./NodeHTMLEditor")),
+    markdown: Loadable(() => import("./NodeMarkdownEditor"))
 }
 
-interface NodeEditorProps {
+export interface NodeEditorProps {
     node: NodeViewModel
 }
 
