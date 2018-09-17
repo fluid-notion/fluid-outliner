@@ -22,6 +22,7 @@ export interface Node extends NodeParent {
     id: string
     parentId: Maybe<string>
     contentId: Maybe<string>
+    contentHash: Maybe<string>
     content: Maybe<string>
     format: string
     output?: string
@@ -36,6 +37,7 @@ export interface Outline extends NodeParent {
 export const createDefaultNode: Fn0<Node> = () => ({
     parentId: null,
     contentId: null,
+    contentHash: null,
     content: null,
     id: uuid(),
     format: "text",
