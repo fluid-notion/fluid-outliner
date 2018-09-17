@@ -6,18 +6,18 @@ import { OutlineViewModel } from "../models/OutlineViewModel"
 import { withStyles } from "../helpers/type-overrides"
 import { StyledComponentProps } from "@material-ui/core"
 import { autobind } from "../../../node_modules/core-decorators"
-import { TitleEditor } from "./TitleEditor";
-import { NodeToolbar } from "./NodeToolbar";
-import { NodeEditor } from "./NodeEditor";
+import { TitleEditor } from "./TitleEditor"
+import { NodeToolbar } from "./NodeToolbar"
+import { NodeEditor } from "./NodeEditor"
 
 const styles = {
     header: {
         display: "flex",
-        flexDirection: "row" as "row"
+        flexDirection: "row" as "row",
     },
     titleContainer: {
         textAlign: "left" as "left",
-        flexGrow: 2
+        flexGrow: 2,
     },
     outerContainer: {
         background: "#F2F2F2",
@@ -62,9 +62,7 @@ export class OutlineEditor extends React.Component<OutlineEditorProps> {
                 <div ref={this.outerContainerRef} className={classes.outerContainer}>
                     <Scrollbars ref={this.scrollerRef} onScrollFrame={this.syncScrollState}>
                         <div className={classes.innerContainer} ref={this.containerRef}>
-                            {outline.visibleNodes.map((node) => (
-                                <NodeEditor node={node} />
-                            ))}
+                            {outline.visibleNodes.map(node => <NodeEditor node={node} />)}
                         </div>
                     </Scrollbars>
                 </div>

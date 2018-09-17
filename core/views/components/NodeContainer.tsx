@@ -7,7 +7,7 @@ import { observable } from "mobx"
 import { NodeViewModel } from "../models/NodeViewModel"
 import { withStyles } from "../helpers/type-overrides"
 import { NodeFoldControls } from "./NodeFoldControls"
-import { palette } from "../styles/theme";
+import { palette } from "../styles/theme"
 
 const styles = {
     container: {
@@ -24,13 +24,13 @@ const styles = {
         cursor: "pointer",
         opacity: 0.4,
         "&:hover": {
-            opacity: 1
-        }
+            opacity: 1,
+        },
     },
     paper: {
         padding: "10px",
         borderRadius: 0,
-    }
+    },
 }
 
 interface NodePresenterProps extends StyledComponentProps<keyof typeof styles> {
@@ -50,7 +50,7 @@ export class NodeContainer extends React.Component<NodePresenterProps> {
     render() {
         const classes = this.props.classes!
         const distLeft = this.props.node.level * 20
-        const { node } = this.props;
+        const { node } = this.props
         return (
             <div
                 tabIndex={0}
@@ -68,7 +68,11 @@ export class NodeContainer extends React.Component<NodePresenterProps> {
                     }}
                 >
                     {this.props.node.hasChildren && (
-                        <NodeFoldControls node={this.props.node} classes={this.props.classes} style={{ left: `${distLeft - 35}px` }} />
+                        <NodeFoldControls
+                            node={this.props.node}
+                            classes={this.props.classes}
+                            style={{ left: `${distLeft - 35}px` }}
+                        />
                     )}
                     {this.props.children}
                 </Paper>
@@ -91,6 +95,6 @@ export class NodeContainer extends React.Component<NodePresenterProps> {
 
     @autobind
     private onFocus() {
-        this.props.node.outline.setActive(this.props.node.id);
+        this.props.node.outline.setActive(this.props.node.id)
     }
 }

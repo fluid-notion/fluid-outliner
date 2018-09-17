@@ -1,5 +1,5 @@
 import React from "react"
-import { Navbar } from "./NavBar"
+import { Navbar } from "./Navbar"
 import { observer, inject } from "mobx-react"
 
 import { RepositoryViewModel } from "../models/RepositoryViewModel"
@@ -36,9 +36,9 @@ export class App extends React.Component<AppProps> {
                 tabIndex={0}
             >
                 <Navbar
-                    toggleDrawer={() => { }}
+                    toggleDrawer={() => {}}
                     searchRef={this.searchRef}
-                    drawerOpen={() => { }}
+                    drawerOpen={() => {}}
                     repository={this.repository}
                 />
                 {this.outline && <OutlineEditor outline={this.outline} />}

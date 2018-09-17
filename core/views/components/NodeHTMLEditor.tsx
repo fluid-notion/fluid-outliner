@@ -1,27 +1,27 @@
 import React from "react"
 import ReactQuill from "react-quill"
 
-import 'react-quill/dist/quill.snow.css';
-import { NodeEditorProps } from "./NodeEditor";
-import { autobind } from "../../../node_modules/core-decorators";
+import "react-quill/dist/quill.snow.css"
+import { NodeEditorProps } from "./NodeEditor"
+import { autobind } from "../../../node_modules/core-decorators"
 
 export class NodeHTMLEditor extends React.Component<NodeEditorProps> {
-    quillRef = React.createRef<ReactQuill>();
+    quillRef = React.createRef<ReactQuill>()
 
     render() {
         return (
             <ReactQuill
-                defaultValue={this.props.node.content}
+                defaultValue={this.props.node.content || ""}
                 onBlur={this.handleBlur}
                 theme="snow"
                 ref={this.quillRef}
                 modules={{
                     toolbar: {
-                        container: '.quill-custom-toolbar'
-                    }
+                        container: ".quill-custom-toolbar",
+                    },
                 }}
             />
-        );
+        )
     }
 
     @autobind
@@ -31,4 +31,4 @@ export class NodeHTMLEditor extends React.Component<NodeEditorProps> {
     }
 }
 
-export default NodeHTMLEditor;
+export default NodeHTMLEditor

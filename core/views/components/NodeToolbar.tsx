@@ -5,11 +5,10 @@ import Octicon from "react-octicon"
 import { withStyles } from "../helpers/type-overrides"
 import { StyledComponentProps } from "@material-ui/core"
 import { NodeViewModel } from "../models/NodeViewModel"
-import { QuillToolbar } from "./QuillToolbar";
+import { QuillToolbar } from "./QuillToolbar"
 
 const styles = {
-    container: {
-    },
+    container: {},
 
     iconRow: {
         display: "flex" as "flex",
@@ -54,8 +53,8 @@ const styles = {
     select: {
         background: "transparent",
         border: "1px solid silver",
-        margin: "5px"
-    }
+        margin: "5px",
+    },
 }
 
 interface NodeToolbarProps extends StyledComponentProps<keyof typeof styles> {
@@ -70,7 +69,7 @@ export class NodeToolbar extends React.Component<NodeToolbarProps> {
         const classes = this.props.classes!
         const { node } = this.props
         return (
-            <div className={classes.container} style={this.props.style} >
+            <div className={classes.container} style={this.props.style}>
                 <div className={classes.iconRow}>
                     <a className={classes.iconLink} title="Edit Node" onClick={node.activateEditing}>
                         <Octicon name="pencil" className={`${classes.primaryIcon}`} />
@@ -124,10 +123,13 @@ export class NodeToolbar extends React.Component<NodeToolbarProps> {
                     <div className={classes.group}>
                         <Octicon name="file" className={`${classes.primaryIcon} ${classes.groupLeaderIcon}`} />
                         <div className={classes.groupInner}>
-                            <select className={classes.select} onChange={(e) => {
-                                debugger
-                                node.setFormat(e.target.value);
-                            }}>
+                            <select
+                                className={classes.select}
+                                onChange={e => {
+                                    debugger
+                                    node.setFormat(e.target.value)
+                                }}
+                            >
                                 <option value="text">Plain Text</option>
                                 <option value="html">Rich Text (HTML)</option>
                                 <option value="markdown">Markdown</option>

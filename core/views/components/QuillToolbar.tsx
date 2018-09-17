@@ -16,12 +16,7 @@ export const QuillToolbar = () => (
                         <polygon className="ql-stroke" points="7 7 9 5 11 7 7 7" />
                     </svg>
                 </span>
-                <span
-                    className="ql-picker-options"
-                    aria-hidden="true"
-                    tabIndex={-1}
-                    id="ql-picker-options-0"
-                >
+                <span className="ql-picker-options" aria-hidden="true" tabIndex={-1} id="ql-picker-options-0">
                     <span tabIndex={0} role="button" className="ql-picker-item" data-value="1" />
                     <span tabIndex={0} role="button" className="ql-picker-item" data-value="2" />
                     <span tabIndex={0} role="button" className="ql-picker-item" data-value="3" />
@@ -57,19 +52,8 @@ export const QuillToolbar = () => (
             </button>
             <button type="button" className="ql-underline">
                 <svg viewBox="0 0 18 18">
-                    <path
-                        className="ql-stroke"
-                        d="M5,3V9a4.012,4.012,0,0,0,4,4H9a4.012,4.012,0,0,0,4-4V3"
-                    />
-                    <rect
-                        className="ql-fill"
-                        height="1"
-                        rx="0.5"
-                        ry="0.5"
-                        width="12"
-                        x="3"
-                        y="15"
-                    />
+                    <path className="ql-stroke" d="M5,3V9a4.012,4.012,0,0,0,4,4H9a4.012,4.012,0,0,0,4-4V3" />
+                    <rect className="ql-fill" height="1" rx="0.5" ry="0.5" width="12" x="3" y="15" />
                 </svg>
             </button>
             <button type="button" className="ql-link">

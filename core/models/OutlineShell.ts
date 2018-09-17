@@ -6,11 +6,13 @@ import first from "lodash/first"
 import _debug from "debug"
 // @ts-ignore
 import AutoMerge from "automerge"
-import { observable, computed } from "mobx"
+import { computed } from "mobx"
 
 import { v4 as uuid } from "uuid"
 import { Maybe, Fn0 } from "../helpers/types"
 import { linkProducer } from "../helpers/unidirectional-observable-bridge/producer"
+import { EmbeddedDataFile } from "./EmbeddedDataFile"
+import { Repository } from "./Repository"
 
 const debug = _debug("fluid-outliner:OutlineShell")
 
@@ -21,11 +23,7 @@ export interface NodeParent {
 export interface Node extends NodeParent {
     id: string
     parentId: Maybe<string>
-    contentId: Maybe<string>
-    contentHash: Maybe<string>
-    content: Maybe<string>
     format: string
-    output?: string
 }
 
 export interface Outline extends NodeParent {
@@ -36,9 +34,6 @@ export interface Outline extends NodeParent {
 
 export const createDefaultNode: Fn0<Node> = () => ({
     parentId: null,
-    contentId: null,
-    contentHash: null,
-    content: null,
     id: uuid(),
     format: "text",
     children: [],
@@ -47,9 +42,10 @@ export const createDefaultNode: Fn0<Node> = () => ({
 type OutlineChangeSubscriber = (changes: any, newOutline: Outline, oldOutline: Outline) => void
 
 export class OutlineShell {
+    repository: Repository
     idLink: any
     titleLink: any
-    public static create() {
+    public static create(outlineEDF: EmbeddedDataFile<Outline>, repository: Repository) {
         const outline = AutoMerge.change(AutoMerge.init(), (doc: any) => {
             doc.id = uuid()
             doc.title = "Untitled"
@@ -59,16 +55,18 @@ export class OutlineShell {
             doc.children = [defaultNode.id]
             return doc
         })
+        outlineEDF.crdt = outline
+        outlineEDF.save()
         debug("Creating outline", outline)
-        return new this(outline)
+        return new this(outlineEDF, repository)
     }
 
-    public static load(raw: string) {
-        debug("Loading outline:", raw)
-        return new this(AutoMerge.load(raw))
-    }
+    edf: Maybe<EmbeddedDataFile<Outline>>
 
-    @observable.ref public outline: Outline
+    @computed
+    get outline() {
+        return this.edf!.crdt!
+    }
 
     @computed
     get id() {
@@ -82,9 +80,9 @@ export class OutlineShell {
 
     private subscribers: OutlineChangeSubscriber[] = []
 
-    private constructor(outline: Outline) {
-        debug("Creating Outline:", outline)
-        this.outline = outline
+    constructor(edf: EmbeddedDataFile<Outline>, repository: Repository) {
+        this.edf = edf
+        this.repository = repository
         this.idLink = linkProducer(this, "id")
         this.titleLink = linkProducer(this, "title")
     }
@@ -99,8 +97,8 @@ export class OutlineShell {
     }
 
     public async addNode(parentId: Maybe<string>): Promise<Maybe<string>> {
-        let id: Maybe<string> = null;
-        this.makeChange((doc: Outline) => {
+        let id: Maybe<string> = null
+        this.edf!.makeChange((doc: Outline) => {
             const node = createDefaultNode()
             if (parentId) {
                 node.parentId = parentId
@@ -110,13 +108,13 @@ export class OutlineShell {
             }
             doc.allNodes[node.id] = node
             debug("Added Node:", node)
-            id = node.id;
+            id = node.id
         }, "addNode")
-        return id;
+        return id
     }
 
     public removeNode(nodeId: string) {
-        this.makeChange(outline => {
+        this.edf!.makeChange(outline => {
             const antecedent = this.getAntecedent(nodeId, outline)
             const sibIdx = this.getSiblingIndex(nodeId, outline)
             antecedent.children.splice(sibIdx, 1)
@@ -125,31 +123,37 @@ export class OutlineShell {
     }
 
     public async relocateNode(id: string, parentId: string, index: number) {
-        this.makeChange(outline => this.changeNodeParent(id, parentId, index, outline), `Relocate node: ${id}`)
+        this.edf!.makeChange(outline => this.changeNodeParent(id, parentId, index, outline), `Relocate node: ${id}`)
     }
 
     public async setContent(id: string, content: string, output?: string) {
-        this.makeChange(outline => {
+        const attachmentEDF = await this.getAttachmentEDF(id)
+        attachmentEDF.makeChange(data => {
+            data.content = content
+            data.output = output
+            return data
+        })
+        await attachmentEDF.save()
+    }
+
+    public async getContent(id: string) {
+        const attachmentEDF = await this.getAttachmentEDF(id)
+        return attachmentEDF.crdt!.content
+    }
+
+    public async setFormat(id: string, format: string) {
+        this.edf!.makeChange(outline => {
             const node = this.getNode(id, outline)
-            node.content = content
-            node.output = output
+            node.format = format
             return outline
         })
     }
 
-    public async setFormat(id: string, format: string) {
-        this.makeChange(outline => {
-            const node = this.getNode(id, outline);
-            node.format = format;
-            return outline;
-        });
-    }
-
     public setTitle(title: string) {
-        this.makeChange((outline) => {
-            outline.title = title;
+        this.edf!.makeChange(outline => {
+            outline.title = title
             return outline
-        });
+        })
     }
 
     private changeNodeParent(id: string, parentId: string, index: number, outline: Outline) {
@@ -172,22 +176,6 @@ export class OutlineShell {
             node.parentId = parentId
         }
         return outline
-    }
-
-    private makeChange(mutate: (doc: Outline) => void, msg = "Update outline") {
-        const oldDoc = this.outline
-        const newDoc = AutoMerge.change(oldDoc, msg, mutate)
-        const changes = AutoMerge.getChanges(oldDoc, newDoc)
-        debug("Updated outline", newDoc)
-        debug("Changes:", newDoc)
-        this.outline = newDoc
-        this.broadcastChanges(changes, newDoc, oldDoc)
-    }
-
-    private broadcastChanges(...args: any[]) {
-        for (const subscriber of this.subscribers) {
-            ; (subscriber as any)(...args)
-        }
     }
 
     public getNode(id: string, outline = this.outline) {
@@ -273,7 +261,7 @@ export class OutlineShell {
     }
 
     public shiftBackward(nodeId: string) {
-        this.makeChange(outline => {
+        this.edf!.makeChange(outline => {
             const grandPa = this.getGrandAntecedent(nodeId, outline)
             const node = this.getNode(nodeId, outline)
             if (!grandPa) return
@@ -287,5 +275,11 @@ export class OutlineShell {
             this.changeNodeParent(nodeId, grandPa.id, parSibIdx + 1, outline)
             return outline
         })
+    }
+
+    private async getAttachmentEDF(id: string) {
+        const attachmentEDF = this.repository.getAttachmentEDF(id)
+        await attachmentEDF.safeLoad()
+        return attachmentEDF
     }
 }

@@ -56,6 +56,6 @@ export class OutlineViewModel {
 
     @action
     setActive(id: string) {
-        this.activeNodeId = id;
+        this.activeNodeId = id
     }
 }

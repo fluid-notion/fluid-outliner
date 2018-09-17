@@ -2,9 +2,9 @@ import { ButtonBase } from "@material-ui/core"
 import { autobind } from "core-decorators"
 import { observable } from "mobx"
 import React from "react"
-import { inject } from "mobx-react";
+import { inject } from "mobx-react"
 
-import { RepositoryViewModel } from "../models/RepositoryViewModel";
+import { RepositoryViewModel } from "../models/RepositoryViewModel"
 
 interface IFileUploaderProps {
     dismiss: () => void
@@ -105,6 +105,6 @@ export class FileUploader extends React.Component<IFileUploaderProps> {
             alert("Uploading multiple files is not supported")
         }
         const file = files[0]
-        this.props.repository!.loadFromLocal(file);
+        this.props.repository!.loadFromLocal(file)
     }
 }

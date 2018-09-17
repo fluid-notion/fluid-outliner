@@ -1,17 +1,14 @@
 import * as Comlink from "comlink"
 import JSZip from "jszip"
-import assert from "assert"
 import pull from "lodash/pull"
 
 // @ts-ignore
 import manifest from "../../package.json"
 import { Lambda, autorun, observable, computed } from "mobx"
-import _debug from "debug"
 import { Newable, Maybe } from "../helpers/types"
 import { OutlineShell, Outline } from "./OutlineShell"
 import { OutlineVisitState } from "./OutlineVisitState"
-
-const debug = _debug("fluid-outliner:repository")
+import { EmbeddedDataFile } from "./EmbeddedDataFile"
 
 export interface RepositoryPlugin {
     register(repository: Repository): void
@@ -76,6 +73,7 @@ export class Repository {
         return Comlink.proxyValue(() => pull(this.subscribers.onUnload, lambda))
     }
 
+    @computed
     public get outline(): Maybe<Outline> {
         if (this.outlineShell) {
             return this.outlineShell.outline
@@ -125,19 +123,32 @@ export class Repository {
         this.outlineShell = null
     }
 
+    public getEDF<D>(filePath: string) {
+        return new EmbeddedDataFile<D>(this.archive!, filePath)
+    }
+
+    public getOutlineEDF() {
+        return this.getEDF<Outline>("outline.json")
+    }
+
+    public getAttachmentEDF<D = { content: string; output?: string }>(id: string) {
+        return this.getEDF<D>(`files/${id}.json`)
+    }
+
     private invokeSubscribers(name: keyof RepositorySubscribers) {
         this.subscribers[name].forEach((l: Lambda) => l())
     }
 
     private async loadOutline() {
-        const raw = await this.archive!.file("outline.automerge.json").async("text")
-        this.outlineShell = OutlineShell.load(raw)
+        const outlineEDF = this.getOutlineEDF()
+        await outlineEDF.load()
+        this.outlineShell = new OutlineShell(outlineEDF, this)
         this.outlineDidLoad()
     }
 
     private async initOutline() {
-        this.outlineShell = OutlineShell.create()
-        this.saveToArchive()
+        const outlineEDF = this.getOutlineEDF()
+        this.outlineShell = OutlineShell.create(outlineEDF, this)
         this.outlineDidLoad()
     }
 
@@ -166,15 +177,7 @@ export class Repository {
     private bindOutlineObserver() {
         this.unbindOutlineObserver = autorun(() => {
             if (!this.outline) return
-            this.saveToArchive()
             this.invokeSubscribers("onUpdate")
         })
-    }
-
-    private saveToArchive() {
-        debug("Updating archive")
-        assert(this.outlineShell)
-        this.archive!.file("outline.json", JSON.stringify(this.outline, null, 2))
-        this.archive!.file("outline.automerge.json", this.outlineShell!.serialize())
     }
 }

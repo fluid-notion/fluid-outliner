@@ -11,10 +11,10 @@ export interface NodePresenterProps {
 @observer
 export class NodePresenter extends React.Component<NodePresenterProps> {
     render() {
-        const { node } = this.props;
+        const { node } = this.props
         if (node.output) {
             return <div dangerouslySetInnerHTML={{ __html: node.output }} />
         }
-        return node.content;
+        return node.content
     }
 }

@@ -6,7 +6,7 @@ import flow from "lodash/flow"
 import Octicon from "react-octicon"
 import { observer } from "mobx-react"
 import { withStyles } from "../helpers/type-overrides"
-import { RepositoryViewModel } from "../models/RepositoryViewModel";
+import { RepositoryViewModel } from "../models/RepositoryViewModel"
 
 declare var SHELL_ID: string
 
@@ -112,7 +112,7 @@ export const Navbar = decorate(({ classes, toggleDrawer, searchRef, drawerOpen, 
                             </IconButton>
                         </Tooltip>
                         <Tooltip title="Open local file">
-                            <IconButton color="inherit" aria-label="Menu" onClick={() => { }}>
+                            <IconButton color="inherit" aria-label="Menu" onClick={() => {}}>
                                 <Octicon name="repo-push" className={classes!.icon} />
                             </IconButton>
                         </Tooltip>

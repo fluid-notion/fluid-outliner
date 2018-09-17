@@ -1,4 +1,4 @@
-import { computed } from "mobx";
+import { computed } from "mobx"
 
 import { Node } from "../../models/OutlineShell"
 import { NodeState } from "../../models/OutlineVisitState"
@@ -39,12 +39,7 @@ export class NodeViewModel implements NodeViewModelParams {
     get id() {
         return this.node.id
     }
-    get content() {
-        return this.node.content
-    }
-    get output() {
-        return this.node.output
-    }
+
     get hasChildren() {
         return this.numChildren > 0
     }
@@ -71,18 +66,18 @@ export class NodeViewModel implements NodeViewModelParams {
     async addChildNode() {
         const id = await this.outlineShellProxy.addNode(this.id)
         if (id) {
-            this.outline.nodeUnderEdit = id;
+            this.outline.nodeUnderEdit = id
         }
-        return id;
+        return id
     }
 
     @autobind
     async addSiblingNode() {
         const id = await this.outlineShellProxy.addNode(this.node.parentId)
         if (id) {
-            this.outline.nodeUnderEdit = id;
+            this.outline.nodeUnderEdit = id
         }
-        return id;
+        return id
     }
 
     @autobind
@@ -123,17 +118,22 @@ export class NodeViewModel implements NodeViewModelParams {
     @autobind
     deactivateEditing() {
         if (this.outline.nodeUnderEdit === this.id) {
-            this.outline.nodeUnderEdit = null;
+            this.outline.nodeUnderEdit = null
         }
     }
 
     @autobind
+    getContent() {
+        return this.outlineShellProxy.getContent(this.id)
+    }
+
+    @autobind
     setContent(content: string, output?: string) {
-        this.outlineShellProxy.setContent(this.id, content, output);
+        this.outlineShellProxy.setContent(this.id, content, output)
     }
 
     @autobind
     setFormat(format: string) {
-        this.outlineShellProxy.setFormat(this.id, format);
+        this.outlineShellProxy.setFormat(this.id, format)
     }
 }

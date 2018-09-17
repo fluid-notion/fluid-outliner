@@ -1,35 +1,38 @@
-import assert from "assert";
+import assert from "assert"
 // @ts-ignore
 import AutoMerge from "automerge"
-import JSZip from "jszip";
+import JSZip from "jszip"
 import _debug from "debug"
-import { EmbeddedFile } from "./EmbeddedFile";
+import { EmbeddedFile } from "./EmbeddedFile"
+import { observable } from "mobx"
 
 const debug = _debug("fluid-outliner:EmbeddedDataFile")
 
 export class EmbeddedDataFile<D extends {}> {
+    private file: EmbeddedFile<"text">
+    private crdtFile: EmbeddedFile<"text">
 
-    private file: EmbeddedFile<"text">;
-    private crdtFile: EmbeddedFile<"text">;
-    private crdt?: any;
-    private readonly crdtFilePath: string;
+    @observable.ref public crdt?: Readonly<D>
 
-    constructor(
-        private archive: JSZip,
-        private filePath: string
-    ) {
-        assert(filePath.match(/\.json$/));
-        this.crdtFilePath = this.filePath.replace(/\.json$/, '.crdt.json');
-        this.file = new EmbeddedFile(this.archive, this.filePath, "text");
-        this.crdtFile = new EmbeddedFile(this.archive, this.crdtFilePath, "text");
+    private readonly crdtFilePath: string
+
+    constructor(private archive: JSZip, private filePath: string) {
+        assert(filePath.match(/\.json$/))
+        this.crdtFilePath = this.filePath.replace(/\.json$/, ".crdt.json")
+        this.file = new EmbeddedFile(this.archive, this.filePath, "text")
+        this.crdtFile = new EmbeddedFile(this.archive, this.crdtFilePath, "text")
     }
 
-    async getCRDT() {
-        return JSON.parse(await this.crdtFile.read())
+    async safeLoad() {
+        if (this.crdtFile.isPersisted()) {
+            await this.load()
+        } else {
+            this.crdt = AutoMerge.init()
+        }
     }
 
     async load() {
-        this.crdt = AutoMerge.load(await this.crdtFile.read());
+        this.crdt = AutoMerge.load(await this.crdtFile.read())
     }
 
     public serialize() {
@@ -41,8 +44,8 @@ export class EmbeddedDataFile<D extends {}> {
     }
 
     async save() {
-        await this.file.write(JSON.stringify(this.crdt, null, 2));
-        await this.crdtFile.write(this.serialize());
+        await this.file.write(JSON.stringify(this.crdt, null, 2))
+        await this.crdtFile.write(this.serialize())
     }
 
     public async makeChange(mutate: (doc: D) => void, msg = "Update outline") {
