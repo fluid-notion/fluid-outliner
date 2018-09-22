@@ -1,20 +1,15 @@
 import React from "react"
 
-import { NodeViewModel } from "../models/NodeViewModel"
 import { observer } from "../../../node_modules/mobx-react"
-
-export interface NodePresenterProps {
-    node: NodeViewModel
-    children: any
-}
+import { NodeEditorProps } from "./NodeEditor";
 
 @observer
-export class NodePresenter extends React.Component<NodePresenterProps> {
+export class NodePresenter extends React.Component<NodeEditorProps> {
     render() {
-        const { node } = this.props
-        if (node.output) {
-            return <div dangerouslySetInnerHTML={{ __html: node.output }} />
+        const { defaultOutput, defaultContent } = this.props
+        if (defaultOutput) {
+            return <div dangerouslySetInnerHTML={{ __html: defaultOutput }} />
         }
-        return node.content
+        return defaultContent || null
     }
 }

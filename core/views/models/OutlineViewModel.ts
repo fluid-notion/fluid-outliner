@@ -47,11 +47,6 @@ export class OutlineViewModel {
         this.idLink = linkConsumer(outlineShellProxy, "idLink", this, "id")
         this.titleLink = linkConsumer(outlineShellProxy, "titleLink", this, "title")
         this.visibleNodesLink = linkConsumer(outlineVisitStateProxy, "visibleNodesLink", this, "rawVisibleNodes")
-        // outlineShellProxy.onChange(
-        //     Comlink.proxyValue((..._args: any[]) => {
-        //         debugger
-        //     })
-        // )
     }
 
     @action

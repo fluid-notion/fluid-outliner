@@ -19,7 +19,7 @@ export class NodeMarkdownEditor extends React.Component<NodeEditorProps> {
     render() {
         return (
             <CodeMirror
-                value={this.props.node.content || ""}
+                value={this.props.defaultContent || ""}
                 options={{
                     mode: "markdown",
                     theme: "eclipse",

@@ -1,6 +1,6 @@
 import _debug from "debug"
 import assert from "assert"
-import { observable, computed } from "mobx"
+import { observable, computed, action } from "mobx"
 
 import { Maybe } from "../helpers/types"
 import { OutlineShell, Node, NodeParent } from "./OutlineShell"
@@ -9,6 +9,7 @@ import { linkProducer } from "../helpers/unidirectional-observable-bridge/produc
 const debug = _debug("fluid-outliner:OutlineVisitState")
 
 export const DEFAULT_EMPIRICAL_NODE_HEIGHT = 40
+export const BUFFER_EXTRANEOUS_NODE_COUNT = 5
 
 export interface Bounds {
     height: number
@@ -32,18 +33,26 @@ interface VisibleNodeAccumulator {
 export class OutlineVisitState {
     constructor(public outlineShell: OutlineShell) {
         debug("Creating OutlineVisitState")
+        this.startCursor = this.outlineShell.outline.children[0]
+
     }
 
     @observable private containerBounds: Maybe<Bounds>
 
-    // @ts-ignore
-    @observable private scrollTop: Maybe<number>
+    @observable private scrollTop = 0
+    @observable private baseScrollTop = 0
+    @observable private headerPadding = 0
+    @observable private footerPadding = 0
 
     @observable private nodeHeightMap: Map<string, number> = new Map()
 
     @observable private collapsedMap: Map<string, boolean> = new Map()
 
     @observable private startCursor: Maybe<string>
+
+    get effectiveStartCursor() {
+        return this.startCursor || this.outlineShell.outline.children[0]
+    }
 
     isCollapsed(id: string) {
         if (this.collapsedMap.has(id)) {
@@ -52,8 +61,22 @@ export class OutlineVisitState {
         return false
     }
 
+    @action
     setScrollTop(scrollTop: number) {
         this.scrollTop = scrollTop
+        if (this.scrollTop > this.baseScrollTop) {
+            const nextBaseScrollTop = this.baseScrollTop + this.getNodeHeight(this.effectiveStartCursor);
+            if (this.scrollTop < nextBaseScrollTop) return;
+            const nextVisible = this.getNextVisible(this.effectiveStartCursor)
+            if (!nextVisible) return;
+            this.startCursor = nextVisible
+            this.baseScrollTop = nextBaseScrollTop
+        } else if (this.scrollTop < this.baseScrollTop) {
+            const prevVisible = this.getPrevVisible(this.effectiveStartCursor)
+            if (!prevVisible) return;
+            this.baseScrollTop = this.scrollTop - this.getNodeHeight(prevVisible)
+            this.startCursor = prevVisible
+        }
     }
 
     setContainerBounds(bounds: Bounds) {
@@ -145,5 +168,25 @@ export class OutlineVisitState {
 
     private get allNodes() {
         return this.outlineShell.outline.allNodes
+    }
+
+    getNextVisible(id: string) {
+        let node: Node | null = this.outlineShell.getNode(id);
+        if (!this.isCollapsed(id) && node.children.length > 0) {
+            return node.children[0];
+        }
+        while (node) {
+            const sib = this.outlineShell.getNextSibling(node.id)
+            if (sib) return sib
+            node = this.outlineShell.getParentOf(node.id)
+        }
+        return null
+    }
+
+    getPrevVisible(id: string) {
+        let node: Node | null = this.outlineShell.getNode(id)
+        const sib = this.outlineShell.getPrevSibling(node.id)
+        if (sib) return sib
+        return node.parentId
     }
 }

@@ -62,7 +62,7 @@ export class OutlineEditor extends React.Component<OutlineEditorProps> {
                 <div ref={this.outerContainerRef} className={classes.outerContainer}>
                     <Scrollbars ref={this.scrollerRef} onScrollFrame={this.syncScrollState}>
                         <div className={classes.innerContainer} ref={this.containerRef}>
-                            {outline.visibleNodes.map(node => <NodeEditor node={node} />)}
+                            {outline.visibleNodes.map(node => <NodeEditor key={node.id} node={node} />)}
                         </div>
                     </Scrollbars>
                 </div>

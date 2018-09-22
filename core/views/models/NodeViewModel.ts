@@ -1,4 +1,4 @@
-import { computed } from "mobx"
+import { computed, observable } from "mobx"
 
 import { Node } from "../../models/OutlineShell"
 import { NodeState } from "../../models/OutlineVisitState"
@@ -10,12 +10,25 @@ export interface NodeViewModelParams extends NodeState {
 }
 
 export class NodeViewModel implements NodeViewModelParams {
+
+    @observable
     public node: Node
-    public isCollapsed: boolean
-    public level: number
-    public numChildren: number
+
     public outline: OutlineViewModel
+
+    @observable
+    public isCollapsed: boolean
+
+    @observable
+    public level: number
+
+    @observable
+    public numChildren: number
+
+    @observable
     public canShiftBackward: boolean
+
+    @observable
     public canShiftForward: boolean
 
     constructor({
@@ -123,8 +136,8 @@ export class NodeViewModel implements NodeViewModelParams {
     }
 
     @autobind
-    getContent() {
-        return this.outlineShellProxy.getContent(this.id)
+    getContents() {
+        return this.outlineShellProxy.getContents(this.id)
     }
 
     @autobind

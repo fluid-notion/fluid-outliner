@@ -8,7 +8,7 @@ export const linkConsumer = (source: any, sourceProp: any, target: any, targetPr
     targetProp = targetProp || sourceProp
     return source[sourceProp](
         Comlink.proxyValue((change: any) => {
-            debug("Received change:", source, change)
+            debug(`[${sourceProp} -> ${targetProp}] Received change:`, source, change)
             set(target, targetProp, change.newValue)
         })
     )

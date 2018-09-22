@@ -3,8 +3,8 @@ import { StyledComponentProps } from "@material-ui/core"
 
 import { observer } from "../../../node_modules/mobx-react"
 import { withStyles } from "../helpers/type-overrides"
-import { NodeViewModel } from "../models/NodeViewModel"
 import { autobind } from "../../../node_modules/core-decorators"
+import { NodeEditorProps } from "./NodeEditor";
 
 const styles = {
     textField: {
@@ -13,10 +13,7 @@ const styles = {
     },
 }
 
-export interface NodeTextEditorProps extends StyledComponentProps<keyof typeof styles> {
-    node: NodeViewModel
-    isActive?: boolean
-    children: any
+export interface NodeTextEditorProps extends StyledComponentProps<keyof typeof styles>, NodeEditorProps {
 }
 
 @withStyles<keyof typeof styles, NodeTextEditorProps>(styles)
@@ -32,7 +29,7 @@ export class NodeTextEditor extends React.Component<NodeTextEditorProps> {
         const { classes } = this.props
         return (
             <textarea
-                defaultValue={this.props.node.content || ""}
+                defaultValue={this.props.defaultContent || ""}
                 className={classes!.textField}
                 ref={this.textFieldRef}
                 style={{ width: "100%" }}

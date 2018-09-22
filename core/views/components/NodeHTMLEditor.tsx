@@ -11,7 +11,7 @@ export class NodeHTMLEditor extends React.Component<NodeEditorProps> {
     render() {
         return (
             <ReactQuill
-                defaultValue={this.props.node.content || ""}
+                defaultValue={this.props.defaultContent || ""}
                 onBlur={this.handleBlur}
                 theme="snow"
                 ref={this.quillRef}

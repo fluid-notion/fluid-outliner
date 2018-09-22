@@ -4,6 +4,7 @@ import pull from "lodash/pull"
 import last from "lodash/last"
 import first from "lodash/first"
 import _debug from "debug"
+import md5 from "js-md5"
 // @ts-ignore
 import AutoMerge from "automerge"
 import { computed } from "mobx"
@@ -24,6 +25,7 @@ export interface Node extends NodeParent {
     id: string
     parentId: Maybe<string>
     format: string
+    contentHash: Maybe<string>
 }
 
 export interface Outline extends NodeParent {
@@ -37,6 +39,7 @@ export const createDefaultNode: Fn0<Node> = () => ({
     id: uuid(),
     format: "text",
     children: [],
+    contentHash: null
 })
 
 type OutlineChangeSubscriber = (changes: any, newOutline: Outline, oldOutline: Outline) => void
@@ -133,12 +136,18 @@ export class OutlineShell {
             data.output = output
             return data
         })
+        this.edf!.makeChange(outline => {
+            const node = this.getNode(id, outline)
+            node.contentHash = md5(content)
+            return outline
+        })
         await attachmentEDF.save()
     }
 
-    public async getContent(id: string) {
+    public async getContents(id: string) {
         const attachmentEDF = await this.getAttachmentEDF(id)
-        return attachmentEDF.crdt!.content
+        const { content, output } = attachmentEDF.crdt!
+        return { content, output }
     }
 
     public async setFormat(id: string, format: string) {
@@ -199,6 +208,19 @@ export class OutlineShell {
         const parent = this.getParentOf(nodeId, outline)
         if (!parent) return null
         return this.getParentOf(parent.id, outline)
+    }
+
+    public hasChildren(nodeId: string, outline = this.outline) {
+        const { children } = this.getNode(nodeId, outline);
+        return children.length > 0;
+    }
+
+    public getFirstChildOf(nodeId: string, outline = this.outline) {
+        const { children } = this.getNode(nodeId, outline);
+        if (children.length > 0) {
+            return this.getNode(children[0], outline);
+        }
+        return null
     }
 
     public getChildrenOf(nodeId: string, outline = this.outline) {
