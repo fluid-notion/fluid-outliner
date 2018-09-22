@@ -30,7 +30,6 @@ const styles = {
     innerContainer: {
         margin: "auto",
         maxWidth: "1280px",
-        padding: "40px 0",
     },
 }
 
@@ -61,9 +60,15 @@ export class OutlineEditor extends React.Component<OutlineEditorProps> {
                 </header>
                 <div ref={this.outerContainerRef} className={classes.outerContainer}>
                     <Scrollbars ref={this.scrollerRef} onScrollFrame={this.syncScrollState}>
-                        <div className={classes.innerContainer} ref={this.containerRef}>
-                            {outline.visibleNodes.map(node => <NodeEditor key={node.id} node={node} />)}
-                        </div>
+                        {outline.currentWindow && (
+                            <>
+                                <div style={{ height: outline.currentWindow.headerPadding }} />
+                                <div className={classes.innerContainer} ref={this.containerRef}>
+                                    {outline.visibleNodes.map(node => <NodeEditor key={node.id} node={node} />)}
+                                </div>
+                                <div style={{ height: outline.currentWindow.footerPadding }} />
+                            </>
+                        )}
                     </Scrollbars>
                 </div>
             </div>
@@ -71,6 +76,16 @@ export class OutlineEditor extends React.Component<OutlineEditorProps> {
     }
 
     componentDidMount() {
+        this.syncContainerBounds()
+        window.addEventListener('resize', this.syncContainerBounds);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.syncContainerBounds)
+    }
+
+    @autobind
+    private syncContainerBounds() {
         const rect = this.outerContainerRef.current!.getBoundingClientRect()
         this.props.outline.outlineVisitStateProxy.setContainerBounds({
             height: rect.height,

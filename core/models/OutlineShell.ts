@@ -99,6 +99,14 @@ export class OutlineShell {
         return AutoMerge.save(this.outline)
     }
 
+    public getLevelOf(nodeId: string, curLevel = 0): number {
+        const node = this.getNode(nodeId)
+        if (node && node.parentId) {
+            return this.getLevelOf(node.parentId, curLevel + 1)
+        }
+        return curLevel
+    }
+
     public async addNode(parentId: Maybe<string>): Promise<Maybe<string>> {
         let id: Maybe<string> = null
         this.edf!.makeChange((doc: Outline) => {

@@ -25,7 +25,8 @@
     "prepublish": "node scripts/pre-publish.js",
     "clean": "rimraf ./*/dist*",
     "burnthemall": "yarn run clean && rimraf node_modules && rimraf ./*/node_modules && rimraf ./*/*/node_modules",
-    "deploy": "yarn run clean && yarn run build && node ./scripts/deploy"
+    "deploy": "yarn run clean && yarn run build && node ./scripts/deploy",
+    "pwa-dev-server": "cd pwa-shell && yarn run webpack-dev-server"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.54",

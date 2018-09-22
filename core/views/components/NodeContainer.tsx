@@ -49,8 +49,8 @@ export class NodeContainer extends React.Component<NodePresenterProps> {
 
     render() {
         const classes = this.props.classes!
-        const distLeft = this.props.node.level * 20
         const { node } = this.props
+        const distLeft = node.level * 20
         return (
             <div
                 tabIndex={0}
@@ -60,6 +60,7 @@ export class NodeContainer extends React.Component<NodePresenterProps> {
                 style={{
                     paddingLeft: distLeft,
                 }}
+                data-node-id={node.id}
             >
                 <Paper
                     className={classes!.paper}

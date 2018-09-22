@@ -10,7 +10,7 @@
     },
     "scripts": {
         "build": "../node_modules/.bin/webpack --config webpack.config.ts",
-        "webpack-dev-server": "../node_modules/.bin/webpack-dev-server --hot --progress --profile --colors",
+        "webpack-dev-server": "node --max-old-space-size=8192 ../node_modules/webpack-dev-server/bin/webpack-dev-server.js --hot --progress --profile --colors",
         "clean": "../node_modules/.bin/rimraf ./dist",
         "deploy": "yarn run clean && yarn run build && node ./scripts/deploy"
     }
