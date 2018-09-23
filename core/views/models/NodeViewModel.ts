@@ -77,7 +77,7 @@ export class NodeViewModel implements NodeViewModelParams {
 
     @autobind
     async addChildNode() {
-        const id = await this.outlineShellProxy.addNode(this.id)
+        const id = await this.outlineShellProxy.addNode(this.id, 0)
         if (id) {
             this.outline.nodeUnderEdit = id
         }
@@ -86,7 +86,8 @@ export class NodeViewModel implements NodeViewModelParams {
 
     @autobind
     async addSiblingNode() {
-        const id = await this.outlineShellProxy.addNode(this.node.parentId)
+        const sibIdx = await this.outlineShellProxy.getSiblingIndex(this.node.id)
+        const id = await this.outlineShellProxy.addNode(this.node.parentId, sibIdx + 1)
         if (id) {
             this.outline.nodeUnderEdit = id
         }

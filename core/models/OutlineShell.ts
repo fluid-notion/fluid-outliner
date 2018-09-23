@@ -107,15 +107,15 @@ export class OutlineShell {
         return curLevel
     }
 
-    public async addNode(parentId: Maybe<string>): Promise<Maybe<string>> {
+    public async addNode(parentId: Maybe<string>, index: number): Promise<Maybe<string>> {
         let id: Maybe<string> = null
         this.edf!.makeChange((doc: Outline) => {
             const node = createDefaultNode()
             if (parentId) {
                 node.parentId = parentId
-                doc.allNodes[parentId].children.unshift(node.id)
+                doc.allNodes[parentId].children.splice(index, 0, node.id)
             } else {
-                doc.children.push(node.id)
+                doc.children.splice(index, 0, node.id)
             }
             doc.allNodes[node.id] = node
             debug("Added Node:", node)

@@ -125,6 +125,7 @@ export class NodeToolbar extends React.Component<NodeToolbarProps> {
                         <div className={classes.groupInner}>
                             <select
                                 className={classes.select}
+                                value={node.node.format}
                                 onChange={e => {
                                     node.setFormat(e.target.value)
                                 }}
