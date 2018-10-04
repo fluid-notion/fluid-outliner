@@ -12,27 +12,11 @@ import { computed } from "mobx"
 import { v4 as uuid } from "uuid"
 import { Maybe, Fn0 } from "../helpers/types"
 import { linkProducer } from "../helpers/unidirectional-observable-bridge/producer"
-import { EmbeddedDataFile } from "./EmbeddedDataFile"
 import { Repository } from "./Repository"
+import { Outline, Node } from "./document-data-types";
+import { EmbeddedCRDTFile } from "./EmbeddedCRDTFile";
 
 const debug = _debug("fluid-outliner:OutlineShell")
-
-export interface NodeParent {
-    children: string[]
-}
-
-export interface Node extends NodeParent {
-    id: string
-    parentId: Maybe<string>
-    format: string
-    contentHash: Maybe<string>
-}
-
-export interface Outline extends NodeParent {
-    id: string
-    title: string
-    allNodes: { [key: string]: Node }
-}
 
 export const createDefaultNode: Fn0<Node> = () => ({
     parentId: null,
@@ -48,7 +32,8 @@ export class OutlineShell {
     repository: Repository
     idLink: any
     titleLink: any
-    public static create(outlineEDF: EmbeddedDataFile<Outline>, repository: Repository) {
+
+    public static create(embeddedOutlineFile: EmbeddedCRDTFile<Outline>, repository: Repository) {
         const outline = AutoMerge.change(AutoMerge.init(), (doc: any) => {
             doc.id = uuid()
             doc.title = "Untitled"
@@ -58,17 +43,17 @@ export class OutlineShell {
             doc.children = [defaultNode.id]
             return doc
         })
-        outlineEDF.crdt = outline
-        outlineEDF.save()
+        embeddedOutlineFile.crdt = outline
+        embeddedOutlineFile.save()
         debug("Creating outline", outline)
-        return new this(outlineEDF, repository)
+        return new this(embeddedOutlineFile, repository)
     }
 
-    edf: Maybe<EmbeddedDataFile<Outline>>
+    embeddedFile: Maybe<EmbeddedCRDTFile<Outline>>
 
     @computed
     get outline() {
-        return this.edf!.crdt!
+        return this.embeddedFile!.crdt!
     }
 
     @computed
@@ -83,8 +68,8 @@ export class OutlineShell {
 
     private subscribers: OutlineChangeSubscriber[] = []
 
-    constructor(edf: EmbeddedDataFile<Outline>, repository: Repository) {
-        this.edf = edf
+    constructor(edf: EmbeddedCRDTFile<Outline>, repository: Repository) {
+        this.embeddedFile = edf
         this.repository = repository
         this.idLink = linkProducer(this, "id")
         this.titleLink = linkProducer(this, "title")
@@ -109,7 +94,7 @@ export class OutlineShell {
 
     public async addNode(parentId: Maybe<string>, index: number): Promise<Maybe<string>> {
         let id: Maybe<string> = null
-        this.edf!.makeChange((doc: Outline) => {
+        this.embeddedFile!.makeChange((doc: Outline) => {
             const node = createDefaultNode()
             if (parentId) {
                 node.parentId = parentId
@@ -125,7 +110,7 @@ export class OutlineShell {
     }
 
     public removeNode(nodeId: string) {
-        this.edf!.makeChange(outline => {
+        this.embeddedFile!.makeChange(outline => {
             const antecedent = this.getAntecedent(nodeId, outline)
             const sibIdx = this.getSiblingIndex(nodeId, outline)
             antecedent.children.splice(sibIdx, 1)
@@ -134,32 +119,41 @@ export class OutlineShell {
     }
 
     public async relocateNode(id: string, parentId: string, index: number) {
-        this.edf!.makeChange(outline => this.changeNodeParent(id, parentId, index, outline), `Relocate node: ${id}`)
+        this.embeddedFile!.makeChange(outline => this.changeNodeParent(id, parentId, index, outline), `Relocate node: ${id}`)
     }
 
     public async setContent(id: string, content: string, output?: string) {
-        const attachmentEDF = await this.getAttachmentEDF(id)
-        attachmentEDF.makeChange(data => {
-            data.content = content
+        const node = this.getNode(id)
+        const ecf = await this.getEmbeddedContentFile(id, node.format)
+        ecf.makeChange(data => {
+            data.content = data.content || new AutoMerge.Text();
             data.output = output
             return data
         })
-        this.edf!.makeChange(outline => {
+        this.embeddedFile!.makeChange(outline => {
             const node = this.getNode(id, outline)
             node.contentHash = md5(content)
             return outline
         })
-        await attachmentEDF.save()
+        await ecf.save()
+    }
+
+    public async applyContentOperation(id: string, changes: NodeChange[]) {
+        const attachmentEDF = await this.getEmbeddedContentFile(id)
+        attachmentEDF.makeChange(data => {
+            data.content = data.content || new AutoMerge.Text();
+
+        })
     }
 
     public async getContents(id: string) {
-        const attachmentEDF = await this.getAttachmentEDF(id)
+        const attachmentEDF = await this.getEmbeddedContentFile(id)
         const { content, output } = attachmentEDF.crdt!
         return { content, output }
     }
 
     public async setFormat(id: string, format: string) {
-        this.edf!.makeChange(outline => {
+        this.embeddedFile!.makeChange(outline => {
             const node = this.getNode(id, outline)
             node.format = format
             return outline
@@ -167,7 +161,7 @@ export class OutlineShell {
     }
 
     public setTitle(title: string) {
-        this.edf!.makeChange(outline => {
+        this.embeddedFile!.makeChange(outline => {
             outline.title = title
             return outline
         })
@@ -291,7 +285,7 @@ export class OutlineShell {
     }
 
     public shiftBackward(nodeId: string) {
-        this.edf!.makeChange(outline => {
+        this.embeddedFile!.makeChange(outline => {
             const grandPa = this.getGrandAntecedent(nodeId, outline)
             const node = this.getNode(nodeId, outline)
             if (!grandPa) return
@@ -307,9 +301,9 @@ export class OutlineShell {
         })
     }
 
-    private async getAttachmentEDF(id: string) {
-        const attachmentEDF = this.repository.getAttachmentEDF(id)
-        await attachmentEDF.safeLoad()
-        return attachmentEDF
+    private async getEmbeddedContentFile(id: string, format: string) {
+        const ecf = this.repository.getEmbeddedContentFile(id, format)
+        await ecf.safeLoad()
+        return ecf
     }
 }

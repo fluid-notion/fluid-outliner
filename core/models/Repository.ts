@@ -6,9 +6,12 @@ import pull from "lodash/pull"
 import manifest from "../../package.json"
 import { Lambda, autorun, observable, computed } from "mobx"
 import { Newable, Maybe } from "../helpers/types"
-import { OutlineShell, Outline } from "./OutlineShell"
+import { OutlineShell } from "./OutlineShell"
 import { OutlineVisitState } from "./OutlineVisitState"
-import { EmbeddedDataFile } from "./EmbeddedDataFile"
+import { EmbeddedCRDTFile } from "./EmbeddedCRDTFile"
+import { getRendererForFormat } from "../helpers/renderers";
+import { EmbeddedContentFile } from "./EmbeddedContentFile";
+import { Outline } from "./document-data-types";
 
 export interface RepositoryPlugin {
     register(repository: Repository): void
@@ -123,16 +126,16 @@ export class Repository {
         this.outlineShell = null
     }
 
-    public getEDF<D>(filePath: string) {
-        return new EmbeddedDataFile<D>(this.archive!, filePath)
+    public getEmbeddedCRDTFile<D>(filePath: string) {
+        return new EmbeddedCRDTFile<D>(this.archive!, filePath)
     }
 
     public getOutlineEDF() {
-        return this.getEDF<Outline>("outline.json")
+        return this.getEmbeddedCRDTFile<Outline>("outline.json")
     }
 
-    public getAttachmentEDF<D = { content: string; output?: string }>(id: string) {
-        return this.getEDF<D>(`files/${id}.json`)
+    public getEmbeddedContentFile(id: string, format: string) {
+        return new EmbeddedContentFile(`files/${id}.json`, getRendererForFormat(format))
     }
 
     private invokeSubscribers(name: keyof RepositorySubscribers) {

@@ -1,33 +1,48 @@
-import assert from "assert"
+import assert from "assert";
+import _debug from "debug"
 // @ts-ignore
 import AutoMerge from "automerge"
 import JSZip from "jszip"
-import _debug from "debug"
-import { EmbeddedFile } from "./EmbeddedFile"
-import { observable } from "mobx"
+import { EmbeddedFile } from "./EmbeddedFile";
+import { Maybe } from "../helpers/types";
+import { observable } from "../../node_modules/mobx";
 
 const debug = _debug("fluid-outliner:EmbeddedDataFile")
 
-export class EmbeddedDataFile<D extends {}> {
-    private file: EmbeddedFile<"text">
-    private crdtFile: EmbeddedFile<"text">
+export class EmbeddedCRDTFile<D extends {}> {
+    private _file: Maybe<EmbeddedFile<"text">>
+    private _crdtFile: Maybe<EmbeddedFile<"text">>
 
+    // TODO: Deep Read only
     @observable.ref public crdt?: Readonly<D>
 
-    private readonly crdtFilePath: string
-
-    constructor(private archive: JSZip, private filePath: string) {
+    constructor(
+        protected archive: JSZip,
+        protected filePath: string
+    ) {
         assert(filePath.match(/\.json$/))
-        this.crdtFilePath = this.filePath.replace(/\.json$/, ".crdt.json")
-        this.file = new EmbeddedFile(this.archive, this.filePath, "text")
-        this.crdtFile = new EmbeddedFile(this.archive, this.crdtFilePath, "text")
+    }
+
+    get file(): EmbeddedFile<"text"> {
+        this._file = this._file || new EmbeddedFile(this.archive, this.filePath, "text")
+        return this._file
+    }
+
+    get crdtFile(): EmbeddedFile<"text"> {
+        if (!this._crdtFile) {
+            const crdtFilePath = this.filePath.replace(/.json$/, ".crdt.json")
+            this._crdtFile = new EmbeddedFile(this.archive, crdtFilePath, "text")
+        }
+        return this._crdtFile
     }
 
     async safeLoad() {
         if (this.crdtFile.isPersisted()) {
             await this.load()
         } else {
-            this.crdt = AutoMerge.init()
+            this.crdt = AutoMerge.change(AutoMerge.init(), (doc: any) => {
+                doc.content = new AutoMerge.Text()
+            });
         }
     }
 
@@ -57,4 +72,5 @@ export class EmbeddedDataFile<D extends {}> {
         this.crdt = newDoc
         await this.save()
     }
+
 }
